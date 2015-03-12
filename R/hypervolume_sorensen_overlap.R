@@ -1,4 +1,5 @@
 hypervolume_sorensen_overlap <- function(hvlist)
 {
-  hvlist@HVList$Intersection@Volume / hvlist@HVList$Union@Volume
+  value <- 2 * hvlist@HVList$Intersection@Volume / (hvlist@HVList$HV1@Volume + hvlist@HVList$HV2@Volume)
+  return(value)
 }

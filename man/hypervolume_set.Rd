@@ -19,7 +19,7 @@ A n-dimensional hypervolume
 A n-dimensional hypervolume
 }
   \item{npoints_max}{
-Maximum number of random points to use for set operations. If \code{NULL} defaults to 10*10^sqrt(n) where n is the dimensionality of the input hypervolumes.
+Maximum number of random points to use for set operations. If \code{NULL} defaults to 100*10^sqrt(n) where n is the dimensionality of the input hypervolumes. Note that this default parameter value has been increased by a factor of 10 since the 1.2 release of this package.
 }
   \item{verbose}{
 Logical value; print diagnostic output if true.
@@ -36,8 +36,9 @@ By default, the function uses {check_memory=TRUE} which will provide an estimate
 The computation is actually performed on a random sample from both input hypervolumes, constraining each to have the same point density given by the minimum of the point density of each input hypervolume, and the point density calculated using the volumes of each input hypervolume divided by \code{npoints_max}.
 }
 \value{
-If {check_memory} is false, returns a HypervolumeList object, with four items in its HVList slot:
-
+If {check_memory} is false, returns a HypervolumeList object, with six items in its HVList slot:
+  \item{HV1 }{The input hypervolume hv1}
+  \item{HV2 }{The input hypervolume hv2}
   \item{Intersection }{The intersection of hv1 and hv2}
   \item{Union }{The union of hv1 and hv2}
   \item{Unique_1 }{The unique component of hv1 relative to hv2}
@@ -52,9 +53,12 @@ If {check_memory} is true, instead returns a scalar with the expected number of 
 
 \examples{
 data(iris)
-hv1 = hypervolume(subset(iris, Species=="setosa")[,1:4],reps=1000,bandwidth=0.2,warn=FALSE)
-hv2 = hypervolume(subset(iris, Species=="virginica")[,1:4],reps=1000,bandwidth=0.2,warn=FALSE)
-hv3 = hypervolume(subset(iris, Species=="versicolor")[,1:4],reps=1000,bandwidth=0.2,warn=FALSE)
+hv1 = hypervolume(subset(iris, Species=="setosa")[,1:4],reps=1000,bandwidth=0.2,
+  warn=FALSE,name='setosa')
+hv2 = hypervolume(subset(iris, Species=="virginica")[,1:4],reps=1000,bandwidth=0.2,
+  warn=FALSE,name='virginica')
+hv3 = hypervolume(subset(iris, Species=="versicolor")[,1:4],reps=1000,bandwidth=0.2,
+  warn=FALSE,name='versicolor')
 
 
 hv_set12 = hypervolume_set(hv1, hv2, check_memory=FALSE)

@@ -14,14 +14,17 @@ extendrange <- function(x,factor=0.5)
   xminf <- xmin - (xmax - xmin)*factor
   xmaxf <- xmax + (xmax - xmin)*factor
   
-  return(c(xminf, xmaxf))
+  result <- c(xminf, xmaxf)
+  
+  return(result)
 }
 
 plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 1000, 
-                                 colors=rainbow(length(x@HVList)), names=NULL, 
+                                 colors=rainbow(length(x@HVList),alpha=0.8), names=NULL, 
                                  reshuffle=TRUE, showrandom=TRUE, showdensity=TRUE,showdata=TRUE,darkfactor=0.5,
                                  cex.random=0.5,cex.data=0.75,cex.axis=0.75,cex.names=1.0,cex.legend=0.75,
                                  legend=TRUE, varlims=NULL, showcontour=TRUE, contour.lwd=1, contour.filled=FALSE,contour.filled.alpha=0.5,
+                                 showcentroid=TRUE, cex.centroid=3,
                                  pairplot=TRUE,whichaxes=NULL,...)
 {
   sapply(x@HVList, function(z)
@@ -124,12 +127,18 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 1000,
               for (whichid in 1:length(unique(all$ID)))
               {
                 allss <- subset(all, all$ID==whichid)
-                kde2dresults <- kde2d(allss[,j], allss[,i],n=50,lims=c(extendrange(allss[,j]),extendrange(allss[,i])))
-  
-                .filled.contour(kde2dresults$x,kde2dresults$y, kde2dresults$z,
-                               col=c(NA,rgb2rgba(colors[whichid],contour.filled.alpha),NA),
-                               levels=c(0,min(kde2dresults$z)+diff(range(kde2dresults$z))*0.05,max(kde2dresults$z)))
-  
+                
+                if (nrow(allss) > 0)
+                {     
+                  contourx <- allss[,j]
+                  contoury <- allss[,i]
+                  
+                  kde2dresults <- kde2d(contourx, contoury, n=50,lims=c(extendrange(contourx),extendrange(contoury)))
+    
+                  .filled.contour(kde2dresults$x,kde2dresults$y, kde2dresults$z,
+                                 col=c(NA,rgb2rgba(colors[whichid],contour.filled.alpha),NA),
+                                 levels=c(0,min(kde2dresults$z)+diff(range(kde2dresults$z))*0.05,max(kde2dresults$z)))
+                }
               }
             }
             
@@ -137,13 +146,20 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 1000,
             for (whichid in 1:length(unique(all$ID)))
             {
               allss <- subset(all, all$ID==whichid)
-              kde2dresults <- kde2d(allss[,j], allss[,i],n=50,lims=c(extendrange(allss[,j]),extendrange(allss[,i])))
-
-              contour(kde2dresults,
-                      col=colors[whichid],
-                      levels=min(kde2dresults$z)+diff(range(kde2dresults$z))*0.05,
-                      lwd=contour.lwd,
-                      drawlabels=FALSE,add=TRUE)
+              
+              if (nrow(allss) > 0)
+              {         
+                contourx <- allss[,j]
+                contoury <- allss[,i]
+                
+                kde2dresults <- kde2d(contourx, contoury, n=50,lims=c(extendrange(contourx),extendrange(contoury)))
+  
+                contour(kde2dresults,
+                        col=colors[whichid],
+                        levels=min(kde2dresults$z)+diff(range(kde2dresults$z))*0.05,
+                        lwd=contour.lwd,
+                        drawlabels=FALSE,add=TRUE)
+              }
             }
           }
           
@@ -158,6 +174,21 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 1000,
           if (showdata & nrow(alldata) > 0)
           {
             points(alldata[,j], alldata[,i], col=colorlistdata,cex=cex.data,pch=16)
+          }
+          
+          if (showcentroid == TRUE)
+          {
+            for (whichid in 1:length(unique(all$ID)))
+            {
+              allss <- subset(all, all$ID==whichid)
+              centroid_x <- mean(allss[,j],na.rm=T) + rnorm(1)*diff(range(all[,j]))*0.01
+              centroid_y <- mean(allss[,i],na.rm=T) + rnorm(1)*diff(range(all[,i]))*0.01
+              
+              # draw point
+              points(centroid_x, centroid_y, col=colors[whichid],cex=cex.centroid,pch=16)
+              # add a white boundary for clarity
+              points(centroid_x, centroid_y, col='white',cex=cex.centroid,pch=1,lwd=1.5)
+            }
           }
           
           box()
@@ -222,6 +253,20 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 1000,
       if (!any(is.nan(as.matrix(alldata[,whichaxes]))))
       {
         rgl::points3d(x=alldata[,whichaxes[1]], y=alldata[,whichaxes[2]], z=alldata[,whichaxes[3]], col=colorlistdata,cex=cex.data,pch=16)
+      }
+    }
+    
+    if (showcentroid == TRUE)
+    {
+      for (whichid in 1:length(unique(all$ID)))
+      {
+        allss <- subset(all, all$ID==whichid)
+        centroid_1 <- mean(allss[,whichaxes[1]],na.rm=T)
+        centroid_2 <- mean(allss[,whichaxes[2]],na.rm=T)
+        centroid_3 <- mean(allss[,whichaxes[3]],na.rm=T)
+        
+        # draw point
+        rgl::points3d(x=centroid_1, y=centroid_2, z=centroid_3, col=colors[whichid],cex=cex.centroid,pch=16)
       }
     }
   }

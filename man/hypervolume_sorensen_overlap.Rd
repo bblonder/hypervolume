@@ -5,7 +5,7 @@
 Sorensen similarity index for hypervolume set operations
 }
 \description{
-Calculates the intersection volume divided by the union volume. 
+Calculates the Sorensen index, i.e. for hypervolumes A and B, 2*|A int B| / (|A| + |B|). Note that this definition has been changed since version 1.2 of the package.
 }
 \usage{
 hypervolume_sorensen_overlap(hvlist)
