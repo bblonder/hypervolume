@@ -11,11 +11,12 @@ Plots a single hypervolume or multiple hypervolumes as either a pairs plot (all 
 \usage{
 \method{plot}{HypervolumeList}(x, 
 npmax_data = 1000, npmax_random = 1000, 
-colors=rainbow(length(x@HVList)), names=NULL, 
+colors=rainbow(length(x@HVList),alpha=0.8), names=NULL, 
 reshuffle=TRUE, showrandom=TRUE, showdensity=TRUE,showdata=TRUE,darkfactor=0.5,
 cex.random=0.5,cex.data=0.75,cex.axis=0.75,cex.names=1.0,cex.legend=0.75,
 legend=TRUE, varlims=NULL, 
 showcontour=TRUE, contour.lwd=1, contour.filled=FALSE,contour.filled.alpha=0.5,
+ showcentroid=TRUE, cex.centroid=3,
 pairplot=TRUE,whichaxes=NULL,...)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -81,6 +82,12 @@ A logical value indicating whether contours should be shaded. Ignored if \code{s
 }
 \item{contour.filled.alpha}{
 An alpha value used to determine the transparency of shaded contours. Ignored if \code{contour.filled=FALSE}.
+}
+\item{showcentroid}{
+A logical value indicating whether a solid point indicating the centroid for each hypervolume should be drawn.
+}
+\item{cex.centroid}{
+Expansion factor for the centroid symbol.
 }
 \item{pairplot}{
 If true, a pair plot is produced. If false, a 3D plot is produced.

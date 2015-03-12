@@ -10,6 +10,8 @@ hypervolume_set <- function(hv1, hv2, npoints_max=NULL, verbose=TRUE, check_memo
     warning('hv1 has no random points and is empty.')
     result = new("HypervolumeList")
     result@HVList = list(
+      HV1 = hv1,
+      HV2 = hv2,
       Intersection = hv1, 
       Union = hv2, 
       Unique_1 = hv1, 
@@ -23,6 +25,8 @@ hypervolume_set <- function(hv1, hv2, npoints_max=NULL, verbose=TRUE, check_memo
     warning('hv2 has no random points and is empty.')
     result = new("HypervolumeList")
     result@HVList = list(
+      HV1 = hv1,
+      HV2 = hv2,
       Intersection = hv2, 
       Union = hv1, 
       Unique_1 = hv2, 
@@ -48,7 +52,7 @@ hypervolume_set <- function(hv1, hv2, npoints_max=NULL, verbose=TRUE, check_memo
   
   if (is.null(npoints_max))
   {
-    npoints_max = floor(10*10^sqrt(hv1@Dimensionality))
+    npoints_max = floor(100*10^sqrt(hv1@Dimensionality))
     cat(sprintf('Choosing npoints_max=%.0f (use a larger value for more accuracy.)\n',npoints_max))    
   }
   
@@ -69,9 +73,8 @@ hypervolume_set <- function(hv1, hv2, npoints_max=NULL, verbose=TRUE, check_memo
     }
   }
 
-  hv1_points_ss = hv1@RandomUniformPointsThresholded[sample(1:np1,size=numpointstokeep_hv1),]
-  hv2_points_ss = hv2@RandomUniformPointsThresholded[sample(1:np2,size=numpointstokeep_hv2),]
-
+  hv1_points_ss = hv1@RandomUniformPointsThresholded[sample(1:np1,size=numpointstokeep_hv1),,drop=FALSE]
+  hv2_points_ss = hv2@RandomUniformPointsThresholded[sample(1:np2,size=numpointstokeep_hv2),,drop=FALSE]
   
   point_density = nrow(hv1_points_ss) / hv1@Volume
   
@@ -204,7 +207,14 @@ hypervolume_set <- function(hv1, hv2, npoints_max=NULL, verbose=TRUE, check_memo
   
   # assemble final results into a list
   result = new("HypervolumeList")
-  result@HVList = list(Intersection = result_intersection, Union = result_union, Unique_1 = result_unique_hv1, Unique_2 = result_unique_hv2)
+  result@HVList = list(
+    HV1 = hv1,
+    HV2 = hv2,
+    Intersection = result_intersection, 
+    Union = result_union, 
+    Unique_1 = result_unique_hv1, 
+    Unique_2 = result_unique_hv2
+  )
   
   return(result)
 }
