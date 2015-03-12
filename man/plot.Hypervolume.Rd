@@ -84,7 +84,7 @@ A logical value indicating whether contours should be shaded. Ignored if \code{s
 An alpha value used to determine the transparency of shaded contours. Ignored if \code{contour.filled=FALSE}.
 }
 \item{showcentroid}{
-A logical value indicating whether a solid point indicating the centroid for each hypervolume should be drawn.
+A logical value indicating whether a solid point indicating the centroid for each hypervolume should be drawn. Centroids are randomly jittered by 1 percent to improve visual clarity.
 }
 \item{cex.centroid}{
 Expansion factor for the centroid symbol.
