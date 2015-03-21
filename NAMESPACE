@@ -1,6 +1,6 @@
 useDynLib(hypervolume)
 
-export(hypervolume, hypervolume_set, hypervolume_inclusion_test, estimate_bandwidth, get_volume, hypervolume_importance, negative_features, expectation_box, expectation_convex, expectation_maximal, expectation_ball, hypervolume_join, hypervolume_distance, hypervolume_sorensen_overlap) 
+export(hypervolume, hypervolume_set, hypervolume_inclusion_test, hypervolume_prune, hypervolume_segment, hypervolume_thin, estimate_bandwidth, get_volume, hypervolume_importance, hypervolume_holes, expectation_box, expectation_convex, expectation_maximal, expectation_ball, hypervolume_join, hypervolume_distance, hypervolume_sorensen_overlap) 
 
 exportClasses(
     "Hypervolume",
@@ -16,11 +16,13 @@ S3method(summary, HypervolumeList)
 S3method(get_volume, Hypervolume)
 S3method(get_volume, HypervolumeList)
 
+import(Rcpp)
+
 import(geometry)
 import(MASS)
-import(Rcpp)
 import(methods)
 import(rgl)
-import(pdist)
+import(ks)
+import(fastcluster)
 
 

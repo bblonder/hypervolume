@@ -25,7 +25,7 @@ hypervolume_distance <- function(hv1, hv2, type="centroid", npmax=1000, check_me
       stop()
     }
 
-    crossdistances <- pdist::pdist(hv1p_ss, hv2p_ss)
+    crossdistances <- fastPdist2(hv1p_ss, hv2p_ss)
     
     minimum_distance <- min(as.numeric(as.matrix(crossdistances)),na.rm=T)
     

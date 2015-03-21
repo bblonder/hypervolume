@@ -10,9 +10,6 @@ Estimates the shape and volume of high-dimensional objects and performs set oper
 
 \details{
 A FAQ can be found at http://www.benjaminblonder.org/hypervolume_faq.html.
-
-
-
 }
 
 \author{

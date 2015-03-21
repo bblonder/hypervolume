@@ -21,7 +21,7 @@ Data for occurrences of Quercus alba and Quercus rubra based on geographic obser
 Occurrence data come from the BIEN2 database (http://bien.nceas.ucsb.edu/bien/). Climate data are from WorldClim.
 }
 \references{
-Blonder, B., Lamanna, C., Violle, C., Enquist, B. The n-dimensional hypervolume. Global Ecology and Biogeography (in press)
+Blonder, B., Lamanna, C., Violle, C., Enquist, B. The n-dimensional hypervolume. Global Ecology and Biogeography (2014)
 }
 \examples{
 demo('quercus', package='hypervolume')

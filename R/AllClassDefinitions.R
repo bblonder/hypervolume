@@ -29,11 +29,14 @@ summary.HypervolumeList <- function(object, ...)
 {
   cat(sprintf("HypervolumeList with %d elements:\n\n", length(object@HVList)))
   
-  for (i in 1:length(object@HVList))
+  if (length(object@HVList)>0)
   {
-    whichhv <- object@HVList[[i]]
-    
-    summary.Hypervolume(whichhv)
+    for (i in 1:length(object@HVList))
+    {
+      whichhv <- object@HVList[[i]]
+      
+      summary.Hypervolume(whichhv)
+    }
   }
 }
 

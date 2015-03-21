@@ -13,3 +13,7 @@ kdtree_range_query_multiple <- function(tr, pminlist, pmaxlist, nr, nc, verb) {
     .Call('hypervolume_kdtree_range_query_multiple', PACKAGE = 'hypervolume', tr, pminlist, pmaxlist, nr, nc, verb)
 }
 
+fastPdist2 <- function(Ar, Br) {
+    .Call('hypervolume_fastPdist2', PACKAGE = 'hypervolume', Ar, Br)
+}
+

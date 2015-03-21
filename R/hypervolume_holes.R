@@ -157,7 +157,7 @@ expectation_ball <- function(input, npoints=NULL, userandom=FALSE)
 
 
 
-expectation_convex <- function(input, npoints_inhull=NULL, npoints_onhull=NULL, check_memory=TRUE, userandom=FALSE, method="rejection", burnin=NULL, delta=NULL)
+expectation_convex <- function(input, npoints_inhull=NULL, npoints_onhull=NULL, check_memory=TRUE, userandom=FALSE)
 {  
   if (class(input)=="Hypervolume")
   {
@@ -217,56 +217,29 @@ expectation_convex <- function(input, npoints_inhull=NULL, npoints_onhull=NULL, 
     cat(sprintf('Choosing npoints_inhull=%.0f (use a larger value for more accuracy.)\n',npoints_inhull))
   }  
   
+
+  # REJECTION SAMPLING FROM BOUNDING BOX TO FILL IN CONVEX POLYTOPE APPROACH  
+  ntrials <- 1000 # number of candidate points to propose at a time (algorithm always works regardless of this choice)
+  done = FALSE
+  inpoints <- NULL
+  niter <- 0
   
-  if (method=="rejection")
+  # generate a bounding box, and test if each point is in the convex hull or not
+  while(!done)
   {
-    # REJECTION SAMPLING FROM BOUNDING BOX TO FILL IN CONVEX POLYTOPE APPROACH  
-    ntrials <- 1000 # number of candidate points to propose at a time (algorithm always works regardless of this choice)
-    done = FALSE
-    inpoints <- NULL
-    niter <- 0
-    
-    # generate a bounding box, and test if each point is in the convex hull or not
-    while(!done)
-    {
-      # try a set of test points
-      testpoints <- expectation_box(data_reduced, npoints=ntrials)
+    # try a set of test points
+    testpoints <- expectation_box(data_reduced, npoints=ntrials)
 
-      chullin <- (inhull(testpts= testpoints@RandomUniformPointsThresholded, calpts=data_reduced, hull=hull_matrix)==1)
-      # figure out which are 'in'
-      inpoints_temp <- testpoints@RandomUniformPointsThresholded[chullin,]
-      
-      niter <- niter + 1
-      inpoints <- rbind(inpoints, inpoints_temp)
-      
-      done = nrow(inpoints) >= npoints_inhull
-      
-      cat(sprintf('Rejection sampling: iteration %.0f - %.0f / %.0f points accepted\n', niter, nrow(inpoints), npoints_inhull))
-    }
-  }
-  else if (method=="metropolis")
-  {
-    isin <- function(candidate)
-    {
-      inhull(testpts=matrix(candidate, nrow=1), calpts=data_reduced, hull=hull_matrix)
-    }
+    chullin <- (inhull(testpts= testpoints@RandomUniformPointsThresholded, calpts=data_reduced, hull=hull_matrix)==1)
+    # figure out which are 'in'
+    inpoints_temp <- testpoints@RandomUniformPointsThresholded[chullin,]
     
-    if (is.null(burnin))
-    {
-      burnin <- 10^ncol(data_reduced)
-    }
-    if (is.null(delta))
-    {
-      delta <- diff(range(data_reduced))/100
-    }
-    cat(sprintf('Running Metropolis algorithm with burnin=%d delta=%f.\nAlgorithm NOT RECOMMENDED unless dimensionality is high (n > 6). Remember that sample is not guaranteed to be uniformly random unless burnin >> 1.\n', burnin, delta))
+    niter <- niter + 1
+    inpoints <- rbind(inpoints, inpoints_temp)
     
-    inpoints <- rwmetro(target=isin, N=npoints_inhull, x=colMeans(data_reduced, na.rm=TRUE), burnin=burnin, delta=delta)
-
-  }
-  else
-  {
-    stop('Invalid convex hull sampling method specified.')
+    done = nrow(inpoints) >= npoints_inhull
+    
+    cat(sprintf('Rejection sampling: iteration %.0f - %.0f / %.0f points accepted\n', niter, nrow(inpoints), npoints_inhull))
   }
   
   dimnames(inpoints) <- list(NULL,dimnames(data)[[2]])
@@ -280,7 +253,6 @@ expectation_convex <- function(input, npoints_inhull=NULL, npoints_onhull=NULL, 
                   Volume=hull_volume,
                   DisjunctFactor=NaN,
                   PointDensity = nrow(inpoints) / hull_volume,
-                  #PointDensity=niter * testpoints@PointDensity, 
                   Bandwidth= NaN, 
                   RepsPerPoint=NaN, 
                   QuantileThresholdDesired=0, 
@@ -291,7 +263,7 @@ expectation_convex <- function(input, npoints_inhull=NULL, npoints_onhull=NULL, 
   return(hv_chull)
 }
 
-negative_features <- function(hv_obs, hv_exp, set_npoints_max=NULL, set_check_memory=TRUE)
+hypervolume_holes <- function(hv_obs, hv_exp, set_npoints_max=NULL, set_check_memory=TRUE)
 {		
   # initialize result
   finalresult <- NULL
@@ -326,7 +298,7 @@ negative_features <- function(hv_obs, hv_exp, set_npoints_max=NULL, set_check_me
   randompoints <- hvs_overlap@HVList$Unique_2@RandomUniformPointsThresholded
   if (is.null(randompoints) || nrow(randompoints) == 0)
   {		
-    cat('No negative features found.\n');
+    cat('No holes found.\n');
   }
   else
   {  	
@@ -346,16 +318,16 @@ negative_features <- function(hv_obs, hv_exp, set_npoints_max=NULL, set_check_me
     thishv <- hvs_overlap@HVList$Unique_2 # copy base information
     thishv@RandomUniformPointsThresholded <- randompoints_trimmed
     thishv@Volume <- hvs_overlap@HVList$Unique_2@Volume * nrow(randompoints_trimmed) / nrow(randompoints)
-    thishv@Name <- sprintf("Negative features of %s relative to %s", hv_obs@Name, hv_exp@Name)
+    thishv@Name <- sprintf("Hole in %s relative to %s", hv_obs@Name, hv_exp@Name)
     
     finalresult <- thishv
 
     # return the final hypervolumelist
-    cat('Returning all negative features.\n');
+    cat('Returning all holes.\n');
     
     if (is.null(finalresult))
     {
-      cat('No negative features retained. This may indicate one or more of the following scenarios\n\t- npoints_min_cluster is too large.\n\t- no negative features\n\t- low PointDensity in input hypervolumes\n\t- reduction_factor is too low.\n\nFunction will return NULL.\n')
+      cat('No holes found. Function will return NULL.\n')
     }
         
   }

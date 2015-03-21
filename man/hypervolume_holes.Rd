@@ -1,19 +1,19 @@
-\name{negative_features}
-\alias{negative_features}
+\name{hypervolume_holes}
+\alias{hypervolume_holes}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Negative feature detection
+Hole detection
 }
 \description{
 Detects the negative features of an observed hypervolume relative to an expectation
 }
 \usage{
-negative_features(hv_obs, hv_exp, set_npoints_max = NULL, set_check_memory = TRUE)
+hypervolume_holes(hv_obs, hv_exp, set_npoints_max = NULL, set_check_memory = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{hv_obs}{
-The observed hypervolume whose negative features are to be detected
+The observed hypervolume whose holes are to be detected
 }
   \item{hv_exp}{
 The expected hypervolume that provides a baseline expectation geometry
@@ -26,12 +26,12 @@ If \code{TRUE}, estimates the memory usage required to perform set operations, t
 }
 }
 \details{
-This algorithm has a good Type I error rate (rarely detects negative features that do not actually exist). However it can have a high Type II error rate (failure to find negative features when they do exist). To reduce this error rate, make sure to re-run the algorithm with input hypervolumes with higher values of \code{@PointDensity}, or increase \code{set_npoints_max}.
+This algorithm has a good Type I error rate (rarely detects holes that do not actually exist). However it can have a high Type II error rate (failure to find holes when they do exist). To reduce this error rate, make sure to re-run the algorithm with input hypervolumes with higher values of \code{@PointDensity}, or increase \code{set_npoints_max}.
 
 The algorithm performs the set difference between the observed and expected hypervolumes, then removes stray points in this hypervolume by deleting any random point whose distance from any other random point is greater than expected.
 }
 \value{
-A \code{Hypervolume} object containing a uniformly random set of points describing the negative features in \code{hv_obs}. Note that the point density of this object is likely to be much lower than that of the input hypervolumes due to the stochastic geometry algorithms used.
+A \code{Hypervolume} object containing a uniformly random set of points describing the holes in \code{hv_obs}. Note that the point density of this object is likely to be much lower than that of the input hypervolumes due to the stochastic geometry algorithms used.
 }
 \author{
 Benjamin Blonder
@@ -51,13 +51,16 @@ hv_annulus <- hypervolume(data_annulus,bandwidth=0.1,name='annulus',reps=500)
 # GET CONVEX EXPECTATION
 hv_convex <- expectation_convex(hv_annulus, check_memory=FALSE)
 
-# DETECT FEATURES (low npoints for fast execution)
-features_annulus <- negative_features(
+# DETECT HOLES (low npoints for fast execution)
+features_annulus <- hypervolume_holes(
                       hv_obs=hv_annulus, 
                       hv_exp=hv_convex,
                       set_check_memory=FALSE)
 
+# CLEAN UP RESULTS
+features_segmented <- hypervolume_segment(features_annulus)
+features_segmented_pruned <- hypervolume_prune(features_segmented, minvol=0.01)
 
-# PLOT RESULTS
-plot(hypervolume_join(hv_annulus, features_annulus))
+# PLOT RETAINED HOLE(S)
+plot(hypervolume_join(hv_annulus, features_segmented_pruned))
 }

@@ -1,4 +1,4 @@
-if (exists('doHypervolumeNegativeFinchDemo')==TRUE)
+if (exists('doHypervolumeHolesFinchDemo')==TRUE)
 {
   data(finch)
   
@@ -13,16 +13,16 @@ if (exists('doHypervolumeNegativeFinchDemo')==TRUE)
   ec_finch <- expectation_convex(hv_finch, check_memory=F)
   
   # find negative features
-  nf_finch <- negative_features(hv_finch, ec_finch, set_check_memory=F)
-  nf_finch@Name <- "Non-convex negative features"
+  holes_finch <- hypervolume_holes(hv_finch, ec_finch, set_check_memory=F)
+  holes_finch@Name <- "Non-convex negative features"
   
   # fraction of volume occupied
-  print(vol_ratio <- nf_finch@Volume / ec_finch@Volume)
+  print(vol_ratio <- holes_finch@Volume / ec_finch@Volume)
   # approximate axis length occupied
   print(lengthratio <- vol_ratio ^ (1/4))
   
-  # identification of negative features
-  print(apply(nf_finch@RandomUniformPointsThresholded,2,median))
+  # identification of location of hole centroids
+  print(apply(holes_finch@RandomUniformPointsThresholded,2,median))
   
   # plot the results
   plot(hypervolume_join(hv_finch, nf_finch),
@@ -36,7 +36,7 @@ if (exists('doHypervolumeNegativeFinchDemo')==TRUE)
   
   # make a movie
   open3d(windowRect=c(0,0,600,600))
-  plot(hypervolume_join(hv_finch, nf_finch),
+  plot(hypervolume_join(hv_finch, holes_finch),
        npmax_random=5000,
        showdensity=F,
        showdata=T,
@@ -52,7 +52,7 @@ if (exists('doHypervolumeNegativeFinchDemo')==TRUE)
   message('Demo does not run by default to meet CRAN runtime requirements.')
   message('This demo requires approximately 1 minutes to run.')  
   message('To run the demo, type')
-  message('\tdoHypervolumeNegativeFinchDemo=TRUE')
-  message('\tdemo(negative_finch)')
+  message('\tdoHypervolumeHolesFinchDemo=TRUE')
+  message('\tdemo(holes_finch)')
   message('at the R command line prompt.')
 }

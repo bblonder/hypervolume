@@ -27,7 +27,7 @@ Data for nine morphological traits for five species of Darwin's finches occurrin
 Data are from Snodgrass RE and Heller E (1904) Papers from the Hopkins-Stanford Galapagos Expedition, 1898-99. XVI. Birds. Proceedings of the Washington Academy of Sciences 5: 231-372.
 }
 \references{
-Blonder, B., Lamanna, C., Violle, C., Enquist, B. The n-dimensional hypervolume. Global Ecology and Biogeography (in press)
+Blonder, B., Lamanna, C., Violle, C., Enquist, B. The n-dimensional hypervolume. Global Ecology and Biogeography (2014)
 }
 \examples{
 demo('finch', package='hypervolume')

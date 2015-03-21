@@ -47,7 +47,7 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 1000,
   for (i in 1:length(x@HVList))
   {
     ivals = sample(nrow(x@HVList[[i]]@RandomUniformPointsThresholded), min(c(npmax_random, nrow(x@HVList[[i]]@RandomUniformPointsThresholded))))
-    subsampledpoints = data.frame(x@HVList[[i]]@RandomUniformPointsThresholded[ivals,])
+    subsampledpoints = data.frame(x@HVList[[i]]@RandomUniformPointsThresholded[ivals,,drop=FALSE])
     densityvals = x@HVList[[i]]@ProbabilityDensityAtRandomUniformPoints[ivals]
     
     if (nrow(subsampledpoints) > 0)
@@ -152,13 +152,16 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 1000,
                 contourx <- allss[,j]
                 contoury <- allss[,i]
                 
-                kde2dresults <- kde2d(contourx, contoury, n=50,lims=c(extendrange(contourx),extendrange(contoury)))
-  
-                contour(kde2dresults,
+                if (length(contourx) > 1 & length(contoury) > 1)
+                {
+                  kde2dresults <- kde2d(contourx, contoury, n=50,lims=c(extendrange(contourx),extendrange(contoury)))
+                  
+                  contour(kde2dresults,
                         col=colors[whichid],
                         levels=min(kde2dresults$z)+diff(range(kde2dresults$z))*0.05,
                         lwd=contour.lwd,
                         drawlabels=FALSE,add=TRUE)
+                }
               }
             }
           }

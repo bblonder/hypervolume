@@ -53,19 +53,13 @@ If {check_memory} is true, instead returns a scalar with the expected number of 
 
 \examples{
 data(iris)
-<<<<<<< HEAD
-hv1 = hypervolume(subset(iris, Species=="setosa")[,1:4],reps=1000,bandwidth=0.2,
-  warn=FALSE,name='setosa')
-hv2 = hypervolume(subset(iris, Species=="virginica")[,1:4],reps=1000,bandwidth=0.2,
-  warn=FALSE,name='virginica')
-hv3 = hypervolume(subset(iris, Species=="versicolor")[,1:4],reps=1000,bandwidth=0.2,
-  warn=FALSE,name='versicolor')
-=======
-hv1 = hypervolume(subset(iris, Species=="setosa")[,1:4],reps=1000,bandwidth=0.2,warn=FALSE,name='setosa')
-hv2 = hypervolume(subset(iris, Species=="virginica")[,1:4],reps=1000,bandwidth=0.2,warn=FALSE,name='virginica')
-hv3 = hypervolume(subset(iris, Species=="versicolor")[,1:4],reps=1000,bandwidth=0.2,warn=FALSE,name='versicolor')
->>>>>>> e9d82c5f24f20034998ea2ffd2b04e1853877bc0
 
+hv1 = hypervolume(subset(iris, Species=="setosa")[,1:4],
+  reps=1000,bandwidth=0.2,warn=FALSE,name='setosa')
+hv2 = hypervolume(subset(iris, Species=="virginica")[,1:4],
+  reps=1000,bandwidth=0.2,warn=FALSE,name='virginica')
+hv3 = hypervolume(subset(iris, Species=="versicolor")[,1:4],
+  reps=1000,bandwidth=0.2,warn=FALSE,name='versicolor')
 
 hv_set12 = hypervolume_set(hv1, hv2, check_memory=FALSE)
 hv_set23 = hypervolume_set(hv2, hv3, check_memory=FALSE)

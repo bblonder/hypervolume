@@ -10,8 +10,7 @@ Creates a hypervolume with geometry of the convex polytope (hull) minimally encl
 \usage{
 expectation_convex(input, 
   npoints_inhull = NULL, npoints_onhull = NULL,
-  check_memory = TRUE, userandom = FALSE, 
-  method = "rejection", burnin = NULL, delta = NULL)
+  check_memory = TRUE, userandom = FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -30,18 +29,9 @@ If \code{TRUE}, prints estimated memory usage and convex polytope size and exits
   \item{userandom}{
 If \code{input} is a hypervolume and \code{userandom} is \code{TRUE}, the output hypervolume will enclose the uniformly random points defining the hypervolume; otherwise, it will enclose the data points used to build the hypervolume. If \code{input} is a data frame, this argument is ignored.
 }
-  \item{method}{
-If \code{"rejection"}, constructs output hypervolume using hyperbox rejection sampling (recommended) from the convex polytope. If \code{"metropolis"}, uses Metropolis-Hastings algorithm, discarding the first \code{burnin} samples with a jump size of \code{delta} (experimental; not recommended)
-}
-  \item{burnin}{
-Number of MCMC samples to discard if \code{method="metropolis"}. Defaults to 10^n (value not guaranteed to produce uniformly random results). Otherwise ignored.
-}
-  \item{delta}{
-Jump size for MCMC sampling if \code{method="metropolis"}. Defaults to one percent of the maximum range of the data along any axis. Otherwise ignored.
-}
 }
 \details{
-The computational complexity of convex polytope algorithms is very high. Running in n>5 dimensions may crash most desktop computers due to high memory requirements. Even if sufficient memory is available, rejection sampling becomes exponentially inefficient with dimensionality, resulting in long runtimes. The Metropolis-Hastings method may run faster in high dimensions but convergence to a uniformly random distribution may require very high burn-in values.
+The computational complexity of convex polytope algorithms is very high. Running in n>5 dimensions may crash most desktop computers due to high memory requirements. Even if sufficient memory is available, rejection sampling becomes exponentially inefficient with dimensionality, resulting in long runtimes.
 }
 \value{
 A \code{Hypervolume} object containing a uniformly random set of points sampled from the convex polytope enclosing the input data.
