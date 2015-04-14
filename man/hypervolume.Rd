@@ -18,7 +18,7 @@ hypervolume(data, repsperpoint=NULL, bandwidth,
 A m x n matrix or data frame, where m is the number of observations and n is the dimensionality.
 }
   \item{repsperpoint}{
-The number of random points to generate in the kernel around each data point. Larger values are needed in higher dimensions, and generally produce more accurate results. If \code{NULL}, defaults to 100*10^sqrt(n) where n is the dimensionality of the input data.
+The number of random points to generate in the kernel around each data point. Larger values are needed in higher dimensions, and generally produce more accurate results. If \code{NULL}, defaults to 500*n where n is the dimensionality of the input data.
 }
   \item{bandwidth}{
 A scalar or a n x 1 vector corresponding to the half-width of the box kernel in each dimension. If a scalar input, the single value is used for all dimensions. Bandwidth also can be estimated using \code{\link{estimate_bandwidth}} if necessary (not recommended).

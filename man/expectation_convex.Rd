@@ -18,7 +18,7 @@ expectation_convex(input,
 A data frame or hypervolume object whose data are enclosed by the output hypervolume.
 }
   \item{npoints_inhull}{
-Number of random points in the output hypervolume. If \code{NULL} and \code{input} is of class \code{Hypervolume}, defaults to a value that matches the point density of the input hypervolume; if \code{NULL} and \code{input} is a data frame, defaults to 10*10^n, where n is the dimensionality.
+Number of random points in the output hypervolume. If \code{NULL} and \code{input} is of class \code{Hypervolume}, defaults to a value that matches the point density of the input hypervolume; if \code{NULL} and \code{input} is a data frame, defaults to 1000*10^sqrt(n), where n is the dimensionality.
 }
   \item{npoints_onhull}{
 Number of data points to sample from the input to define the convex polytope. Samples are weighted by their Euclidean distance from the centroid of the input. If \code{NULL}, defaults to 10^sqrt(n).

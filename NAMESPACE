@@ -24,5 +24,6 @@ import(methods)
 import(rgl)
 import(ks)
 import(fastcluster)
+import(compiler)
 
 

@@ -7,7 +7,7 @@ hypervolume <- function(data, repsperpoint=NULL, bandwidth, quantile=0.0, name=N
   
   if (is.null(repsperpoint))
   {
-    repsperpoint = floor(100*10^sqrt(ncol(data)))
+    repsperpoint = floor(500*ncol(data))
     cat(sprintf('Choosing repsperpoint=%.0f (use a larger value for more accuracy.)\n',repsperpoint))
   }
   

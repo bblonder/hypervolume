@@ -19,7 +19,7 @@ The observed hypervolume whose holes are to be detected
 The expected hypervolume that provides a baseline expectation geometry
 }
   \item{set_npoints_max}{
-Maximum number of points to be used for set operations comparing \code{hv_obs} to \code{hv_exp}. Defaults to 100*10^n, where n is the dimensionality of the input hypervolumes.
+Maximum number of points to be used for set operations comparing \code{hv_obs} to \code{hv_exp}. Defaults to 100*10^sqrt(n), where n is the dimensionality of the input hypervolumes.
 }
   \item{set_check_memory}{
 If \code{TRUE}, estimates the memory usage required to perform set operations, then exits. If \code{FALSE}, prints resource usage and continues algorithm. It is useful for preventing crashes to check the estimated memory usage on large or high dimensional datasets before running the full algorithm.

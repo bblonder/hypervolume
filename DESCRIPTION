@@ -9,4 +9,4 @@ Description: Estimates the shape and volume of high-dimensional datasets and per
 License: GPL-3
 Depends: Rcpp,  rgl, methods, R (>= 3.0.0)
 LinkingTo: Rcpp, RcppArmadillo
-Imports: MASS, geometry, ks, fastcluster
+Imports: MASS, geometry, ks, fastcluster, compiler

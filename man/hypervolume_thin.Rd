@@ -35,7 +35,3 @@ hv1 = hypervolume(subset(iris, Species=="setosa")[,1:4],bandwidth=0.2)
 # downsample to 1000 random points
 hv1_thinned = hypervolume_thin(hv1, npoints=1000)
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line

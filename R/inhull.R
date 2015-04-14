@@ -1,4 +1,6 @@
-# from Keith Jewell - https://stat.ethz.ch/pipermail/r-help/2009-December/222371.html
+# from Keith Jewell
+norm_compiled <- cmpfun(function(x) {sqrt(sum(x^2))})
+
 inhull <- function(testpts, calpts, hull=geometry::convhulln(calpts), tol=mean(mean(abs(calpts)))*sqrt(.Machine$double.eps)) {
   #++++++++++++++++++++
   # R implementation of the Matlab code by John D'Errico 04 Mar 2006 (Updated 30 Oct 2006)
@@ -63,7 +65,7 @@ inhull <- function(testpts, calpts, hull=geometry::convhulln(calpts), tol=mean(m
   center = apply(calpts, 2, mean)
   a <- calpts[hull[!degenflag,1],]
   # scale normal vectors to unit length and ensure pointing inwards
-  nrmls <- nrmls/matrix(apply(nrmls, 1, function(x) sqrt(sum(x^2))), nt, p)
+  nrmls <- nrmls/matrix(apply(nrmls, 1, norm_compiled), nt, p)
   dp <- sign(apply((matrix(center, nt, p, byrow=TRUE)-a) * nrmls, 1, sum))
   nrmls <- nrmls*matrix(dp, nt, p)
   # if  min across all faces of dot((x - a),nrml) is
@@ -71,9 +73,12 @@ inhull <- function(testpts, calpts, hull=geometry::convhulln(calpts), tol=mean(m
   #      0   then x is on hull
   #      -ve then x is outside hull
   # Instead of dot((x - a),nrml)  use dot(x,nrml) - dot(a, nrml)
-  aN <- diag(a %*% t(nrmls))
-  val <- apply(testpts %*% t(nrmls) - matrix(aN, cx, nt, byrow=TRUE), 1,min)
+  tnrmls <- t(nrmls)
+  aN <- diag(a %*% tnrmls)
+  val <- apply(testpts %*% tnrmls - matrix(aN, cx, nt, byrow=TRUE), 1,min)
   # code  values inside 'tol' to zero, return sign as integer
   val[abs(val) < tol] <- 0
   as.integer(sign(val))
 }
+
+inhull_compiled <- cmpfun(inhull)
