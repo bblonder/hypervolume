@@ -19,7 +19,7 @@ extendrange <- function(x,factor=0.5)
   return(result)
 }
 
-plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 1000, 
+plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 10000, 
                                  colors=rainbow(length(x@HVList),alpha=0.8), names=NULL, 
                                  reshuffle=TRUE, showrandom=TRUE, showdensity=TRUE,showdata=TRUE,darkfactor=0.5,
                                  cex.random=0.5,cex.data=0.75,cex.axis=0.75,cex.names=1.0,cex.legend=0.75,
@@ -117,54 +117,7 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 1000,
         {
           # set up axes with right limits
           plot(all[,j], all[,i],type="n",axes=F,xlim=varlims[[j]], ylim=varlims[[i]])
-          
-          # calculate contours
-          if (showcontour==TRUE)
-          {
-            if (contour.filled==TRUE)
-            {
-              # draw shaded centers
-              for (whichid in 1:length(unique(all$ID)))
-              {
-                allss <- subset(all, all$ID==whichid)
-                
-                if (nrow(allss) > 0)
-                {     
-                  contourx <- allss[,j]
-                  contoury <- allss[,i]
-                  
-                  kde2dresults <- kde2d(contourx, contoury, n=50,lims=c(extendrange(contourx),extendrange(contoury)))
-    
-                  .filled.contour(kde2dresults$x,kde2dresults$y, kde2dresults$z,
-                                 col=c(NA,rgb2rgba(colors[whichid],contour.filled.alpha),NA),
-                                 levels=c(0,min(kde2dresults$z)+diff(range(kde2dresults$z))*0.05,max(kde2dresults$z)))
-                }
-              }
-            }
-            
-            # draw edges
-            for (whichid in 1:length(unique(all$ID)))
-            {
-              allss <- subset(all, all$ID==whichid)
-              
-              if (nrow(allss) > 0)
-              {         
-                contourx <- allss[,j]
-                contoury <- allss[,i]
-                
-                if (length(contourx) > 1 & length(contoury) > 1)
-                {
-                  kde2dresults <- kde2d(contourx, contoury, n=50,lims=c(extendrange(contourx),extendrange(contoury)))
-                  
-                  contour(kde2dresults,
-                        col=colors[whichid],
-                        levels=min(kde2dresults$z)+diff(range(kde2dresults$z))*0.05,
-                        lwd=contour.lwd,
-                        drawlabels=FALSE,add=TRUE)
-                }
-              }
-            }
-          }
+  
           
           
           # draw random points
@@ -191,6 +144,55 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 1000,
               points(centroid_x, centroid_y, col=colors[whichid],cex=cex.centroid,pch=16)
               # add a white boundary for clarity
               points(centroid_x, centroid_y, col='white',cex=cex.centroid,pch=1,lwd=1.5)
+            }
+          }
+          
+          
+          # calculate contours
+          if (showcontour==TRUE)
+          {
+            if (contour.filled==TRUE)
+            {
+              # draw shaded centers
+              for (whichid in 1:length(unique(all$ID)))
+              {
+                allss <- subset(all, all$ID==whichid)
+                
+                if (nrow(allss) > 0)
+                {     
+                  contourx <- allss[,j]
+                  contoury <- allss[,i]
+                  
+                  kde2dresults <- kde2d(contourx, contoury, n=50,lims=c(extendrange(contourx),extendrange(contoury)))
+                  
+                  .filled.contour(kde2dresults$x,kde2dresults$y, kde2dresults$z,
+                                  col=c(NA,rgb2rgba(colors[whichid],contour.filled.alpha),NA),
+                                  levels=c(0,min(kde2dresults$z)+diff(range(kde2dresults$z))*0.05,max(kde2dresults$z)))
+                }
+              }
+            }
+            
+            # draw edges
+            for (whichid in 1:length(unique(all$ID)))
+            {
+              allss <- subset(all, all$ID==whichid)
+              
+              if (nrow(allss) > 0)
+              {         
+                contourx <- allss[,j]
+                contoury <- allss[,i]
+                
+                if (length(contourx) > 1 & length(contoury) > 1)
+                {
+                  kde2dresults <- kde2d(contourx, contoury, n=50,lims=c(extendrange(contourx),extendrange(contoury)))
+                  
+                  contour(kde2dresults,
+                          col=colors[whichid],
+                          levels=min(kde2dresults$z)+diff(range(kde2dresults$z))*0.05,
+                          lwd=contour.lwd,
+                          drawlabels=FALSE,add=TRUE)
+                }
+              }
             }
           }
           

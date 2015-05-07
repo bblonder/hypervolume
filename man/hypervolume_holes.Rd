@@ -5,7 +5,7 @@
 Hole detection
 }
 \description{
-Detects the negative features of an observed hypervolume relative to an expectation
+Detects the holes in an observed hypervolume relative to an expectation
 }
 \usage{
 hypervolume_holes(hv_obs, hv_exp, set_npoints_max = NULL, set_check_memory = TRUE)

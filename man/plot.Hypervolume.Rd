@@ -10,7 +10,7 @@ Plots a single hypervolume or multiple hypervolumes as either a pairs plot (all 
 }
 \usage{
 \method{plot}{HypervolumeList}(x, 
-npmax_data = 1000, npmax_random = 1000, 
+npmax_data = 1000, npmax_random = 10000, 
 colors=rainbow(length(x@HVList),alpha=0.8), names=NULL, 
 reshuffle=TRUE, showrandom=TRUE, showdensity=TRUE,showdata=TRUE,darkfactor=0.5,
 cex.random=0.5,cex.data=0.75,cex.axis=0.75,cex.names=1.0,cex.legend=0.75,
