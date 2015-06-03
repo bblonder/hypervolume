@@ -41,9 +41,8 @@ hvboxdata = expectation_box(hv1, userandom=FALSE)
 hvboxrandom = expectation_box(hv1, userandom=TRUE)
 
 # show the two expectations
-plot(hypervolume_join(hv1, hvboxdata))
-
-plot(hypervolume_join(hv1, hvboxrandom))
+#plot(hypervolume_join(hv1, hvboxdata))
+#plot(hypervolume_join(hv1, hvboxrandom))
 
 
 # ball expectation
@@ -52,6 +51,5 @@ hvballrandom = expectation_ball(hv1, userandom=TRUE, npoints=10000)
 
 # show the two expectations
 #plot(hypervolume_join(hv1, hvballdata))
-
 #plot(hypervolume_join(hv1, hvballrandom))
 }
