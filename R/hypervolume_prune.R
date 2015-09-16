@@ -1,4 +1,4 @@
-hypervolume_prune <- function(hvlist, minnp=NULL, minvol=NULL)
+hypervolume_prune <- function(hvlist, minnp=NULL, minvol=NULL, returnids=FALSE)
 {
   if (!is.null(minnp))
   {
@@ -58,5 +58,12 @@ hypervolume_prune <- function(hvlist, minnp=NULL, minvol=NULL)
   
   hvlist@HVList <- hvlist@HVList[!dodrop]
   
-  return(hvlist)
+  if (returnids)
+  {
+    return(list(HVList=hvlist, IDs=which(!dodrop)))
+  }
+  else
+  {
+    return(hvlist)
+  }
 }

@@ -16,7 +16,7 @@ reshuffle=TRUE, showrandom=TRUE, showdensity=TRUE,showdata=TRUE,darkfactor=0.5,
 cex.random=0.5,cex.data=0.75,cex.axis=0.75,cex.names=1.0,cex.legend=0.75,
 legend=TRUE, varlims=NULL, 
 showcontour=TRUE, contour.lwd=1, contour.filled=FALSE,contour.filled.alpha=0.5,
- showcentroid=TRUE, cex.centroid=3,
+contour.factor=0.05, showcentroid=TRUE, cex.centroid=3,
 pairplot=TRUE,whichaxes=NULL,...)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -83,12 +83,11 @@ A logical value indicating whether contours should be shaded. Ignored if \code{s
 \item{contour.filled.alpha}{
 An alpha value used to determine the transparency of shaded contours. Ignored if \code{contour.filled=FALSE}.
 }
+\item{contour.factor}{
+A numeric value that controls the threshold level at which the contour is drawn. Scaled so that 0 includes all data and 1 includes no data. Ignored if \code{showcontour=FALSE}.
+}
 \item{showcentroid}{
-<<<<<<< HEAD
 A logical value indicating whether a solid point indicating the centroid for each hypervolume should be drawn. Centroids are randomly jittered by 1 percent to improve visual clarity.
-=======
-A logical value indicating whether a solid point indicating the centroid for each hypervolume should be drawn.
->>>>>>> e9d82c5f24f20034998ea2ffd2b04e1853877bc0
 }
 \item{cex.centroid}{
 Expansion factor for the centroid symbol.

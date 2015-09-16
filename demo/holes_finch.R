@@ -5,10 +5,10 @@ if (exists('doHypervolumeHolesFinchDemo')==TRUE)
   # convert length units to comparable scales; lo
   fd <- scale(finch[,c("BodyL","WingL","TailL","BeakW")])
   
-  getholes <- function(bandwidth_factor)
+  getholes <- function(bw)
   {
     # get overall community hypervolume
-    hv_finch <- hypervolume(fd,bandwidth=bandwidth_factor*estimate_bandwidth(fd),name=sprintf("Finches b = %.1f*auto",bandwidth_factor))
+    hv_finch <- hypervolume(fd,bandwidth=bw,name='Isabela Island')
     # compute convex expectation
     ec_finch <- expectation_convex(hv_finch, check_memory=F)
     # find holes
@@ -21,10 +21,10 @@ if (exists('doHypervolumeHolesFinchDemo')==TRUE)
     # approximate axis length occupied
     cat(sprintf("Approximate axis fraction occupied: %.3f\n", vol_ratio ^ (1/ncol(fd)))) 
     # identification of location of hole centroids
-    cat(sprintf("Position of holes: %s\n", paste(apply(holes_finch@RandomUniformPointsThresholded,2,median), collapse=" ")))
+    cat(sprintf("Position of holes: %s\n", paste(apply(holes_finch@RandomUniformPointsThresholded,2,mean), collapse=" ")))
     
     # return combined result 
-    return(hypervolume_join(hv_finch, ec_finch, holes_finch))
+    return(hypervolume_join(hv_finch, holes_finch))
   }  
   
   plotholes <- function(result)
@@ -38,21 +38,19 @@ if (exists('doHypervolumeHolesFinchDemo')==TRUE)
          showdensity=F,
          npmax_random=2000,
          showdata=F,
-         col=c("red","orange","blue"),
+         col=c("#33A02CFF","#6A3D9A80"),
          names=c("Body length","Wing length","Tail length","Beak width")
     )  
   }
   
-  # calculate holes for two different bandwidth choices
-  # auto bandwidth - no holes detected
-  result_auto <- getholes(1.0)
-  # 70% of automatic bandwidth - several large holes detected
-  result_auto07 <- getholes(0.7)
+  # below code takes ~ 2 hours to run - for demo purposes, using the output as-is
+  #bw_plugin <- estimate_bandwidth(fd, method='plug-in')
+  bw_plugin <- c(0.6150874,0.5639092,0.6771332, 0.4939054)
+  
+  result <- getholes(bw_plugin)
 
-  # show no holes in full-bandwidth result
-  plotholes(result_auto)
-  # show major holes in smaller-bandwidth result
-  plotholes(result_auto07)
+  # show holes
+  plotholes(result)
 } else
 {
   message('Demo does not run by default to meet CRAN runtime requirements.')

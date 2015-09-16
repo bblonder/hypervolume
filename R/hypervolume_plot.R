@@ -23,7 +23,7 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 10000,
                                  colors=rainbow(length(x@HVList),alpha=0.8), names=NULL, 
                                  reshuffle=TRUE, showrandom=TRUE, showdensity=TRUE,showdata=TRUE,darkfactor=0.5,
                                  cex.random=0.5,cex.data=0.75,cex.axis=0.75,cex.names=1.0,cex.legend=0.75,
-                                 legend=TRUE, varlims=NULL, showcontour=TRUE, contour.lwd=1, contour.filled=FALSE,contour.filled.alpha=0.5,
+                                 legend=TRUE, varlims=NULL, showcontour=TRUE, contour.lwd=1, contour.filled=FALSE,contour.filled.alpha=0.5,contour.factor=0.05,
                                  showcentroid=TRUE, cex.centroid=3,
                                  pairplot=TRUE,whichaxes=NULL,...)
 {
@@ -167,7 +167,7 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 10000,
                   
                   .filled.contour(kde2dresults$x,kde2dresults$y, kde2dresults$z,
                                   col=c(NA,rgb2rgba(colors[whichid],contour.filled.alpha),NA),
-                                  levels=c(0,min(kde2dresults$z)+diff(range(kde2dresults$z))*0.05,max(kde2dresults$z)))
+                                  levels=c(0,min(kde2dresults$z)+diff(range(kde2dresults$z))*contour.factor,max(kde2dresults$z)))
                 }
               }
             }
@@ -188,7 +188,7 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 10000,
                   
                   contour(kde2dresults,
                           col=colors[whichid],
-                          levels=min(kde2dresults$z)+diff(range(kde2dresults$z))*0.05,
+                          levels=min(kde2dresults$z)+diff(range(kde2dresults$z))*contour.factor,
                           lwd=contour.lwd,
                           drawlabels=FALSE,add=TRUE)
                 }
