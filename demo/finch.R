@@ -1,22 +1,31 @@
 if (exists('doHypervolumeFinchDemo')==TRUE)
 {
-  data(finch)
+  data(morphSnodgrassHeller)
+  finch_isabela <- morphSnodgrassHeller[morphSnodgrassHeller$IslandID=="Isa_Alb",]
+
+  # select trait axes
+  trait_axes <- c("BodyL","WingL","TailL","BeakW")
+  traitdata <- finch_isabela[,c("TaxonOrig",trait_axes)]
+  # keep complete cases only
+  traitdata <- na.omit(traitdata)
   
-  species_list = unique(finch$Species)
-  num_species = length(species_list)
-  
+  species_list = as.character(unique(traitdata$TaxonOrig))
+  num_species = length(species_list)  
+
+  # compute hypervolumes for each species  
   hv_finches_list = new("HypervolumeList")
   hv_finches_list@HVList = vector(mode="list",length=num_species)
-  
-  # compute hypervolumes for each species
   for (i in 1:num_species)
   {
-    this_species = subset(finch, Species==species_list[i])
-    # keep the trait data
-    this_species_log <- log10(this_species[,2:ncol(this_species)])
+    # keep the trait data 
+    data_this_species = traitdata[traitdata$TaxonOrig==species_list[i],trait_axes]
+    # log-transform to rescale
+    data_this_species_log <- log10(data_this_species)
+    
     # make a hypervolume using auto-bandwidth
-    hv_finches_list@HVList[[i]] <- hypervolume(this_species_log, bandwidth=estimate_bandwidth(this_species_log),
-                                               reps=10000, quantile=0, name=as.character(species_list[i]), warn=FALSE)
+      hv_finches_list@HVList[[i]] <- hypervolume(data_this_species_log, 
+                                          bandwidth=estimate_bandwidth(data_this_species_log),
+                                          name=as.character(species_list[i]), warn=FALSE)
   }
   
   # compute all pairwise overlaps
@@ -31,7 +40,7 @@ if (exists('doHypervolumeFinchDemo')==TRUE)
         # compute set operations on each pair
         this_set = hypervolume_set(hv_finches_list@HVList[[i]], hv_finches_list@HVList[[j]], check_memory=FALSE)
         # calculate a Sorensen overlap index (2 x shared volume / sum of |hv1| + |hv2|)
-        overlap[i,j] = 2 * this_set@HVList$Intersection@Volume / (hv_finches_list@HVList[[i]]@Volume + hv_finches_list@HVList[[j]]@Volume)
+        overlap[i,j] = hypervolume_sorensen_overlap(this_set)
       }
     }   
   }
@@ -39,9 +48,9 @@ if (exists('doHypervolumeFinchDemo')==TRUE)
 
   
   # show all hypervolumes
-  plot(hv_finches_list,npmax.random=500,darkfactor=0.5,cex.legend=0.25,cex.names=0.75)
+  plot(hv_finches_list)
   
-  # show pairwise overlaps - note that actually very few species overlap in nine dimensions
+  # show pairwise overlaps - note that actually very few species overlap in four dimensions
   op <- par(mar=c(10,10,1,1))
   image(x=1:nrow(overlap), y=1:nrow(overlap), z=overlap,axes=F,xlab='',ylab='',col=rainbow(5))
   box()
@@ -49,6 +58,7 @@ if (exists('doHypervolumeFinchDemo')==TRUE)
   axis(side=2, at=1:(length(dimnames(overlap)[[2]])),dimnames(overlap)[[2]],las=1,cex.axis=0.75)
   par(op)
   
+  # reset to original state
   rm(doHypervolumeFinchDemo)
 } else
 {

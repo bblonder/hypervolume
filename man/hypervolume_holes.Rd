@@ -29,6 +29,8 @@ If \code{TRUE}, estimates the memory usage required to perform set operations, t
 This algorithm has a good Type I error rate (rarely detects holes that do not actually exist). However it can have a high Type II error rate (failure to find holes when they do exist). To reduce this error rate, make sure to re-run the algorithm with input hypervolumes with higher values of \code{@PointDensity}, or increase \code{set_npoints_max}.
 
 The algorithm performs the set difference between the observed and expected hypervolumes, then removes stray points in this hypervolume by deleting any random point whose distance from any other random point is greater than expected.
+
+A 'rule of thumb' is that algorithm has acceptable statistical performance when log_e(m) > n, where m is the number of data points and n is the dimensionality.
 }
 \value{
 A \code{Hypervolume} object containing a uniformly random set of points describing the holes in \code{hv_obs}. Note that the point density of this object is likely to be much lower than that of the input hypervolumes due to the stochastic geometry algorithms used.

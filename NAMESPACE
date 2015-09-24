@@ -18,10 +18,11 @@ S3method(get_volume, HypervolumeList)
 
 import(Rcpp)
 
+
 import(geometry)
 import(MASS)
 import(methods)
-importFrom(rgl)
+import(rgl)
 import(ks)
 import(fastcluster)
 import(compiler)
