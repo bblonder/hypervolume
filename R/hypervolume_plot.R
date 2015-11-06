@@ -100,7 +100,10 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 2000,
   colorlistdata <- rgb2rgbdark(colorlistdata, darkfactor)
   
   
-  
+  if (ncol(all) < 2)
+  {
+    stop('Plotting only available in n>=2 dimensions.')
+  }
   
   if (pairplot)
   {

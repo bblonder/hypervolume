@@ -96,8 +96,8 @@ hypervolume_set <- function(hv1, hv2, npoints_max=NULL, verbose=TRUE, check_memo
   }
   
   # subset to retain only those 'close enough' points
-  p2_in_1 = as.data.frame(hv2_points_ss)[p2_in_1_all > 0,]
-  p1_in_2 = as.data.frame(hv1_points_ss)[p1_in_2_all > 0,]
+  p2_in_1 = as.data.frame(hv2_points_ss)[p2_in_1_all > 0,,drop=FALSE]
+  p1_in_2 = as.data.frame(hv1_points_ss)[p1_in_2_all > 0,,drop=FALSE]
   
   
   # the final volume is proportional to the fraction 
@@ -115,12 +115,12 @@ hypervolume_set <- function(hv1, hv2, npoints_max=NULL, verbose=TRUE, check_memo
   
   
   # now find the union point cloud
-  p1_not_in_2 = hv1_points_ss[p1_in_2_all == 0,] # the points only in the first hypervolume
-  p2_not_in_1 = hv2_points_ss[p2_in_1_all == 0,] # the points only in the second hypervolume
+  p1_not_in_2 = hv1_points_ss[p1_in_2_all == 0,,drop=FALSE] # the points only in the first hypervolume
+  p2_not_in_1 = hv2_points_ss[p2_in_1_all == 0,,drop=FALSE] # the points only in the second hypervolume
   
   num_points_to_sample_in_intersection = floor(point_density * final_volume_intersection) # choose the right number of points to keep the point density constant
   
-  p_in_1_and_2 = final_points_intersection[sample(1:nrow(final_points_intersection), size=num_points_to_sample_in_intersection),] # randomly sample the intersection to grab
+  p_in_1_and_2 = final_points_intersection[sample(1:nrow(final_points_intersection), size=num_points_to_sample_in_intersection),,drop=FALSE] # randomly sample the intersection to grab
   
   final_volume_union = hv1@Volume + hv2@Volume - final_volume_intersection # union is sum minus intersection 
   final_points_union = unique(rbind(p1_not_in_2, p2_not_in_1, p_in_1_and_2)) 
