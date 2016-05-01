@@ -1,4 +1,4 @@
-hypervolume_set <- function(hv1, hv2, npoints_max=NULL, verbose=TRUE, check_memory=TRUE)
+hypervolume_set <- function(hv1, hv2, npoints_max=NULL, verbose=TRUE, check_memory=TRUE, distance_factor=1.0)
 {
   # determine dataset sizes and dimensionality
   np1 = nrow(hv1@RandomUniformPointsThresholded)
@@ -53,12 +53,18 @@ hypervolume_set <- function(hv1, hv2, npoints_max=NULL, verbose=TRUE, check_memo
   if (is.null(npoints_max))
   {
     npoints_max = floor(100*10^sqrt(hv1@Dimensionality))
-    cat(sprintf('Choosing npoints_max=%.0f (use a larger value for more accuracy.)\n',npoints_max))    
+    if (verbose==TRUE)
+    {
+      cat(sprintf('Choosing npoints_max=%.0f (use a larger value for more accuracy.)\n',npoints_max))  
+    }
   }
   
   # sample both hypervolumes down to the minimum point density
   mindensity = min(c(hv1_point_density, hv2_point_density, npoints_max / hv1@Volume , npoints_max / hv2@Volume))
-  cat(sprintf('Using minimum density of %f\n', mindensity))
+  if (verbose==TRUE)
+  {
+    cat(sprintf('Using minimum density of %f\n', mindensity))
+  }
   
   numpointstokeep_hv1 = floor(mindensity * hv1@Volume)
   numpointstokeep_hv2 = floor(mindensity * hv2@Volume)
@@ -79,7 +85,7 @@ hypervolume_set <- function(hv1, hv2, npoints_max=NULL, verbose=TRUE, check_memo
   point_density = nrow(hv1_points_ss) / hv1@Volume
   
   # calculate characteristic distances
-  cutoff_dist = point_density^(-1/dim)
+  cutoff_dist = point_density^(-1/dim) * distance_factor
   
   
   # figure out which points are 'close enough' to other points
@@ -136,9 +142,6 @@ hypervolume_set <- function(hv1, hv2, npoints_max=NULL, verbose=TRUE, check_memo
   final_volume_unique_hv2 = hv2@Volume - final_volume_intersection
   final_points_in_unique_2 = unique(p2_not_in_1)
   final_density_unique_2 = nrow(final_points_in_unique_2) / final_volume_unique_hv2
-  
-  # clean up memory
-  gc()
   
   # get column names
   cn <- dimnames(hv1@RandomUniformPointsThresholded)[[2]]

@@ -1,4 +1,4 @@
-hypervolume_inclusion_test <- function(hv, points, reduction_factor=1, verbose=T)
+hypervolume_inclusion_test <- function(hv, points, reduction_factor=1, verbose=T, distance_factor=1.0)
 {  
   np = nrow(hv@RandomUniformPointsThresholded)
   dimhv = ncol(hv@RandomUniformPointsThresholded)
@@ -35,7 +35,7 @@ hypervolume_inclusion_test <- function(hv, points, reduction_factor=1, verbose=T
   point_density = nrow(hv_points_ss) / hv@Volume
   
   # calculate characteristic distances
-  cutoff_dist = point_density^(-1/dimhv)  
+  cutoff_dist = point_density^(-1/dimhv) * distance_factor
   
   # figure out which points are 'close enough' to other points
   # (within a n-ball of the critical distance)
@@ -43,9 +43,6 @@ hypervolume_inclusion_test <- function(hv, points, reduction_factor=1, verbose=T
   
   # flag those points and return them
   points_in = points_in_hv_all > 0
-  
-  # clean up memory
-  gc()
   
   return(points_in)
 }

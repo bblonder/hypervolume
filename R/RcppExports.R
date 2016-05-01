@@ -9,6 +9,10 @@ kdtree_ball_query_multiple <- function(tr, ptlist, nr, nc, r, verb) {
     .Call('hypervolume_kdtree_ball_query_multiple', PACKAGE = 'hypervolume', tr, ptlist, nr, nc, r, verb)
 }
 
+kdtree_ball_query_id_multiple <- function(tr, ptlist, nr, nc, r, verb) {
+    .Call('hypervolume_kdtree_ball_query_id_multiple', PACKAGE = 'hypervolume', tr, ptlist, nr, nc, r, verb)
+}
+
 kdtree_range_query_multiple <- function(tr, pminlist, pmaxlist, nr, nc, verb) {
     .Call('hypervolume_kdtree_range_query_multiple', PACKAGE = 'hypervolume', tr, pminlist, pmaxlist, nr, nc, verb)
 }

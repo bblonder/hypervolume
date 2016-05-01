@@ -35,6 +35,22 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// kdtree_ball_query_id_multiple
+SEXP kdtree_ball_query_id_multiple(SEXP tr, SEXP ptlist, SEXP nr, SEXP nc, SEXP r, SEXP verb);
+RcppExport SEXP hypervolume_kdtree_ball_query_id_multiple(SEXP trSEXP, SEXP ptlistSEXP, SEXP nrSEXP, SEXP ncSEXP, SEXP rSEXP, SEXP verbSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type tr(trSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type ptlist(ptlistSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type nr(nrSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type nc(ncSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type r(rSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type verb(verbSEXP);
+    __result = Rcpp::wrap(kdtree_ball_query_id_multiple(tr, ptlist, nr, nc, r, verb));
+    return __result;
+END_RCPP
+}
 // kdtree_range_query_multiple
 SEXP kdtree_range_query_multiple(SEXP tr, SEXP pminlist, SEXP pmaxlist, SEXP nr, SEXP nc, SEXP verb);
 RcppExport SEXP hypervolume_kdtree_range_query_multiple(SEXP trSEXP, SEXP pminlistSEXP, SEXP pmaxlistSEXP, SEXP nrSEXP, SEXP ncSEXP, SEXP verbSEXP) {

@@ -21,9 +21,9 @@ rgb2rgbdark <- function(colorlist, darkfactor)
   result <- rep(NA, length(colorlist))
   for (i in 1:length(colorlist))
   {
-    vals <- col2rgb(colorlist[i],alpha=F)
+    vals <- col2rgb(colorlist[i],alpha=T)
     
-    result[i] <- rgb(vals[1]/255*darkfactor, vals[2]/255*darkfactor, vals[3]/255*darkfactor)
+    result[i] <- rgb(vals[1]/255*darkfactor, vals[2]/255*darkfactor, vals[3]/255*darkfactor, vals[4]/255)
   }
   
   return(result)

@@ -1,6 +1,33 @@
 useDynLib(hypervolume)
 
-export(hypervolume, hypervolume_set, hypervolume_inclusion_test, hypervolume_prune, hypervolume_segment, hypervolume_thin, estimate_bandwidth, get_volume, hypervolume_importance, hypervolume_holes, expectation_box, expectation_convex, expectation_maximal, expectation_ball, hypervolume_join, hypervolume_distance, hypervolume_sorensen_overlap) 
+export(hypervolume, 
+       hypervolume_set, 
+       hypervolume_inclusion_test, 
+       hypervolume_prune, 
+       hypervolume_segment, 
+       hypervolume_thin, 
+       estimate_bandwidth, 
+       get_volume, 
+       hypervolume_importance, 
+       hypervolume_holes, 
+       expectation_box, 
+       expectation_convex, 
+       expectation_maximal, 
+       expectation_ball, 
+       hypervolume_join, 
+       hypervolume_distance, 
+       hypervolume_sorensen_overlap,
+
+       evalfspherical,
+       hypervolume_estimate_probability,
+       expectation_adaptive_box,
+       hypervolume_svm,
+       expectation_convex_hitandrun,
+       estimate_threshold_gaussian,
+       hypervolume_gaussian,
+       hypervolume_threshold,
+       hypervolume_project
+       ) 
 
 exportClasses(
     "Hypervolume",
@@ -10,6 +37,12 @@ exportClasses(
 S3method(plot, Hypervolume)
 S3method(plot, HypervolumeList)
 
+S3method(print, Hypervolume)
+S3method(print, HypervolumeList)
+
+S3method(show, Hypervolume)
+S3method(show, HypervolumeList)
+
 S3method(summary, Hypervolume)
 S3method(summary, HypervolumeList)
 
@@ -17,8 +50,6 @@ S3method(get_volume, Hypervolume)
 S3method(get_volume, HypervolumeList)
 
 import(Rcpp)
-
-
 import(geometry)
 import(MASS)
 import(methods)
@@ -26,6 +57,8 @@ import(rgl)
 import(ks)
 import(fastcluster)
 import(compiler)
+import(e1071)
+importFrom(raster,extract)
 
 importFrom("grDevices", "col2rgb", "rainbow", "rgb")
 importFrom("graphics", ".filled.contour", "axis", "box", "contour","par", "plot", "points", "text")

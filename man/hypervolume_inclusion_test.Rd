@@ -8,7 +8,8 @@ Inclusion test
 Determines if a set of points are within a hypervolume.
 }
 \usage{
-hypervolume_inclusion_test(hv, points, reduction_factor = 1, verbose = T)
+hypervolume_inclusion_test(hv, points, reduction_factor = 1, 
+  verbose = T, distance_factor = 1)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -24,9 +25,12 @@ A number in (0,1] that represents the fraction of random points sampled from the
   \item{verbose}{
 Logical value; print diagnostic output if true.
 }
+  \item{distance_factor}{
+Numeric value; multiplicative factor applied to the critical distance for all inclusion tests (see below). Recommended to not change this parameter.
+}
 }
 \details{
-Tests if a point is in a hypervolume by determining if it is within a characteristic distance of at least one point from a uniformly random sample of the hypervolume.
+Tests if a point is in a hypervolume by determining if it is within a characteristic distance of at least one point from a uniformly random sample of the hypervolume. Because this algorithm is based on distances calculated between the distributions of random points, the critical distance (point density ^ (-1/n)) can be scaled by a user-specified factor to provide more or less liberal estimates (\code{distance_factor} greater than or less than 1).
 }
 \value{
 A m x 1 logical vector indicating whether each candidate point is in the hypervolume.

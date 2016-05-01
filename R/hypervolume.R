@@ -55,10 +55,10 @@ hypervolume <- function(data, repsperpoint=NULL, bandwidth, quantile=0.0, name=N
       warning(finalstring)
     }
     
-    if (np <= dim)
+    if (log(np) <= dim)
     {
-      warning(sprintf('Number of observations (%d) is less than or equal to the number of dimensions (%d).\nResults will be very sensitive to bandwidth choice.',
-                      np, dim))
+      warning(sprintf('Log number of observations (%.2f) is less than or equal to the number of dimensions (%d).\nResults may be inaccurate and sensitive to bandwidth choice.\nConsider reducing the dimensionality of the analysis.',
+                      log(np), dim))
     }
     
     if (nrow(data) > 2)
@@ -141,10 +141,6 @@ hypervolume <- function(data, repsperpoint=NULL, bandwidth, quantile=0.0, name=N
   names(points_uniform_final) = names(data)
   density_uniform_final = point_counts_final[weightedsample,ncol(point_counts_final)]
   point_density_final = nrow(points_uniform_final) / vc$final_volume
-
-  # clean up memory
-  gc()
-  
 
   result = new("Hypervolume", Name=ifelse(is.null(name), "untitled", toString(name)))
   result@Data = as.matrix(data)

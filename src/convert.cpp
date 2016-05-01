@@ -82,6 +82,56 @@ SEXP kdtree_ball_query_multiple(SEXP tr, SEXP ptlist, SEXP nr, SEXP nc, SEXP r, 
 }
 
 // [[Rcpp::export]]
+SEXP kdtree_ball_query_id_multiple(SEXP tr, SEXP ptlist, SEXP nr, SEXP nc, SEXP r, SEXP verb)
+{
+  XPtr<KDTree> tree = as<XPtr<KDTree> >(tr);
+  int nrow = as<int>(nr);
+  int ncol = as<int>(nc);
+  NumericVector data(ptlist);
+  double radius = as<double>(r);
+  bool verbose = as<int>(verb);
+  
+  vector<vector< double > > dataMatrix
+    = convertMatrixToVector(data.begin(), nrow, ncol);
+  
+  vector< vector< int > > finalIDs;
+  
+  if (ncol != tree->ndims())
+  {
+    throw(length_error("Points not same dimensionality as data in kdtree"));  
+  }
+  
+  for (int i=0; i<nrow; i++)
+  {
+    vector<int> thisIndices;
+    
+    vector<double> thisDistances;
+    
+    vector<double> thisPoint = dataMatrix[i];
+    tree->ball_query(thisPoint, radius, thisIndices, thisDistances);
+    
+    // store the number of points within the ball for each point
+    if (thisIndices.size() > 0)
+    {
+      finalIDs.push_back(thisIndices);
+    }
+    else
+    {
+      vector<int> empty;
+      empty.push_back(-1);
+      finalIDs.push_back(empty);
+    }
+    
+    if (verbose==1 && (i%10000)==1)
+    {
+      Rcpp::Rcout << " " << 1.0*i/nrow << " ";
+    }
+  }
+  
+  return(wrap(finalIDs));
+}
+
+// [[Rcpp::export]]
 SEXP kdtree_range_query_multiple(SEXP tr, SEXP pminlist, SEXP pmaxlist, SEXP nr, SEXP nc, SEXP verb)
 {
   XPtr<KDTree> tree = as<XPtr<KDTree> >(tr);

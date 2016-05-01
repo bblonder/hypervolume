@@ -40,8 +40,17 @@ summary.HypervolumeList <- function(object, ...)
   }
 }
 
+print.Hypervolume <- function(x, ...) {summary.Hypervolume(x)}
+print.HypervolumeList <- function(x, ...) {summary.HypervolumeList(x)}
+
+show.Hypervolume <- function(object) {summary.Hypervolume(object)}
+show.HypervolumeList <- function(object) {summary.HypervolumeList(object)}
+
 setMethod("show","Hypervolume", function(object) {summary.Hypervolume(object)})
 setMethod("show","HypervolumeList", function(object) {summary.HypervolumeList(object)})
+setMethod("print","Hypervolume", function(x, ...) {summary.Hypervolume(object)})
+setMethod("print","HypervolumeList", function(x, ...) {summary.HypervolumeList(object)})
+
 
 
 get_volume.Hypervolume <- function(object)

@@ -19,7 +19,7 @@ extendrange <- function(x,factor=0.5)
   return(result)
 }
 
-plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 2000, 
+plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 5000, 
                                  colors=rainbow(length(x@HVList),alpha=0.8), names=NULL, 
                                  reshuffle=TRUE, showrandom=TRUE, showdensity=TRUE,showdata=TRUE,darkfactor=0.5,
                                  cex.random=0.5,cex.data=0.75,cex.axis=0.75,cex.names=1.0,cex.legend=0.75,
@@ -60,9 +60,12 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 2000,
     thisdata=x@HVList[[i]]@Data
     alldata <- rbind(alldata, cbind(thisdata, ID=rep(i,nrow(thisdata))))
   }  
-  all <- unique(all)
+  #all <- unique(all)
   alldata <- as.data.frame(alldata)
-  alldata <- alldata[sample(nrow(alldata), min(c(npmax_data, nrow(alldata)))),]
+  if (npmax_data < nrow(alldata) && !is.null(npmax_data))
+  {
+  	alldata <- alldata[sample(nrow(alldata), min(c(npmax_data, nrow(alldata)))),]
+  }
   
   if (is.null(all))
   {
@@ -71,7 +74,8 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 2000,
   
   if (reshuffle==TRUE)
   {
-    all <- all[sample(nrow(all)),] # reorder to shuffle colors
+    all <- all[sample(nrow(all),replace=F),] # reorder to shuffle colors
+    alldata <- alldata[sample(nrow(alldata),replace=F),]
   }
   
   if (is.null(names))
@@ -140,8 +144,8 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 2000,
             for (whichid in 1:length(unique(all$ID)))
             {
               allss <- subset(all, all$ID==whichid)
-              centroid_x <- mean(allss[,j],na.rm=T) + rnorm(1)*diff(range(all[,j]))*0.01
-              centroid_y <- mean(allss[,i],na.rm=T) + rnorm(1)*diff(range(all[,i]))*0.01
+              centroid_x <- mean(allss[,j],na.rm=T) 
+              centroid_y <- mean(allss[,i],na.rm=T)
               
               # draw point
               points(centroid_x, centroid_y, col=colors[whichid],cex=cex.centroid,pch=16)

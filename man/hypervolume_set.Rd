@@ -8,7 +8,8 @@ Set operations (intersection / union / unique components)
 Computes the intersection, union, and unique components of two hypervolumes.
 }
 \usage{
-hypervolume_set(hv1, hv2, npoints_max = NULL, verbose = TRUE, check_memory = TRUE)
+hypervolume_set(hv1, hv2, npoints_max = NULL, 
+  verbose = TRUE, check_memory = TRUE, distance_factor = 1)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -27,13 +28,20 @@ Logical value; print diagnostic output if true.
   \item{check_memory}{
 Logical value; returns information about expected memory usage if true.
 }
+  \item{distance_factor}{
+Numeric value; multiplicative factor applied to the critical distance for all inclusion tests (see below). Recommended to not change this parameter.
+}
 }
 \details{
-Uses the inclusion test approach to identify points in the first hypervolume that are or are not within the second hypervolume and vice-versa. The intersection is the points in both hypervolumes, the union those in either hypervolume, and the unique components the points in one hypervolume but not the other.
+Uses the inclusion test approach to identify points in the first hypervolume that are or are not within the second hypervolume and vice-versa, based on determining whether each random point in each hypervolume is within a critical distance of at least one random point in the other hypervolume.
+
+The intersection is the points in both hypervolumes, the union those in either hypervolume, and the unique components the points in one hypervolume but not the other.
 
 By default, the function uses {check_memory=TRUE} which will provide an estimate of the computational cost of the set operations. The function should then be re-run with {check_memory=FALSE} if the cost is acceptable. This algorithm's memory and time cost scale quadratically with the number of input points, so large datasets can have disproportionately high costs. This error-checking is intended to prevent the user from large accidental memory allocation. 
 
 The computation is actually performed on a random sample from both input hypervolumes, constraining each to have the same point density given by the minimum of the point density of each input hypervolume, and the point density calculated using the volumes of each input hypervolume divided by \code{npoints_max}.
+
+Because this algorithm is based on distances calculated between the distributions of random points, the critical distance (point density ^ (-1/n)) can be scaled by a user-specified factor to provide more or less liberal estimates (\code{distance_factor} greater than or less than 1).
 }
 \value{
 If {check_memory} is false, returns a HypervolumeList object, with six items in its HVList slot:

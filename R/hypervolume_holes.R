@@ -9,12 +9,6 @@ hypervolume_holes <- function(hv_obs, hv_exp, set_npoints_max=NULL, set_check_me
     cat(sprintf('Choosing set_npoints_max=%.0f (choose a larger value for more accuracy.)\n',set_npoints_max))    
   }
   
-  # make sure we are using a hypervolume with data (i.e. not the output of set operations)
-  if(all(is.nan(hv_obs@Data)))
-  {
-    stop('Hypervolume must be associated with datapoints')
-  }
-  
   if (hv_obs@Dimensionality != hv_exp@Dimensionality)
   {
     stop('Observed and expected hypervolumes must have same dimensionality.')
