@@ -1,6 +1,6 @@
 Package: hypervolume
 Type: Package
-Title: Hypervolume geometry via kernel density estimation, support vector machines, and convex polytope sampling
+Title: High Dimensional Geometry and Set Operations Using Kernel Density Estimation, Support Vector Machines, and Convex Polytopes
 Version: 1.5.0
 Date: 2016-04-29
 Author: Benjamin Blonder
@@ -9,4 +9,4 @@ Description: Estimates the shape and volume of high-dimensional datasets and per
 License: GPL-3
 Depends: Rcpp, rgl, methods, R (>= 3.0.0)
 LinkingTo: Rcpp, RcppArmadillo
-Imports: MASS, geometry, ks, fastcluster, compiler, e1071, hitandrun
+Imports: raster, MASS, geometry, ks, fastcluster, compiler, e1071, hitandrun

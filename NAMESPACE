@@ -18,7 +18,6 @@ export(hypervolume,
        hypervolume_distance, 
        hypervolume_sorensen_overlap,
 
-       evalfspherical,
        hypervolume_estimate_probability,
        expectation_adaptive_box,
        hypervolume_svm,
@@ -26,7 +25,16 @@ export(hypervolume,
        estimate_threshold_gaussian,
        hypervolume_gaussian,
        hypervolume_threshold,
-       hypervolume_project
+       hypervolume_project,
+       
+       print.Hypervolume,
+       print.HypervolumeList,
+       plot.Hypervolume,
+       plot.HypervolumeList,
+       show.Hypervolume,
+       show.HypervolumeList,
+       summary.Hypervolume,
+       summary.HypervolumeList
        ) 
 
 exportClasses(
@@ -34,17 +42,14 @@ exportClasses(
      "HypervolumeList" 
 )
 
-S3method(plot, Hypervolume)
-S3method(plot, HypervolumeList)
 
+ 	
 S3method(print, Hypervolume)
 S3method(print, HypervolumeList)
-
-S3method(show, Hypervolume)
-S3method(show, HypervolumeList)
-
 S3method(summary, Hypervolume)
 S3method(summary, HypervolumeList)
+S3method(plot, Hypervolume)
+S3method(plot, HypervolumeList)
 
 S3method(get_volume, Hypervolume)
 S3method(get_volume, HypervolumeList)
@@ -58,7 +63,7 @@ import(ks)
 import(fastcluster)
 import(compiler)
 import(e1071)
-importFrom(raster,extract)
+importFrom("raster","raster", "getValues","values")
 
 importFrom("grDevices", "col2rgb", "rainbow", "rgb")
 importFrom("graphics", ".filled.contour", "axis", "box", "contour","par", "plot", "points", "text")

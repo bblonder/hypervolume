@@ -166,7 +166,7 @@ hypervolume_svm <- function(data, output.density=10^ncol(data), expectation.num.
 
 
 # modified by Gert van Valkenhoef - reference is
-#Tervonen, T., van Valkenhoef, G., Basturk, N., & Postmus, D. (2012). Hit-And-Run enables efficient weight generation for simulation-based multiple criteria decision analysis. European Journal of Operational Research, 224(3), 552–559.
+#Tervonen, T., van Valkenhoef, G., Basturk, N., & Postmus, D. (2012). Hit-And-Run enables efficient weight generation for simulation-based multiple criteria decision analysis. European Journal of Operational Research, 224(3), 552-559.
 # http://dx.doi.org/10.1016/j.ejor.2012.08.026
 hullToConstr <- function(calpts, hull) {
   calpts <- as.matrix(calpts)

@@ -18,8 +18,8 @@ hypervolume_project <- function(hv, rasters, do.probability=TRUE, normalize=TRUE
 
   
   # copy raster properties
-  raster.out = raster(rasters[[1]]);
-  values(raster.out) <- projected.values
+  raster.out = raster::raster(rasters[[1]]);
+  raster::values(raster.out) <- projected.values
   
   return(raster.out)
 }
