@@ -20,7 +20,7 @@ extendrange <- function(x,factor=0.5)
 }
 
 plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 5000, 
-                                 colors=rainbow(length(x@HVList),alpha=0.8), names=NULL, 
+                                 colors=rainbow(floor(length(x@HVList)*1.5),alpha=4/5), names=NULL, 
                                  reshuffle=TRUE, showrandom=TRUE, showdensity=TRUE,showdata=TRUE,darkfactor=0.5,
                                  cex.random=0.5,cex.data=0.75,cex.axis=0.75,cex.names=1.0,cex.legend=0.75,
                                  legend=TRUE, varlims=NULL, showcontour=TRUE, contour.lwd=1, contour.filled=FALSE,contour.filled.alpha=0.5,contour.factor=0.05,
@@ -52,8 +52,8 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 5000,
     
     if (nrow(subsampledpoints) > 0)
     {  
-      subsampledpoints = cbind(subsampledpoints, ID=rep(i, nrow(subsampledpoints)), Density=densityvals/max(densityvals,na.rm=T))
-    
+      subsampledpoints = cbind(subsampledpoints, ID=rep(i, nrow(subsampledpoints)), Density=(densityvals-min(densityvals,na.rm=T))/(max(densityvals,na.rm=T)-min(densityvals,na.rm=T)))
+      subsampledpoints[is.nan(subsampledpoints[,"Density"]),"Density"] <- 1
       all <- rbind(all, subsampledpoints)
     }
     
@@ -115,6 +115,7 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 5000,
     
     par(mfrow=c(ncol(all)-2, ncol(all)-2))
     par(mar=c(0,0,0,0))
+    par(oma=c(0.5,0.5,0.5,0.5))
     
     for (i in 1:(ncol(all)-2))
     {
@@ -170,7 +171,7 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 5000,
                   contourx <- allss[,j]
                   contoury <- allss[,i]
                   
-                  kde2dresults <- kde2d(contourx, contoury, n=50,lims=c(extendrange(contourx),extendrange(contoury)))
+                  kde2dresults <- kde2d(contourx, contoury, n=50,lims=c(extendrange(all[,j]),extendrange(all[,i])))
                   
                   .filled.contour(kde2dresults$x,kde2dresults$y, kde2dresults$z,
                                   col=c(NA,rgb2rgba(colors[whichid],contour.filled.alpha),NA),

@@ -63,11 +63,11 @@ If {check_memory} is true, instead returns a scalar with the expected number of 
 data(iris)
 
 hv1 = hypervolume(subset(iris, Species=="setosa")[,1:4],
-  reps=1000,bandwidth=0.2,warn=FALSE,name='setosa')
+reps=1000,bandwidth=0.2,name='setosa')
 hv2 = hypervolume(subset(iris, Species=="virginica")[,1:4],
-  reps=1000,bandwidth=0.2,warn=FALSE,name='virginica')
+  reps=1000,bandwidth=0.2,name='virginica')
 hv3 = hypervolume(subset(iris, Species=="versicolor")[,1:4],
-  reps=1000,bandwidth=0.2,warn=FALSE,name='versicolor')
+  reps=1000,bandwidth=0.2,name='versicolor')
 
 hv_set12 = hypervolume_set(hv1, hv2, check_memory=FALSE)
 hv_set23 = hypervolume_set(hv2, hv3, check_memory=FALSE)

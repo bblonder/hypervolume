@@ -1,14 +1,16 @@
 setClass("Hypervolume", slots=c(
     Name="character",
+    Method="character",
     Data="matrix",
+    Weights="numeric",
     Dimensionality="numeric",
     Volume="numeric",
     PointDensity="numeric",
-    Bandwidth="numeric",
-    RepsPerPoint="numeric",
-    DisjunctFactor="numeric",
-    QuantileThresholdDesired="numeric",
-    QuantileThresholdObtained="numeric",
+    Parameters="numeric",
+#    RepsPerPoint="numeric",
+#    DisjunctFactor="numeric",
+#    QuantileThresholdDesired="numeric",
+#    QuantileThresholdObtained="numeric",
     RandomUniformPointsThresholded="matrix",
     ProbabilityDensityAtRandomUniformPoints="numeric"
     ))
@@ -20,9 +22,15 @@ setClass("HypervolumeList", slots=c(
 
 summary.Hypervolume <- function(object, ...)
 {
-  cat(sprintf("Hypervolume\n\tName: %s\n\tNr. of observations: %d\n\tDimensionality: %d\n\tVolume: %f\n\tBandwidth: %s\n\tDisjunct factor: %f\n\tQuantile desired: %f\n\tQuantile obtained: %f\n\tNr. of repetitions per point: %.0f\n\tNumber of random points: %.0f\n\tPoint density: %f\n", 
-              object@Name, ifelse(all(is.nan(object@Data)), 0, nrow(object@Data)), object@Dimensionality, object@Volume, paste(format(object@Bandwidth,digits=2),collapse=' '), object@DisjunctFactor, object@QuantileThresholdDesired, object@QuantileThresholdObtained, object@RepsPerPoint, nrow(object@RandomUniformPointsThresholded), object@PointDensity))
-  
+  cat("***** Object of class Hypervolume *****\n")
+  cat(sprintf("Name: %s\n",object@Name))
+  cat(sprintf("Method: %s\n",object@Method))
+  cat(sprintf("Number of data points (after weighting): %d\n",ifelse(all(is.nan(object@Data)), 0, nrow(object@Data))))
+  cat(sprintf("Dimensionality: %d\n",object@Dimensionality))
+  cat(sprintf("Volume: %f\n",object@Volume))
+  cat(sprintf("Random point density: %f\n",object@PointDensity))
+  cat(sprintf("Number of random points: %d\n",nrow(object@RandomUniformPointsThresholded)))
+  cat(sprintf("Parameters:\n\t%s\n",paste("",paste(names(object@Parameters), format(object@Parameters,digits=3), sep=": "),collapse='\n\t')))
 }
 
 summary.HypervolumeList <- function(object, ...)
@@ -34,7 +42,7 @@ summary.HypervolumeList <- function(object, ...)
     for (i in 1:length(object@HVList))
     {
       whichhv <- object@HVList[[i]]
-      
+      cat(sprintf("\n$`%s` (%d / %d) \n", names(object@HVList)[[i]],i, length(object@HVList)))
       summary.Hypervolume(whichhv)
     }
   }
@@ -59,25 +67,6 @@ get_volume.HypervolumeList <- function(object)
 {
   sapply(object@HVList, get_volume.Hypervolume)
 } 
-
-hypervolume_join <- function(...)
-{
-  hvl <- list()
-  
-  for (a in list(...))
-  {
-    if (class(a) == "HypervolumeList")
-    {
-      hvl <- c(hvl, a@HVList)
-    }
-    else if (class(a) == "Hypervolume")
-    {
-      hvl <- c(hvl, a)
-    }
-  }
-  
-  return(new("HypervolumeList",HVList=hvl))
-}
 
 setGeneric("get_volume", function(object) {})
 setMethod("get_volume","Hypervolume", function(object) {get_volume.Hypervolume(object)})

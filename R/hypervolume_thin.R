@@ -41,7 +41,5 @@ hypervolume_thin <- function(hv, factor=NULL, npoints=NULL)
   
   hv_out@PointDensity <- hv@PointDensity * factor
   
-  hv_out@RepsPerPoint <- hv@RepsPerPoint * factor
-  
   return(hv_out)
 }

@@ -9,7 +9,7 @@ evalfspherical <- function(data, radius, points, verbose=T, getid.nearestneighbo
   nr = nrow(points)
   nc = ncol(points)
   
-  if (verbose==TRUE) {cat('Querying tree...')}
+  if (verbose==TRUE) {cat('Querying tree...\n')}
 
   result <- kdtree_ball_query_multiple(tree, points_numeric, nr, nc, radius, verbose)
 

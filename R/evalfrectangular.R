@@ -14,7 +14,7 @@ evalfrectangular <- function(data, bandwidth, points, verbose=T)
   nr = nrow(pointsfinalmax)
   nc = ncol(pointsfinalmax)
   
-  if (verbose==TRUE) {cat('Querying tree...')}
+  if (verbose==TRUE) {cat('Querying tree...\n')}
   result <- kdtree_range_query_multiple(tree, pointsmin_numeric, pointsmax_numeric, nr, nc, verbose)
   if (verbose==TRUE) {cat(' done.\n')}
   
