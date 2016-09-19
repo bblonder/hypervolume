@@ -25,6 +25,7 @@ hypervolume_quantile_threshold <- function(hv, thresholds=NULL, num.thresholds=1
     hv_new <- hv
     hv_new@RandomUniformPointsThresholded <- hv@RandomUniformPointsThresholded[hv@ProbabilityDensityAtRandomUniformPoints > thresholds[i],,drop=F]
     hv_new@Volume <- length(which(hv@ProbabilityDensityAtRandomUniformPoints > thresholds[i])) / hv@PointDensity
+    hv_new@ProbabilityDensityAtRandomUniformPoints <- normalize_probability(rep(1, length(hv_new@ProbabilityDensityAtRandomUniformPoints)),hv_new@PointDensity)
     result[[i]] <- hv_new
   }
   names(result) <- thresholds
