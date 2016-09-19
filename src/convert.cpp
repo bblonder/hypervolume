@@ -75,6 +75,10 @@ SEXP kdtree_ball_query_multiple(SEXP tr, SEXP ptlist, SEXP nr, SEXP nc, SEXP r, 
     if (verbose==1 && (i%10000)==1)
     {
       Rcpp::Rcout << " " << 1.0*i/nrow << " ";
+      if ((i%50000)==1)
+      {
+        Rcpp::Rcout << "\n";
+      }
     }
   }
   
@@ -125,6 +129,10 @@ SEXP kdtree_ball_query_id_multiple(SEXP tr, SEXP ptlist, SEXP nr, SEXP nc, SEXP 
     if (verbose==1 && (i%10000)==1)
     {
       Rcpp::Rcout << " " << 1.0*i/nrow << " ";
+      if ((i%50000)==1)
+      {
+        Rcpp::Rcout << "\n";
+      }
     }
   }
   
@@ -172,6 +180,10 @@ SEXP kdtree_range_query_multiple(SEXP tr, SEXP pminlist, SEXP pmaxlist, SEXP nr,
     if (verbose==1 && (i%10000)==1)
     {
       Rcpp::Rcout << " " << 1.0*i/nrow << " ";
+      if ((i%50000)==1)
+      {
+        Rcpp::Rcout << "\n";
+      }
     }
   }
   

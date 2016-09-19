@@ -149,64 +149,52 @@ hypervolume_set <- function(hv1, hv2, npoints_max=NULL, verbose=TRUE, check_memo
   
   # prepare final hypervolumes
   result_intersection = new("Hypervolume")
+  result_intersection@Method = "Set operations"
   result_intersection@Name = sprintf("Intersection of (%s, %s)", hv1@Name, hv2@Name)
   result_intersection@Data = matrix(NaN,nrow=1,ncol=dim)
   result_intersection@Dimensionality = dim
-  result_intersection@DisjunctFactor = NaN
   result_intersection@Volume = final_volume_intersection
   result_intersection@PointDensity = final_density_intersection
-  result_intersection@Bandwidth = rep(NaN,dim)
-  result_intersection@RepsPerPoint = NaN
-  result_intersection@QuantileThresholdDesired = 0
-  result_intersection@QuantileThresholdObtained = 0
+  result_intersection@Parameters = rep(NaN,dim)
   result_intersection@RandomUniformPointsThresholded = matrix(as.matrix(as.data.frame(final_points_intersection)),ncol=dim)  
   dimnames(result_intersection@RandomUniformPointsThresholded) = dn
-  result_intersection@ProbabilityDensityAtRandomUniformPoints = rep(1,nrow(result_intersection@RandomUniformPointsThresholded))
+  result_intersection@ProbabilityDensityAtRandomUniformPoints = normalize_probability(rep(1,nrow(result_intersection@RandomUniformPointsThresholded)), final_density_intersection)
   
   result_union = new("Hypervolume")
   result_union@Name = sprintf("Union of (%s, %s)", hv1@Name, hv2@Name)
+  result_union@Method = "Set operations"
   result_union@Data = matrix(NaN,nrow=1,ncol=dim)
   result_union@Dimensionality = dim
-  result_union@DisjunctFactor = NaN
   result_union@Volume = final_volume_union
   result_union@PointDensity = final_density_union
-  result_union@Bandwidth = rep(NaN,dim)
-  result_union@RepsPerPoint = NaN
-  result_union@QuantileThresholdDesired = 0
-  result_union@QuantileThresholdObtained = 0
+  result_union@Parameters = rep(NaN,dim)
   result_union@RandomUniformPointsThresholded = matrix(as.matrix(as.data.frame(final_points_union)),ncol=dim)
   dimnames(result_union@RandomUniformPointsThresholded) = dn
-  result_union@ProbabilityDensityAtRandomUniformPoints = rep(1,nrow(result_union@RandomUniformPointsThresholded))
+  result_union@ProbabilityDensityAtRandomUniformPoints = normalize_probability(rep(1,nrow(result_union@RandomUniformPointsThresholded)), final_density_union)
   
   result_unique_hv1 = new("Hypervolume")
   result_unique_hv1@Name = sprintf("Unique component of (%s) relative to (%s)", hv1@Name, hv2@Name)
   result_unique_hv1@Data = matrix(NaN,nrow=1,ncol=dim)
+  result_unique_hv1@Method = "Set operations"
   result_unique_hv1@Dimensionality = dim
-  result_unique_hv1@DisjunctFactor = NaN
   result_unique_hv1@Volume = final_volume_unique_hv1
   result_unique_hv1@PointDensity = final_density_unique_1
-  result_unique_hv1@Bandwidth = rep(NaN,dim)
-  result_unique_hv1@RepsPerPoint = NaN
-  result_unique_hv1@QuantileThresholdDesired = 0
-  result_unique_hv1@QuantileThresholdObtained = 0
+  result_unique_hv1@Parameters = rep(NaN,dim)
   result_unique_hv1@RandomUniformPointsThresholded = matrix(as.matrix(as.data.frame(final_points_in_unique_1)),ncol=dim)
   dimnames(result_unique_hv1@RandomUniformPointsThresholded) = dn
-  result_unique_hv1@ProbabilityDensityAtRandomUniformPoints = rep(1,nrow(result_unique_hv1@RandomUniformPointsThresholded))
+  result_unique_hv1@ProbabilityDensityAtRandomUniformPoints = normalize_probability(rep(1,nrow(result_unique_hv1@RandomUniformPointsThresholded)), final_density_unique_1)
   
   result_unique_hv2 = new("Hypervolume")
   result_unique_hv2@Name = sprintf("Unique component of (%s) relative to (%s)", hv2@Name, hv1@Name)
   result_unique_hv2@Data = matrix(NaN,nrow=1,ncol=dim)
+  result_unique_hv2@Method = "Set operations"
   result_unique_hv2@Dimensionality = dim
-  result_unique_hv2@DisjunctFactor = NaN
   result_unique_hv2@Volume = final_volume_unique_hv2
   result_unique_hv2@PointDensity = final_density_unique_2
-  result_unique_hv2@Bandwidth = rep(NaN,dim)
-  result_unique_hv2@RepsPerPoint = NaN
-  result_unique_hv2@QuantileThresholdDesired = 0
-  result_unique_hv2@QuantileThresholdObtained = 0
+  result_unique_hv2@Parameters = rep(NaN,dim)
   result_unique_hv2@RandomUniformPointsThresholded = matrix(as.matrix(as.data.frame(final_points_in_unique_2)),ncol=dim)
   dimnames(result_unique_hv2@RandomUniformPointsThresholded) = dn
-  result_unique_hv2@ProbabilityDensityAtRandomUniformPoints = rep(1,nrow(result_unique_hv2@RandomUniformPointsThresholded))
+  result_unique_hv2@ProbabilityDensityAtRandomUniformPoints = normalize_probability(rep(1,nrow(result_unique_hv2@RandomUniformPointsThresholded)), final_density_unique_2)
   
   # assemble final results into a list
   result = new("HypervolumeList")

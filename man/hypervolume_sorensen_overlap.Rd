@@ -23,8 +23,8 @@ A number between 0 and 1 indicating how similar two input hypervolumes are.
 
 \examples{
 data(iris)
-hv2 = hypervolume(subset(iris, Species=="virginica")[,1:4],reps=1000,bandwidth=0.2,warn=FALSE)
-hv3 = hypervolume(subset(iris, Species=="versicolor")[,1:4],reps=1000,bandwidth=0.2,warn=FALSE)
+hv2 = hypervolume(subset(iris, Species=="virginica")[,1:4],reps=1000,bandwidth=0.2)
+hv3 = hypervolume(subset(iris, Species=="versicolor")[,1:4],reps=1000,bandwidth=0.2)
 
 hv_set23 = hypervolume_set(hv2, hv3, check_memory=FALSE)
 

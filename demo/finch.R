@@ -25,7 +25,7 @@ if (exists('doHypervolumeFinchDemo')==TRUE)
     # make a hypervolume using auto-bandwidth
       hv_finches_list@HVList[[i]] <- hypervolume(data_this_species_log, 
                                           bandwidth=estimate_bandwidth(data_this_species_log),
-                                          name=as.character(species_list[i]), warn=FALSE)
+                                          name=as.character(species_list[i]))
   }
   
   # compute all pairwise overlaps
