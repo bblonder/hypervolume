@@ -1,4 +1,4 @@
-hypervolume_quantile_threshold <- function(hv, thresholds=NULL, num.thresholds=100, plot=TRUE, verbose=TRUE, quantile.requested=NULL)
+hypervolume_quantile_threshold <- function(hv, thresholds=NULL, num.thresholds=50, plot=TRUE, verbose=TRUE, quantile.requested=NULL)
 {
   if (is.null(thresholds))
   {

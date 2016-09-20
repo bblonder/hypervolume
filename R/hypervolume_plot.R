@@ -8,8 +8,8 @@ plot.Hypervolume <- function(x, ...)
 
 extendrange <- function(x,factor=0.5)
 {
-  xmin <- min(x,na.rm=T)
-  xmax <- max(x,na.rm=T)
+  xmin <- min(x,na.rm=TRUE)
+  xmax <- max(x,na.rm=TRUE)
   
   xminf <- xmin - (xmax - xmin)*factor
   xmaxf <- xmax + (xmax - xmin)*factor
@@ -52,7 +52,7 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 5000,
     
     if (nrow(subsampledpoints) > 0)
     {  
-      subsampledpoints = cbind(subsampledpoints, ID=rep(i, nrow(subsampledpoints)), Density=(densityvals-min(densityvals,na.rm=T))/(max(densityvals,na.rm=T)-min(densityvals,na.rm=T)))
+      subsampledpoints = cbind(subsampledpoints, ID=rep(i, nrow(subsampledpoints)), Density=(densityvals-min(densityvals,na.rm=TRUE))/(max(densityvals,na.rm=TRUE)-min(densityvals,na.rm=TRUE)))
       subsampledpoints[is.nan(subsampledpoints[,"Density"]),"Density"] <- 1
       all <- rbind(all, subsampledpoints)
     }
@@ -74,8 +74,8 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 5000,
   
   if (reshuffle==TRUE)
   {
-    all <- all[sample(nrow(all),replace=F),] # reorder to shuffle colors
-    alldata <- alldata[sample(nrow(alldata),replace=F),]
+    all <- all[sample(nrow(all),replace=FALSE),] # reorder to shuffle colors
+    alldata <- alldata[sample(nrow(alldata),replace=FALSE),]
   }
   
   if (is.null(names))
@@ -124,7 +124,7 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 5000,
         if (j > i)
         {
           # set up axes with right limits
-          plot(all[,j], all[,i],type="n",axes=F,xlim=varlims[[j]], ylim=varlims[[i]])
+          plot(all[,j], all[,i],type="n",axes=FALSE,xlim=varlims[[j]], ylim=varlims[[i]])
   
           
           
@@ -145,8 +145,8 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 5000,
             for (whichid in 1:length(unique(all$ID)))
             {
               allss <- subset(all, all$ID==whichid)
-              centroid_x <- mean(allss[,j],na.rm=T) 
-              centroid_y <- mean(allss[,i],na.rm=T)
+              centroid_x <- mean(allss[,j],na.rm=TRUE) 
+              centroid_y <- mean(allss[,i],na.rm=TRUE)
               
               # draw point
               points(centroid_x, centroid_y, col=colors[whichid],cex=cex.centroid,pch=16)
@@ -208,12 +208,12 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 5000,
         }
         else if (j == i)
         {
-          plot(0,0,type="n",xlim=c(0,1),ylim=c(0,1),axes=F)
+          plot(0,0,type="n",xlim=c(0,1),ylim=c(0,1),axes=FALSE)
           text(0.5, 0.5, names[j],cex=cex.names)
         }
         else if (j==1 & i == (ncol(all) - 2))
         {
-          plot(0,0,type="n",xlim=c(0,1),ylim=c(0,1),axes=F)
+          plot(0,0,type="n",xlim=c(0,1),ylim=c(0,1),axes=FALSE)
           
           if (legend == TRUE)
           {
@@ -222,7 +222,7 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 5000,
         }
         else
         {
-          plot(0,0,type="n",axes=F)    
+          plot(0,0,type="n",axes=FALSE)    
         }
         
         if (j==i+1)
@@ -274,9 +274,9 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 5000,
       for (whichid in 1:length(unique(all$ID)))
       {
         allss <- subset(all, all$ID==whichid)
-        centroid_1 <- mean(allss[,whichaxes[1]],na.rm=T)
-        centroid_2 <- mean(allss[,whichaxes[2]],na.rm=T)
-        centroid_3 <- mean(allss[,whichaxes[3]],na.rm=T)
+        centroid_1 <- mean(allss[,whichaxes[1]],na.rm=TRUE)
+        centroid_2 <- mean(allss[,whichaxes[2]],na.rm=TRUE)
+        centroid_3 <- mean(allss[,whichaxes[3]],na.rm=TRUE)
         
         # draw point
         rgl::points3d(x=centroid_1, y=centroid_2, z=centroid_3, col=colors[whichid],cex=cex.centroid,pch=16)

@@ -117,7 +117,7 @@ expectation_ball <- function(input, point_density=NULL, userandom=FALSE)
     }
   }
   
-  center <- apply(data,2,mean,na.rm=T)
+  center <- apply(data,2,mean,na.rm=TRUE)
   data_centered <- sweep(data, 2, center, "-")
   radii = sqrt(rowSums(data_centered^2))
   maxradius = max(radii)
@@ -312,20 +312,22 @@ expectation_convex <- function(input, point_density=NULL, npoints_onhull=NULL, c
   }
 
   # sample data down if needed
-  data_reduced <- data[sample(nrow(data), npoints_onhull, replace=F, prob=rowSums(scale(data, center=TRUE, scale=FALSE)^2)),]
+  data_reduced <- data[sample(nrow(data), npoints_onhull, replace=FALSE, prob=rowSums(scale(data, center=TRUE, scale=FALSE)^2)),]
   
   # FIND THE CONVEX HULL of the reduced data  
   convexhull <- geometry::convhulln(data_reduced,options="FA")
   hull_matrix <- convexhull$hull #extract coordinates of vertices
   hull_volume <- convexhull$vol # extract volume
   
-  if (verbose==TRUE)
-  {
-    cat(sprintf("Convex hull calculated with %.0f simplices.\nCalculation of inequality constraints will require allocation of %.0f double-precision numbers.\n", nrow(hull_matrix), nrow(hull_matrix)^2))
-  }
+
   
   if (check_memory==TRUE)
   {  
+    if (verbose==TRUE)
+    {
+      cat(sprintf("Convex hull calculated with %.0f simplices.\nCalculation of inequality constraints will require allocation of %.0f double-precision numbers.\n", nrow(hull_matrix), nrow(hull_matrix)^2))
+    }    
+    
     if (ncol(data) > 5)
     {
       warning(sprintf("Algorithm may be very slow on high dimensional data (n>5: here, n=%d)",ncol(data)))
@@ -443,7 +445,7 @@ expectation_convex <- function(input, point_density=NULL, npoints_onhull=NULL, c
                     Volume=hull_volume,
                     PointDensity = point_density,
                     Parameters= NaN,
-                    ProbabilityDensityAtRandomUniformPoints = normalize_probability(rep(1, nrow(in_points)),point_density)
+                    ProbabilityDensityAtRandomUniformPoints = normalize_probability(rep(1, nrow(inpoints)),point_density)
     )
     
     return(hv_chull)    

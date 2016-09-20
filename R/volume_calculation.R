@@ -1,4 +1,4 @@
-volume_calculation <- function(point_counts_raw, point_density, quantile, verbose=T)
+volume_calculation <- function(point_counts_raw, point_density, quantile, verbose=TRUE)
 {
   # count up the number 
   if (verbose==TRUE) {cat('Beginning volume calculation... ')}

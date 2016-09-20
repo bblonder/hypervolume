@@ -6,57 +6,20 @@
 Print summary of hypervolume
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+Summarizes all slots of \code{\link{Hypervolume-class}} object.
 }
 \usage{
-print(x, ...)
+\method{print}{Hypervolume}(x, ...)
+\method{print}{HypervolumeList}(x, ...)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{
-%%     ~~Describe \code{x} here~~
+The hypervolume to summarize
 }
-  \item{\dots}{
-%%     ~~Describe \code{\dots} here~~
+  \item{...}{
+ 
 }
-}
-\details{
-%%  ~~ If necessary, more details than the description above ~~
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
+None; used for the side-effect of printing.
 }
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
-\examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function (x, ...) 
-{
-    summary.Hypervolume(x)
-  }
-}
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line

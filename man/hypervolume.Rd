@@ -2,50 +2,37 @@
 \alias{hypervolume}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Hypervolume construction
+Hypervolume construction methods
 }
 \description{
-Constructs a hypervolume from a set of observations via thresholding a kernel density estimate of the observations. Assumes a hyperbox kernel.
+Constructs hypervolumes using one of several possible methods after error-checking input data.
 }
 \usage{
-hypervolume(data, repsperpoint=NULL, bandwidth, 
-  quantile = 0, name = NULL, 
-  verbose = T, warnings = T)
+hypervolume(data, method = "box", ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{data}{
 A m x n matrix or data frame, where m is the number of observations and n is the dimensionality.
 }
-  \item{repsperpoint}{
-The number of random points to generate in the kernel around each data point. Larger values are needed in higher dimensions, and generally produce more accurate results. If \code{NULL}, defaults to 500*n where n is the dimensionality of the input data.
+  \item{method}{
+One of \code{"box"} (hyperbox kernel density estimation), \code{"gaussian"} (Gaussian kernel density estimation), or \code{"svm"} (one-class support vector machine). See respective functions for details.
 }
-  \item{bandwidth}{
-A scalar or a n x 1 vector corresponding to the half-width of the box kernel in each dimension. If a scalar input, the single value is used for all dimensions. Bandwidth also can be estimated using \code{\link{estimate_bandwidth}} if necessary (not recommended).
-}
-  \item{quantile}{
-A number in [0,1), corresponding to the fraction of probability density to exclude from the hypervolume. A value of 0 encloses all data, while a value closer to 1 excludes more data. Note that this is a requested value; due to the discrete nature of the estimation procedure the obtained quantile may differ. A value of 0 can always be obtained.
-}
-  \item{name}{
-A string to assign to the hypervolume for later output and plotting. Defaults to the name of the variable if NULL.
-}
-  \item{verbose}{
-Logical value; print diagnostic output if true.
-}
-  \item{warnings}{
-Logical value; checks for several potential issues in the input data if true. Checks for high variance in standard deviations between dimensions (indicating axis scale problems), highly correlated dimensions (indicating axis choice problems), and low number of observations (indicating algorithm applicability problems). 
+  \item{\dots}{
+Further arguments passed to \code{\link{hypervolume_box}}, \code{\link{hypervolume_gaussian}}, or \code{\link{hypervolume_svm}}.
 }
 }
 \details{
-Constructs a kernel density estimate by overlaying hyperbox kernels on each datapoint, then sampling uniformly random points from each kernel. Kernel density at each point is then determined by a range query on a recursive partitioning tree and used to resample these random points to a uniform density and fixed number, from which a volume can be inferred.
-
-Note that when comparing among hypervolumes constructed with fixed bandwidth, volume will be approximately a an approximately linear function of the number of input data points.
+Checks for collinearity and missingness of input data and generates warning/errors as appropriate. The method-specific functions called by this function
 }
 \value{
 A \code{\link{Hypervolume-class}} object corresponding to the inferred hypervolume.
 }
+\seealso{
+\code{\link{weight_data}}, \code{\link{estimate_bandwidth}}, \code{\link{expectation_convex}}, \code{\link{expectation_ball}}, \code{\link{expectation_box}}, \code{\link{hypervolume_quantile_threshold}}
+}
 \examples{
 data(iris)
-hv1 = hypervolume(subset(iris, Species=="setosa")[,1:4],bandwidth=0.2)
-summary(hv1)
+hv = hypervolume(data=subset(iris, Species=="setosa")[,1:3],method='box')
+summary(hv)
 }

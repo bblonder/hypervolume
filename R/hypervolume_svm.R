@@ -23,7 +23,7 @@ bindata_padded <- function(data, bin.widths, num.shifts, verbose=TRUE)
   for (i in 1:ncol(data_cut))
   {
     cuts[[i]] <- seq(min(data_cut[,i])-bin.widths[i], max(data_cut[,i])+bin.widths[i],by=bin.widths[i])
-    data_cut_index[,i] <- as.numeric(cut(data_cut[,i],breaks=cuts[[i]], ordered=T,include.lowest=T))
+    data_cut_index[,i] <- as.numeric(cut(data_cut[,i],breaks=cuts[[i]], ordered=TRUE,include.lowest=TRUE))
   }
   
   # reduce to unique cases
@@ -152,7 +152,7 @@ expectation_adaptive_box <- function(data, bin.widths, num.shifts=1, density=10^
   return(result)
 }
 
-hypervolume_svm <- function(data, name=NULL, verbose=T, output.density=10^ncol(data), expectation.num.shifts=1, expectation.bin.widths=2*estimate_bandwidth(data), svm.nu=0.01, svm.gamma=0.5, svm.chunksize=1e4)
+hypervolume_svm <- function(data, name=NULL, verbose=TRUE, output.density=10^ncol(data), expectation.num.shifts=1, expectation.bin.widths=2*estimate_bandwidth(data), svm.nu=0.01, svm.gamma=0.5, svm.chunksize=1e4)
 {
   data <- as.matrix(data)
   

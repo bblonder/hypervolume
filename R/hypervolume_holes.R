@@ -38,7 +38,7 @@ hypervolume_holes <- function(hv_obs, hv_exp, set_npoints_max=NULL, set_check_me
     # find points with minimum neighbor distance less than threshold
     distances <- as.matrix(dist(randompoints, method="euclidean"))
     diag(distances) <- NA
-    isin <- (apply(distances, 1, min, na.rm=T) < criticaldistance)
+    isin <- (apply(distances, 1, min, na.rm=TRUE) < criticaldistance)
     
     cat(sprintf("Removing %d stray points...\n", length(which(isin==0))))
     

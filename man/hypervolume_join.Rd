@@ -21,10 +21,6 @@ One or more objects of class \code{Hypervolume} or \code{HypervolumeList}
 A \code{HypervolumeList} containing all hypervolumes in all arguments.
 }
 
-\author{
-Benjamin Blonder
-}
-
 \examples{
 # UNCOMMENT TO RUN - disabled to meet CRAN runtime guidelines
 

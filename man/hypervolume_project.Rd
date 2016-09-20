@@ -2,80 +2,69 @@
 \alias{hypervolume_project}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Species distribution modeling - geographic projection
+Geographical projection of hypervolume for species distribution modeling, using the hypervolume as the environmental niche model.
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+Determines a suitability score by calculating the hypervolume value at each of a set of points in an input raster stack based on either a probability density estimation or inclusion test.
 }
 \usage{
-hypervolume_project(hv, rasters, do.probability = TRUE, normalize = TRUE)
+hypervolume_project(hv, 
+	rasters, do.probability = TRUE, normalize = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{hv}{
-%%     ~~Describe \code{hv} here~~
+An input hypervolume
 }
   \item{rasters}{
-%%     ~~Describe \code{rasters} here~~
+A \code{RasterStack} with the same names as the dimension names of the hypervolume.
 }
   \item{do.probability}{
-%%     ~~Describe \code{do.probability} here~~
+If \code{TRUE}, suitability scores correspond to probability density values; if \code{FALSE}, scores correspond to binary presence/absence values from inclusion test application.
 }
   \item{normalize}{
-%%     ~~Describe \code{normalize} here~~
+If \code{TRUE}, suitability scores are normalized between 0 and 1.
 }
-}
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
-\value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-}
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
 }
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
+\value{
+A \code{raster} object of same resolution and extent as the input layers corresponding to suitability values.
+}
 
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+\code{\link{hypervolume_estimate_probability}}, \code{\link{hypervolume_inclusion_test}}
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function (hv, rasters, do.probability = TRUE, normalize = TRUE) 
+# load in lat/lon data
+data('quercus') 
+data_alba = subset(quercus, Species=="Quercus alba")[,c("Longitude","Latitude")]
+data_alba = data_alba[sample(1:nrow(data_alba),500),]
+ 
+# get worldclim data from internet
+require(maps)
+require(raster)
+climatelayers = getData('worldclim', var='bio', res=10, path=tempdir())
+  
+# z-transform climate layers to make axes comparable
+climatelayers_ss = climatelayers[[c(1,4,12,15)]]
+for (i in 1:nlayers(climatelayers_ss))
 {
-    raster.values = data.frame(raster::getValues(rasters))
-    if (do.probability == TRUE) {
-        projected.values <- hypervolume_estimate_probability(hv, 
-            raster.values)
-        print(str(projected.values))
-        if (normalize == TRUE) {
-            projected.values <- projected.values/sum(projected.values)
-        }
-    }
-    else {
-        projected.values = hypervolume_inclusion_test(hv, raster.values)
-    }
-    raster.out = raster(rasters[[1]])
-    values(raster.out) <- projected.values
-    return(raster.out)
-  }
+  climatelayers_ss[[i]] <- 
+  	(climatelayers_ss[[i]] - cellStats(climatelayers_ss[[i]], 'mean')) / 
+  	cellStats(climatelayers_ss[[i]], 'sd') 
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+
+# extract transformed climate values
+climate_alba = extract(climatelayers_ss, data_alba[1:300,])
+
+# compute hypervolume
+hv_alba <- hypervolume(climate_alba)
+
+# do geographical projection
+raster_alba_projected <- hypervolume_project(hv_alba, rasters=climatelayers_ss)
+
+# draw map of suitability scores
+plot(raster_alba_projected,xlim=c(-100,-60),ylim=c(25,55))
+map('usa',add=TRUE)
+
+}

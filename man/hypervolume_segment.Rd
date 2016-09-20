@@ -11,7 +11,8 @@ Because clustering algorithms scale quadratically with the number of input point
 
 }
 \usage{
-hypervolume_segment(hv, distancefactor = hv@Dimensionality, npmax=NULL)
+hypervolume_segment(hv, distancefactor = hv@Dimensionality, npmax = NULL,
+                 verbose = TRUE, check_memory = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -25,6 +26,12 @@ A numeric value characterizing the distance multiplication factor. Larger values
 \item{npmax}{
 A numeric value describing the maximum number of random points to be retained in the input; passed to \code{hypervolume_thin} before analysis. Set to \code{NULL} to disable thinning.
 }
+\item{verbose}{
+Logical value; print diagnostic output if \code{TRUE}.
+}
+\item{check_memory}{
+Logical value; returns information about expected memory usage if true.
+}
 }
 
 \value{
@@ -34,7 +41,7 @@ A \code{HypervolumeList} object.
 \examples{
 data(iris)
 hv1 <- hypervolume(iris[,1:3],bandwidth=0.1)
-hv1_segmented <- hypervolume_segment(hv1, npmax=1000,distancefactor=5)
+hv1_segmented <- hypervolume_segment(hv1, npmax=1000,distancefactor=5, check_memory=FALSE)
 plot(hv1_segmented)
 }
 \seealso{

@@ -10,14 +10,14 @@ Plots a single hypervolume or multiple hypervolumes as either a pairs plot (all 
 }
 \usage{
 \method{plot}{HypervolumeList}(x, 
-npmax_data = 1000, npmax_random = 5000, 
-colors=rainbow(length(x@HVList),alpha=0.8), names=NULL, 
-reshuffle=TRUE, showrandom=TRUE, showdensity=TRUE,showdata=TRUE,darkfactor=0.5,
-cex.random=0.5,cex.data=0.75,cex.axis=0.75,cex.names=1.0,cex.legend=0.75,
-legend=TRUE, varlims=NULL, 
-showcontour=TRUE, contour.lwd=1, contour.filled=FALSE,contour.filled.alpha=0.5,
-contour.factor=0.05, showcentroid=TRUE, cex.centroid=3,
-pairplot=TRUE,whichaxes=NULL,...)
+	npmax_data = 1000, npmax_random = 5000, 
+	colors=rainbow(floor(length(x@HVList) * 1.5), alpha = 4/5), names=NULL, 
+	reshuffle=TRUE, showrandom=TRUE, showdensity=TRUE,showdata=TRUE,darkfactor=0.5,
+	cex.random=0.5, cex.data=0.75, cex.axis=0.75, cex.names=1.0, cex.legend=0.75,
+	legend=TRUE, varlims=NULL, 
+	showcontour=TRUE, contour.lwd=1, contour.filled=FALSE,contour.filled.alpha=0.5,
+	contour.factor=0.05, showcentroid=TRUE, cex.centroid=3,
+	pairplot=TRUE, whichaxes=NULL,...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

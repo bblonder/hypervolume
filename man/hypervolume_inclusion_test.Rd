@@ -9,7 +9,7 @@ Determines if a set of points are within a hypervolume.
 }
 \usage{
 hypervolume_inclusion_test(hv, points, reduction_factor = 1, 
-  verbose = T, distance_factor = 1)
+  verbose = TRUE, distance_factor = 1)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

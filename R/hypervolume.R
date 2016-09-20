@@ -16,7 +16,7 @@ hypervolume <- function(data, method="box", ...)
   corMatrix = cor(data)
   corMatrix[lower.tri(corMatrix,diag=TRUE)] <- NA
   correlationThreshold = 0.8
-  corInd = which(abs(corMatrix) > correlationThreshold,arr.ind=T)
+  corInd = which(abs(corMatrix) > correlationThreshold,arr.ind=TRUE)
   finalstring = ""
   if (length(corInd) >= 1)
   {

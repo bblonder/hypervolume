@@ -18,9 +18,9 @@ if (exists('doHypervolumeHolesFinchDemo')==TRUE)
     # get overall community hypervolume
     hv_finch <- hypervolume(trait_data_scaled,bandwidth=bw,name="Isabela Island finches")
     # compute convex expectation
-    ec_finch <- expectation_convex(hv_finch, check_memory=F)
+    ec_finch <- expectation_convex(hv_finch, check_memory=FALSE)
     # find holes
-    holes_finch <- hypervolume_holes(hv_finch, ec_finch, set_check_memory=F)
+    holes_finch <- hypervolume_holes(hv_finch, ec_finch, set_check_memory=FALSE)
     
     # return combined result 
     return(list(hv=hv_finch, ec=ec_finch, holes=holes_finch))
@@ -46,9 +46,9 @@ if (exists('doHypervolumeHolesFinchDemo')==TRUE)
   
   # plot holes
   plot(hypervolume_join(result$hv,result$holes),
-       showcentroid=F,darkfactor=0,col=c('purple','green'), npmax_random=2000,
+       showcentroid=FALSE,darkfactor=0,col=c('purple','green'), npmax_random=2000,
        names=c("Body length","Wing length","Tail length", "Beak width"),
-       legend=F,cex.names=1.5,contour.lwd=3)
+       legend=FALSE,cex.names=1.5,contour.lwd=3)
   
   
   # calculate (in transformed coordinates) the centroid of the holes	
@@ -63,7 +63,7 @@ if (exists('doHypervolumeHolesFinchDemo')==TRUE)
   
   # determine which other species in the dataset is most similar to the hole
   # calculate species mean trait values
-  speciesmeans <- as.data.frame(do.call("rbind",by(morphSnodgrassHeller[, trait_axes], morphSnodgrassHeller $TaxonOrig, colMeans,na.rm=T)))
+  speciesmeans <- as.data.frame(do.call("rbind",by(morphSnodgrassHeller[, trait_axes], morphSnodgrassHeller $TaxonOrig, colMeans,na.rm=TRUE)))
   # calculate rescaled distances
   scaled_diffs <- scale(speciesmeans - hole_origcoords)
   speciesmeans$dist <- apply(scaled_diffs, 1, function(x) { sqrt(sum(x^2))})

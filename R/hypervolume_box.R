@@ -1,4 +1,4 @@
-hypervolume_box <- function(data, name=NULL, verbose=T, output.density=10^(2+ncol(data)), repsperpoint=NULL, bandwidth=estimate_bandwidth(data)/2, kdtree.chunksize=1e4)
+hypervolume_box <- function(data, name=NULL, verbose=TRUE, output.density=10^(2+ncol(data)), repsperpoint=NULL, bandwidth=estimate_bandwidth(data)/2, kdtree.chunksize=1e4)
 {
   data <- as.matrix(data)
   
@@ -103,7 +103,7 @@ hypervolume_box <- function(data, name=NULL, verbose=T, output.density=10^(2+nco
   invweight = 1 / point_counts_final[,ncol(point_counts_final)]
   ow <- getOption('warn')
   options(warn=-1)
-  weightedsample = sample(x=1:nrow(point_counts_final),size=floor(vc$final_volume * point_density),replace=T,prob=invweight)
+  weightedsample = sample(x=1:nrow(point_counts_final),size=floor(vc$final_volume * point_density),replace=TRUE,prob=invweight)
   options(warn=ow)
   # keep only unique points
   weightedsample = unique(weightedsample)

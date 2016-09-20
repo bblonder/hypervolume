@@ -1,14 +1,14 @@
-\name{expectation_box}
-\alias{expectation_box}
+\name{expectation_ball}
+\alias{expectation_ball}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Hyperbox expectation
+Hypersphere expectation
 }
 \description{
-Generates expectation hypervolume corresponding to an axis-aligned hyperbox that minimally encloses the data.
+Generates expectation hypervolume corresponding to a hypersphere that minimally encloses the data.
 }
 \usage{
-expectation_box(input, point_density = NULL, userandom = FALSE)
+expectation_ball(input, point_density = NULL, userandom = FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -27,5 +27,5 @@ A \code{Hypervolume-class} object corresponding to the expectation.
 }
 \examples{
 data(iris)
-e_box <- expectation_box(iris[,1:3],point_density=NULL)
+e_ball <- expectation_ball(iris[,1:3],point_density=NULL)
 }

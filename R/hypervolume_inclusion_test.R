@@ -1,4 +1,4 @@
-hypervolume_inclusion_test <- function(hv, points, reduction_factor=1, verbose=T, distance_factor=1.0)
+hypervolume_inclusion_test <- function(hv, points, reduction_factor=1, verbose=TRUE, distance_factor=1.0)
 {  
   np = nrow(hv@RandomUniformPointsThresholded)
   dimhv = ncol(hv@RandomUniformPointsThresholded)

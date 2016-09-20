@@ -38,7 +38,7 @@ weight_data <- function(data, weights, jitter.sd=matrix(0, nrow=nrow(data),ncol=
   }
   else if (length(jitter.sd)==ncol(data))
   {
-    jitter.sd=matrix(jitter.sd,nrow=nrow(data),ncol=ncol(data),byrow=T)
+    jitter.sd=matrix(jitter.sd,nrow=nrow(data),ncol=ncol(data),byrow=TRUE)
   }
   else if (all(dim(data)==dim(jitter.sd)))
   {

@@ -5,8 +5,8 @@ hypervolume_distance <- function(hv1, hv2, type="centroid", npmax=1000, check_me
   
   if (type=="centroid")
   {
-    hv1p_center <- colMeans(hv1p, na.rm=T)
-    hv2p_center <- colMeans(hv2p, na.rm=T)
+    hv1p_center <- colMeans(hv1p, na.rm=TRUE)
+    hv2p_center <- colMeans(hv2p, na.rm=TRUE)
     
     centroid_distance <- sqrt(sum((hv1p_center - hv2p_center)^2))
     
@@ -27,7 +27,7 @@ hypervolume_distance <- function(hv1, hv2, type="centroid", npmax=1000, check_me
 
     crossdistances <- fastPdist2(hv1p_ss, hv2p_ss)
     
-    minimum_distance <- min(as.numeric(as.matrix(crossdistances)),na.rm=T)
+    minimum_distance <- min(as.numeric(as.matrix(crossdistances)),na.rm=TRUE)
     
     return(minimum_distance)
   }

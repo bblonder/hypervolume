@@ -35,10 +35,6 @@ A 'rule of thumb' is that algorithm has acceptable statistical performance when 
 \value{
 A \code{Hypervolume} object containing a uniformly random set of points describing the holes in \code{hv_obs}. Note that the point density of this object is likely to be much lower than that of the input hypervolumes due to the stochastic geometry algorithms used.
 }
-\author{
-Benjamin Blonder
-}
-
 
 \examples{
 # generate annulus data
@@ -48,7 +44,7 @@ data_annulus  <- subset(data_annulus,
 sqrt((x-0.5)^2+(y-0.5)^2) > 0.4 & sqrt((x-0.5)^2+(y-0.5)^2) < 0.5)
 
 # MAKE HYPERVOLUME (low reps for fast execution)
-hv_annulus <- hypervolume(data_annulus,bandwidth=0.1,name='annulus',reps=500)
+hv_annulus <- hypervolume(data_annulus,bandwidth=0.1,name='annulus')
 
 # GET CONVEX EXPECTATION
 hv_convex <- expectation_convex(hv_annulus, check_memory=FALSE)
@@ -60,7 +56,7 @@ features_annulus <- hypervolume_holes(
                       set_check_memory=FALSE)
 
 # CLEAN UP RESULTS
-features_segmented <- hypervolume_segment(features_annulus)
+features_segmented <- hypervolume_segment(features_annulus, check_memory=FALSE)
 features_segmented_pruned <- hypervolume_prune(features_segmented, minvol=0.01)
 
 # PLOT RETAINED HOLE(S)

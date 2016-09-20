@@ -74,8 +74,8 @@ hypervolume_set <- function(hv1, hv2, npoints_max=NULL, verbose=TRUE, check_memo
     cat(sprintf('Retaining %d points in hv1 and %d points in hv2.\n', numpointstokeep_hv1, numpointstokeep_hv2))
     if (check_memory == TRUE)
     {
-      ans <- cat(sprintf('This will require %.0f pairwise comparisons. Re-run function with check_memory=FALSE if acceptable; otherwise use a smaller value of reduction_factor.\n', numpointstokeep_hv1*numpointstokeep_hv2))
-      return(numpoints=floor(numpointstokeep_hv1*numpointstokeep_hv2))
+      ans <- message(sprintf('This will require %.0f pairwise comparisons. Re-run function with check_memory=FALSE if acceptable; otherwise use a smaller value of reduction_factor.\n', numpointstokeep_hv1*numpointstokeep_hv2))
+      return(NULL)
     }
   }
 

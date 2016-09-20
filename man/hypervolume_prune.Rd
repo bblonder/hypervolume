@@ -36,7 +36,7 @@ A \code{HypervolumeList} pruned to only those hypervolumes of sizes above the de
 \examples{
 data(iris)
 hv1 <- hypervolume(iris[,1:3],bandwidth=0.1)
-hv1_segmented <- hypervolume_segment(hv1, npmax=1000,distancefactor=5)
+hv1_segmented <- hypervolume_segment(hv1, npmax=1000,distancefactor=5, check_memory=FALSE)
 hv1_segmented_pruned <- hypervolume_prune(hv1_segmented, minnp=100)
 
 plot(hv1_segmented_pruned)

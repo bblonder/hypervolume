@@ -5,50 +5,51 @@
 Convex expectation
 }
 \description{
-Creates a hypervolume with geometry of the convex polytope (hull) minimally enclosing a set of points
+Generates expectation hypervolume corresponding to a convex hull (polytope) that minimally encloses the data.
 }
 \usage{
 expectation_convex(input, 
-  npoints_inhull = NULL, npoints_onhull = NULL,
-  check_memory = TRUE, userandom = FALSE)
+	point_density = NULL, npoints_onhull = NULL, 
+	check_memory = TRUE, verbose = TRUE, 
+	userandom = FALSE, method = "rejection", chunksize = 1000)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{input}{
-A data frame or hypervolume object whose data are enclosed by the output hypervolume.
+A m x n matrix or data frame, where m is the number of observations and n is the dimensionality.
 }
-  \item{npoints_inhull}{
-Number of random points in the output hypervolume. If \code{NULL} and \code{input} is of class \code{Hypervolume}, defaults to a value that matches the point density of the input hypervolume; if \code{NULL} and \code{input} is a data frame, defaults to 1000*10^sqrt(n), where n is the dimensionality.
+  \item{point_density}{
+The point density of the output expectation. If \code{NULL}, defaults to \code{10^ncol(d)} where \code{d} is the dimensionality of the input
 }
   \item{npoints_onhull}{
-Number of data points to sample from the input to define the convex polytope. Samples are weighted by their Euclidean distance from the centroid of the input. If \code{NULL}, defaults to 10^sqrt(n).
+Number of points of the input used to calculate the convex hull. Larger values are more accurate but may lead to slow runtmes.
 }
   \item{check_memory}{
-If \code{TRUE}, prints estimated memory usage and convex polytope size and exits. Otherwise contines the algorithm. Memory usage can be very high in high dimensions.
+If \code{TRUE}, reports expected number of convex hull simplices required for calculation and stops further memory allocation. Also warns if dimensionality is high.
+}
+  \item{verbose}{
+If \code{TRUE}, prints diagnostic progress messages.
 }
   \item{userandom}{
-If \code{input} is a hypervolume and \code{userandom} is \code{TRUE}, the output hypervolume will enclose the uniformly random points defining the hypervolume; otherwise, it will enclose the data points used to build the hypervolume. If \code{input} is a data frame, this argument is ignored.
+If \code{TRUE} and the input is of class \code{Hypervolume}, sets boundaries based on the \code{@Random} slot; otherwise uses \code{@RandomUniformPointsThresholded}. Otherwise this flag is ignored.
+}
+  \item{method}{
+One of \code{"rejection"} (rejection sampling) or \code{"hitandrun"} (adaptive hit and run Monte Carlo sampling)
+}
+  \item{chunksize}{
+Number of random points to process per internal step. Larger values may have better performance on machines with large amounts of free memory. Changing this parameter does not change the output of the function; only how this output is internally assembled.
 }
 }
 \details{
-The computational complexity of convex polytope algorithms is very high. Running in n>5 dimensions may crash most desktop computers due to high memory requirements. Even if sufficient memory is available, rejection sampling becomes exponentially inefficient with dimensionality, resulting in long runtimes.
+The rejection sampling algorithm generates random points within a hyperbox enclosing the points, then sequentially tests whether each is in or out of the convex polytope based on a dot product test. It becomes exponentially inefficient in high dimensionalities. The hit-and-run sampling algorithm generates a Markov chain of samples that eventually converges to the true distribution of points within the convex polytope. It performs better in high dimensionalities but may not converge quickly. It will also be slow if the number of simplices on the convex polytope is large.
+
+Both algorithms may become impracticably slow in >= 6 or 7 dimensions.
 }
 \value{
-A \code{Hypervolume} object containing a uniformly random set of points sampled from the convex polytope enclosing the input data.
-}
-
-\author{
-Benjamin Blonder
+A \code{\link{Hypervolume-class}} object corresponding to the expectation hypervolume.
 }
 
 \examples{
-# NOTE: uncomment next lines to try example (not run to pass CRAN runtime checks)
-
 data(iris)
-
-#hv1 = hypervolume(subset(iris, Species=="setosa")[,1:4],bandwidth=0.2)
-
-#ec <- expectation_convex(hv1, userandom=F, check_memory=FALSE)
-#plot(hypervolume_join(hv1, ec))
-
+e_convex <- expectation_convex(iris[,1:3], check_memory=FALSE)
 }

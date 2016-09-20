@@ -52,7 +52,7 @@ if (exists('doHypervolumeFinchDemo')==TRUE)
   
   # show pairwise overlaps - note that actually very few species overlap in four dimensions
   op <- par(mar=c(10,10,1,1))
-  image(x=1:nrow(overlap), y=1:nrow(overlap), z=overlap,axes=F,xlab='',ylab='',col=rainbow(5))
+  image(x=1:nrow(overlap), y=1:nrow(overlap), z=overlap,axes=FALSE,xlab='',ylab='',col=rainbow(5))
   box()
   axis(side=1, at=1:(length(dimnames(overlap)[[1]])),dimnames(overlap)[[1]],las=2,cex.axis=0.75)
   axis(side=2, at=1:(length(dimnames(overlap)[[2]])),dimnames(overlap)[[2]],las=1,cex.axis=0.75)

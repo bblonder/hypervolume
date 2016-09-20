@@ -1,4 +1,4 @@
-evalfspherical <- function(data, radius, points, verbose=T, getid.nearestneighbor=F)
+evalfspherical <- function(data, radius, points, verbose=TRUE, getid.nearestneighbor=FALSE)
 {
   if (verbose==TRUE) {cat('Building tree...')}
   tree = kdtree_build(data)
@@ -20,7 +20,7 @@ evalfspherical <- function(data, radius, points, verbose=T, getid.nearestneighbo
   
   if (verbose==TRUE) {cat(' done.\n')}
   
-  rm(tree); gc(reset=T); # make sure the memory is released
+  rm(tree); gc(reset=TRUE); # make sure the memory is released
 
 
   if (getid.nearestneighbor==TRUE)

@@ -5,7 +5,6 @@ hypervolume_project <- function(hv, rasters, do.probability=TRUE, normalize=TRUE
   if (do.probability==TRUE)
   {
     projected.values <- hypervolume_estimate_probability(hv, raster.values)
-    print(str(projected.values))
     if (normalize==TRUE)
     {
       projected.values <- projected.values / sum(projected.values)

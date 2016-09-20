@@ -1,4 +1,4 @@
-mvnorm <- function(x, mu, Sigma, k=length(x),fast=F,diagonalSigma=F) # fast does quadratic approximation
+mvnorm <- function(x, mu, Sigma, k=length(x),fast=FALSE,diagonalSigma=FALSE) # fast does quadratic approximation
 {
   xminusmu <- as.numeric(x - mu)
   if (diagonalSigma==TRUE)
@@ -40,7 +40,7 @@ estimate_threshold_gaussian <- function(sd.count=1, dim)
 }
 
 
-hypervolume_gaussian <- function(data, name=NULL, verbose=T, output.density=10^(ncol(data)), expectation.num.shifts=1, expectation.bin.widths=2*estimate_bandwidth(data), kde.bandwidth=estimate_bandwidth(data)/2, kde.chunksize=1e4, output.threshold=estimate_threshold_gaussian(sd.count=1,dim=ncol(data)))
+hypervolume_gaussian <- function(data, name=NULL, verbose=TRUE, output.density=10^(ncol(data)), expectation.num.shifts=1, expectation.bin.widths=2*estimate_bandwidth(data), kde.bandwidth=estimate_bandwidth(data)/2, kde.chunksize=1e4, output.threshold=estimate_threshold_gaussian(sd.count=1,dim=ncol(data)))
 {
   data <- as.matrix(data)
   
@@ -102,7 +102,7 @@ hypervolume_gaussian <- function(data, name=NULL, verbose=T, output.density=10^(
     kde.probs.this <- ks::kde(x=data, 
                               H=Hmatrix,
                               eval.points= expectation@RandomUniformPointsThresholded[num.samples.completed:(num.samples.completed+num.samples.to.take-1),],
-                              verbose=T)$estimate
+                              verbose=TRUE)$estimate
     kde.probs[[i]] <- kde.probs.this
     num.samples.completed <- num.samples.completed + num.samples.to.take
   }

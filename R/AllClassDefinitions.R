@@ -2,7 +2,6 @@ setClass("Hypervolume", slots=c(
     Name="character",
     Method="character",
     Data="matrix",
-    Weights="numeric",
     Dimensionality="numeric",
     Volume="numeric",
     PointDensity="numeric",

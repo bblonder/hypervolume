@@ -1,4 +1,4 @@
-hypervolume_estimate_probability <- function(hv, points, reduction_factor=1, verbose=T, distance_factor=1.0)
+hypervolume_estimate_probability <- function(hv, points, reduction_factor=1, verbose=TRUE, distance_factor=1.0, chunksize=1e4)
 {  
   np = nrow(hv@RandomUniformPointsThresholded)
   dimhv = ncol(hv@RandomUniformPointsThresholded)
@@ -37,43 +37,48 @@ hypervolume_estimate_probability <- function(hv, points, reduction_factor=1, ver
   # calculate characteristic distances
   cutoff_dist = point_density^(-1/dimhv) * distance_factor
   
+  if (verbose==TRUE)
+  {
+    cat(sprintf('Estimating probability... '))
+  }
+  
+  
+  chunksize <- min(chunksize, nrow(points))  
+  
   # figure out which points are 'close enough' to other points
   # (within a n-ball of the critical distance)
-  points_in_hv_all_list = evalfspherical(hv_points_ss, cutoff_dist, points, verbose=verbose,getid.nearestneighbor=TRUE)
-  points_in_hv_all_list_probs <- points_in_hv_all_list[[2]]
-  
-  if (verbose==TRUE)
+  num.samples.completed <- 0
+  num.chunks <- ceiling(nrow(points)/chunksize)
+  probabilities <- vector(mode="list",length=num.chunks) # the randomuniform points
+
+  for (i in 1:num.chunks)
   {
-    cat(sprintf('Estimating probability at %d points...', length(points_in_hv_all_list_probs)))
+    cat(sprintf("%.3f ", i/num.chunks))  
+    
+    points_in_hv_all_list = evalfspherical(hv_points_ss, cutoff_dist, points[(num.samples.completed+1):min(num.samples.completed+chunksize, nrow(points)),,drop=FALSE], verbose=verbose,getid.nearestneighbor=TRUE)
+    points_in_hv_all_list_probs <- points_in_hv_all_list[[2]]
+    
+    df_probs <- as.data.frame(do.call("rbind",lapply(1:length(points_in_hv_all_list_probs), function(i) { cbind(index.point=i, index.prob=points_in_hv_all_list_probs[[i]])})))
+    df_probs$index.prob[df_probs$index.prob<=0] <- NA
+    print(summary(df_probs))
+    df_probs$prob <- hv@ProbabilityDensityAtRandomUniformPoints[df_probs$index.prob]
+    df_probs$prob[is.na(df_probs$prob)] <- 0
+    
+    print(str(df_probs))
+    
+    mean_probs <- tapply(df_probs$prob, df_probs$index.point, mean)
+    
+    print(str(mean_probs))
+    print("calculated mean probs")
+    
+    probabilities[[i]] <- mean_probs
+    print(str(probabilities[[i]]))
+    
+    num.samples.completed = num.samples.completed + chunksize
+    
   }
-  
-  df_probs <- as.data.frame(do.call("rbind",lapply(1:length(points_in_hv_all_list_probs), function(i) { cbind(index.point=i, index.prob=points_in_hv_all_list_probs[[i]])})))
-  df_probs <- df_probs[df_probs$index.prob > -1,] # remove all 'out' cases
-  df_probs$prob <- hv@ProbabilityDensityAtRandomUniformPoints[df_probs$index.prob+1]
-  
-  probabilities <- tapply(df_probs$prob, df_probs$index.point, mean)
-  
-  probabilities_out <- rep(0, length(points_in_hv_all_list_probs))
-  print(str(probabilities_out))
-  probabilities_out[as.numeric(names(probabilities))] <- probabilities
-  print(str(probabilities_out))
-  return(probabilities_out)
-  
-  
-  # look up probabilities for all of the random points that are 'in' the ball
-  probabilities <- sapply(points_in_hv_all_list_probs, function(indices) { 
-    cat('.')
-    indices_startatone <- indices+1 # C to R index conversion
-    mean_probability <- mean(hv@ProbabilityDensityAtRandomUniformPoints[indices_startatone]) # any remaining zero indices are ignored
-    return(mean_probability)
-    })
-  if (verbose==TRUE)
-  {
-    cat(sprintf('done.\n'))
-  }
-  
-  # flag those points and return them
-  probabilities[points_in_hv_all_list[[1]] == 0] <- 0
+  probabilities <- do.call("c",probabilities)
+  names(probabilities) <- NULL
   
   return(probabilities)
 }

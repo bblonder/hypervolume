@@ -25,6 +25,3 @@ This function is effectively an alias for the \code{hypervolume} function. You m
 \value{
 A Hypervolume object.
 }
-\author{
-Benjamin Blonder
-}

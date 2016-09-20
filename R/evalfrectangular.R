@@ -1,4 +1,4 @@
-evalfrectangular <- function(data, bandwidth, points, verbose=T)
+evalfrectangular <- function(data, bandwidth, points, verbose=TRUE)
 {
   if (verbose==TRUE) {cat('Building tree...')}
   tree = kdtree_build(data)
@@ -18,7 +18,7 @@ evalfrectangular <- function(data, bandwidth, points, verbose=T)
   result <- kdtree_range_query_multiple(tree, pointsmin_numeric, pointsmax_numeric, nr, nc, verbose)
   if (verbose==TRUE) {cat(' done.\n')}
   
-  rm(tree); gc(reset=T); # make sure the memory is released
+  rm(tree); gc(reset=TRUE); # make sure the memory is released
   
   return(result)
 }

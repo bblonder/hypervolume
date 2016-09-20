@@ -73,10 +73,10 @@ hv_set12 = hypervolume_set(hv1, hv2, check_memory=FALSE)
 hv_set23 = hypervolume_set(hv2, hv3, check_memory=FALSE)
 
 # no overlap found between setosa and virginica
-hypervolume_sorensen_overlap(hv_set12)
+hypervolume_overlap_statistics(hv_set12)
 
 # some overlap found between virginica and versicolor
-hypervolume_sorensen_overlap(hv_set23)
+hypervolume_overlap_statistics(hv_set23)
 # examine volumes of each set component
 get_volume(hv_set23)
 }
