@@ -304,15 +304,12 @@ expectation_convex <- function(input, point_density=NULL, npoints_onhull=NULL, c
   
   if (is.null(npoints_onhull))
   {
-    npoints_onhull <- min(nrow(data),floor(10^sqrt(ncol(data))))
-    if (verbose==TRUE)
-    {
-    cat(sprintf('Choosing npoints_onhull=%.0f - maximum value of %.0f possible (use a larger value for more accuracy.)\n',npoints_onhull, nrow(data)))
-    }  
+    #npoints_onhull <- min(nrow(data),floor(10^ncol(data)))
+    npoints_onhull <- nrow(data)
   }
 
-  # sample data down if needed
-  data_reduced <- data[sample(nrow(data), npoints_onhull, replace=FALSE, prob=rowSums(scale(data, center=TRUE, scale=FALSE)^2)),]
+  # sample data down if needed, weighting further points more
+  data_reduced <- data[sample(nrow(data), npoints_onhull, replace=FALSE, prob=rowSums(scale(data, center=TRUE, scale=FALSE)^2)^4),]
   
   # FIND THE CONVEX HULL of the reduced data  
   convexhull <- geometry::convhulln(data_reduced,options="FA")

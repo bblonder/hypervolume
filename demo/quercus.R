@@ -9,7 +9,8 @@ if (exists('doHypervolumeQuercusDemo')==TRUE)
   data_rubra = subset(quercus, Species=="Quercus rubra")[,c("Longitude","Latitude")]
   
   # get worldclim data from internet
-  climatelayers = getData('worldclim', var='bio', res=10, path=tempdir())
+  climatelayers <- getData('worldclim', var='tmin', res=0.5, lon=5, lat=45)
+
   
   # z-transform climate layers to make axes comparable
   climatelayers_ss = climatelayers[[c(1,4,12,15)]]

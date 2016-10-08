@@ -1,4 +1,4 @@
-hypervolume_box <- function(data, name=NULL, verbose=TRUE, output.density=10^(2+ncol(data)), repsperpoint=NULL, bandwidth=estimate_bandwidth(data)/2, kdtree.chunksize=1e4)
+hypervolume_box <- function(data, name=NULL, verbose=TRUE, output.density=10^(ncol(data)), repsperpoint=NULL, bandwidth=estimate_bandwidth(data), kdtree.chunksize=1e4)
 {
   data <- as.matrix(data)
   

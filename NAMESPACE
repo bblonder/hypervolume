@@ -73,4 +73,5 @@ importFrom("grDevices", "col2rgb", "rainbow", "rgb")
 importFrom("graphics", ".filled.contour", "axis", "box", "contour","par", "plot", "points", "text")
 importFrom("stats", "cor", "cutree", "dist", "na.omit", "pgamma","rnorm", "runif", "sd")
 importFrom("utils", "data", "head")
+importFrom("maps", "map")
 

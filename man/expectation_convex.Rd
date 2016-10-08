@@ -19,10 +19,10 @@ expectation_convex(input,
 A m x n matrix or data frame, where m is the number of observations and n is the dimensionality.
 }
   \item{point_density}{
-The point density of the output expectation. If \code{NULL}, defaults to \code{10^ncol(d)} where \code{d} is the dimensionality of the input
+The point density of the output expectation. If \code{NULL}, defaults to \code{10^ncol(d)} where \code{d} is the dimensionality of the input.
 }
   \item{npoints_onhull}{
-Number of points of the input used to calculate the convex hull. Larger values are more accurate but may lead to slow runtmes.
+Number of points of the input used to calculate the convex hull. Larger values are more accurate but may lead to slower runtimes. If \code{NULL}, defaults to using all of the data (most accurate).
 }
   \item{check_memory}{
 If \code{TRUE}, reports expected number of convex hull simplices required for calculation and stops further memory allocation. Also warns if dimensionality is high.
