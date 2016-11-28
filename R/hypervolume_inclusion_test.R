@@ -37,12 +37,21 @@ hypervolume_inclusion_test <- function(hv, points, reduction_factor=1, verbose=T
   # calculate characteristic distances
   cutoff_dist = point_density^(-1/dimhv) * distance_factor
   
-  # figure out which points are 'close enough' to other points
-  # (within a n-ball of the critical distance)
-  points_in_hv_all = evalfspherical(hv_points_ss, cutoff_dist, points, verbose=verbose)
-  
-  # flag those points and return them
-  points_in = points_in_hv_all > 0
-  
-  return(points_in)
+  if (nrow(hv_points_ss) > 0)
+  {
+    
+    # figure out which points are 'close enough' to other points
+    # (within a n-ball of the critical distance)
+    points_in_hv_all = evalfspherical(hv_points_ss, cutoff_dist, points, verbose=verbose)
+    
+    # flag those points and return them
+    points_in = points_in_hv_all > 0
+    
+    return(points_in)
+  }
+  else
+  {
+    warning('No points in hypervolume - increase reduction_factor or use non-empty input hypervolume! Returning NULL.')
+    return(NULL)
+  }
 }

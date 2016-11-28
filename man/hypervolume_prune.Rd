@@ -5,7 +5,7 @@
 Removes small hypervolumes from a HypervolumeList
 }
 \description{
-Identifies hypervolumes characterized either by a  number of uniformly random points or a volume below a user-specified threshold and removes them from a \code{HypervolumeList}. 
+Identifies hypervolumes characterized either by a  number of uniformly random points or a volume below a user-specified value and removes them from a \code{HypervolumeList}. 
 
 This function is useful for removing small features that can occur stochastically during segmentation after set operations or hole detection. 
 }
@@ -18,10 +18,10 @@ hypervolume_prune(hvlist, minnp = NULL, minvol = NULL, returnids=FALSE)
 A \code{HypervolumeList} object.
 }
   \item{minnp}{
-The threshold minimum number of points in each input hypervolume.
+The minimum number of points in each input hypervolume.
 }
   \item{minvol}{
-The threshold minimum volume in each input hypervolume
+The minimum volume in each input hypervolume
 }
   \item{returnids}{
 If \code{TRUE}, returns indices of input list as well as a pruned hypervolume list
@@ -31,7 +31,7 @@ If \code{TRUE}, returns indices of input list as well as a pruned hypervolume li
 Either \code{minnp} or \code{minvol} (but not both) must be specified.
 }
 \value{
-A \code{HypervolumeList} pruned to only those hypervolumes of sizes above the desired threshold. If \code{returnids=TRUE}, instead returns a list structure with first item being the \code{HypervolumeList} and the second item being the indices of the retained hypervolumes.
+A \code{HypervolumeList} pruned to only those hypervolumes of sizes above the desired value. If \code{returnids=TRUE}, instead returns a list structure with first item being the \code{HypervolumeList} and the second item being the indices of the retained hypervolumes.
 }
 \examples{
 data(iris)
