@@ -1,6 +1,6 @@
 normalize_probability <- function(probability_raw, point_density)
 {
-  k <- point_density / sum(probability_raw)
+  k <- point_density / sum(probability_raw,na.rm=T)
   
   return(probability_raw * k)
 }

@@ -18,6 +18,7 @@ export(
   hypervolume_holes, 
   hypervolume_inclusion_test, 
   hypervolume_join, 
+  hypervolume_other,
   hypervolume_overlap_statistics,
   hypervolume_project,
   hypervolume_prune, 
