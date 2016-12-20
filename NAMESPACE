@@ -18,6 +18,7 @@ export(
   hypervolume_holes, 
   hypervolume_inclusion_test, 
   hypervolume_join, 
+  hypervolume_old,
   hypervolume_other,
   hypervolume_overlap_statistics,
   hypervolume_project,
@@ -75,4 +76,6 @@ importFrom("graphics", ".filled.contour", "axis", "box", "contour","par", "plot"
 importFrom("stats", "cor", "cutree", "dist", "na.omit", "pgamma","rnorm", "runif", "sd")
 importFrom("utils", "data", "head")
 importFrom("maps", "map")
-
+  importFrom("graphics", "abline", "legend", "mtext")
+  importFrom("stats", "predict", "var")
+  importFrom("utils", "str")

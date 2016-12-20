@@ -8,7 +8,11 @@ Estimates hypervolume for any model with binary or continuous response.
 Uses random points within a n-dimensional box to evaluate model predictions, then thresholds predictions to yield a semi-probabilistic geometric shape. It is not recommended to use this function in high dimensionalities because of the high computational costs.
 }
 \usage{
-hypervolume_other(model, range, data = NULL, data_pad_fraction = 1, name = NULL, verbose = TRUE, output.density = 10^ncol(data), threshold_initial = 0, normalize = TRUE, chunksize = 10000, check_memory = TRUE, ...)
+hypervolume_other(model, range, data = NULL, 
+  data_pad_fraction = 1, name = NULL, verbose = TRUE, 
+  output.density = 10^ncol(data), threshold_initial = 0, 
+  normalize = TRUE, chunksize = 10000, 
+  check_memory = TRUE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -49,9 +53,6 @@ If \code{TRUE}, estimates the memory usage required to create the n-dimensional 
 Other arguments to be passed to \code{predict}.
 }
 }
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
 \value{
 A \code{Hypervolume} class object corresponding to model predictions above the specified threshold.
 }
@@ -60,12 +61,15 @@ A \code{Hypervolume} class object corresponding to model predictions above the s
 \code{\link{hypervolume_quantile_threshold}}, \code{\link{expectation_box}}, 
 }
 \examples{
-library(randomForest)
+require(randomForest)
 data(iris)
 iris$Species <- iris$Species=="versicolor"
-m_rf <- randomForest(Species~.,data=iris)
-hv_rf <- hypervolume_other(model=m_rf,data=iris[,1:4],data_pad_fraction=1,output.density=10,check_memory=F,threshold_initial = 0.5)
+m_rf <- randomForest::randomForest(Species~.,data=iris)
+hv_rf <- hypervolume_other(model=m_rf,
+  data=iris[,1:4],data_pad_fraction=1,output.density=10,
+  check_memory=FALSE,threshold_initial = 0.5)
 hv_rf_threshold_series <- hypervolume_quantile_threshold(hv_rf,num.thresholds=10)
-plot(hv_rf_threshold_series$HypervolumesThresholded,showcentroid=F,npmax_random=1000)
+plot(hv_rf_threshold_series$HypervolumesThresholded,
+  showcentroid=FALSE,npmax_random=1000)
 
 }

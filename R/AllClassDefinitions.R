@@ -6,13 +6,19 @@ setClass("Hypervolume", slots=c(
     Volume="numeric",
     PointDensity="numeric",
     Parameters="numeric",
-#    RepsPerPoint="numeric",
-#    DisjunctFactor="numeric",
-#    QuantileThresholdDesired="numeric",
-#    QuantileThresholdObtained="numeric",
+
     RandomUniformPointsThresholded="matrix",
     ProbabilityDensityAtRandomUniformPoints="numeric"
     ))
+
+setClass("HypervolumeOld",
+         slots=list(
+              Bandwidth="numeric",
+              RepsPerPoint="numeric",
+              DisjunctFactor="numeric",
+              QuantileThresholdDesired="numeric",
+              QuantileThresholdObtained="numeric"),
+         contains="Hypervolume")
 
 setClass("HypervolumeList", slots=c(
     HVList="list"
@@ -21,7 +27,7 @@ setClass("HypervolumeList", slots=c(
 
 summary.Hypervolume <- function(object, ...)
 {
-  cat("***** Object of class Hypervolume *****\n")
+  cat(sprintf("***** Object of class %s *****\n",class(object)))
   cat(sprintf("Name: %s\n",object@Name))
   cat(sprintf("Method: %s\n",object@Method))
   cat(sprintf("Number of data points (after weighting): %d\n",ifelse(all(is.nan(object@Data)), 0, nrow(object@Data))))

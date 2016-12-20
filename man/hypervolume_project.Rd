@@ -35,36 +35,40 @@ A \code{raster} object of same resolution and extent as the input layers corresp
 \code{\link{hypervolume_estimate_probability}}, \code{\link{hypervolume_inclusion_test}}
 }
 \examples{
-# load in lat/lon data
-data('quercus') 
-data_alba = subset(quercus, Species=="Quercus alba")[,c("Longitude","Latitude")]
-data_alba = data_alba[sample(1:nrow(data_alba),500),]
- 
-# get worldclim data from internet
-require(maps)
-require(raster)
-climatelayers = getData('worldclim', var='bio', res=10, path=tempdir())
-  
-# z-transform climate layers to make axes comparable
-climatelayers_ss = climatelayers[[c(1,4,12,15)]]
-for (i in 1:nlayers(climatelayers_ss))
+# example does not run to meet CRAN runtime guidelines - set TRUE to run
+hypervolume_project_demo = FALSE
+if (hypervolume_project_demo==TRUE)
 {
-  climatelayers_ss[[i]] <- 
-  	(climatelayers_ss[[i]] - cellStats(climatelayers_ss[[i]], 'mean')) / 
-  	cellStats(climatelayers_ss[[i]], 'sd') 
+  # load in lat/lon data
+  data('quercus') 
+  data_alba = subset(quercus, Species=="Quercus alba")[,c("Longitude","Latitude")]
+  data_alba = data_alba[sample(1:nrow(data_alba),500),]
+   
+  # get worldclim data from internet
+  require(maps)
+  require(raster)
+  climatelayers = getData('worldclim', var='bio', res=10, path=tempdir())
+    
+  # z-transform climate layers to make axes comparable
+  climatelayers_ss = climatelayers[[c(1,4,12,15)]]
+  for (i in 1:nlayers(climatelayers_ss))
+  {
+    climatelayers_ss[[i]] <- 
+    	(climatelayers_ss[[i]] - cellStats(climatelayers_ss[[i]], 'mean')) / 
+    	cellStats(climatelayers_ss[[i]], 'sd') 
+  }
+  
+  # extract transformed climate values
+  climate_alba = extract(climatelayers_ss, data_alba[1:300,])
+  
+  # compute hypervolume
+  hv_alba <- hypervolume(climate_alba)
+  
+  # do geographical projection
+  raster_alba_projected <- hypervolume_project(hv_alba, rasters=climatelayers_ss)
+  
+  # draw map of suitability scores
+  plot(raster_alba_projected,xlim=c(-100,-60),ylim=c(25,55))
+  map('usa',add=TRUE)
 }
-
-# extract transformed climate values
-climate_alba = extract(climatelayers_ss, data_alba[1:300,])
-
-# compute hypervolume
-hv_alba <- hypervolume(climate_alba)
-
-# do geographical projection
-raster_alba_projected <- hypervolume_project(hv_alba, rasters=climatelayers_ss)
-
-# draw map of suitability scores
-plot(raster_alba_projected,xlim=c(-100,-60),ylim=c(25,55))
-map('usa',add=TRUE)
-
 }

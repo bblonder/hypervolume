@@ -8,7 +8,7 @@ pad_range <- function(vals, frac=0)
   return(c(v_min - range*frac, v_max + range*frac))
 }
 
-hypervolume_other <- function(model, range, data=NULL, data_pad_fraction=0, name=NULL, verbose=TRUE, output.density=10^ncol(data), threshold_initial=0, normalize=TRUE, chunksize=1e4, check_memory=TRUE, ...)
+hypervolume_other <- function(model, range, data=NULL, data_pad_fraction=1, name=NULL, verbose=TRUE, output.density=10^ncol(data), threshold_initial=0, normalize=TRUE, chunksize=1e4, check_memory=TRUE, ...)
 {
   if (!is.null(data))
   {
