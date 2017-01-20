@@ -1,8 +1,8 @@
 Package: hypervolume
 Type: Package
 Title: High Dimensional Geometry and Set Operations Using Kernel Density Estimation, Support Vector Machines, and Convex Polytopes
-Version: 2.0.1
-Date: 2016-11-28
+Version: 2.0.2
+Date: 2017-01-20
 Author: Benjamin Blonder
 Maintainer: Benjamin Blonder <bblonder@gmail.com>
 Description: Estimates the shape and volume of high-dimensional datasets and performs set operations: intersection / overlap, union, unique components, inclusion test, and hole detection. Uses stochastic geometry approach to high-dimensional kernel density estimation, support vector machine delineation, and convex polytope generation. Applications include modeling trait and niche hypervolumes and species distribution modeling.

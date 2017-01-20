@@ -60,19 +60,13 @@ hypervolume_estimate_probability <- function(hv, points, reduction_factor=1, ver
     
     df_probs <- as.data.frame(do.call("rbind",lapply(1:length(points_in_hv_all_list_probs), function(i) { cbind(index.point=i, index.prob=points_in_hv_all_list_probs[[i]])})))
     df_probs$index.prob[df_probs$index.prob<=0] <- NA
-    print(summary(df_probs))
+
     df_probs$prob <- hv@ProbabilityDensityAtRandomUniformPoints[df_probs$index.prob]
     df_probs$prob[is.na(df_probs$prob)] <- 0
     
-    print(str(df_probs))
-    
     mean_probs <- tapply(df_probs$prob, df_probs$index.point, mean)
     
-    print(str(mean_probs))
-    print("calculated mean probs")
-    
     probabilities[[i]] <- mean_probs
-    print(str(probabilities[[i]]))
     
     num.samples.completed = num.samples.completed + chunksize
     
