@@ -73,6 +73,24 @@ get_volume.HypervolumeList <- function(object)
   sapply(object@HVList, get_volume.Hypervolume)
 } 
 
+`[[.HypervolumeList` <- function(x, i, ...) {
+  if (length(i)==1)
+  {
+    return(x@HVList[i, ...][[1]])
+  }
+  else
+  {
+    xss <- x
+    xss@HVList <- xss@HVList[i, ...]
+    return(xss)
+  }
+}
+
+`[[<-.HypervolumeList` <- function (x, i, ..., value) 
+{
+  x@HVList[c(i,...)] <- value
+}
+
 setGeneric("get_volume", function(object) {})
 setMethod("get_volume","Hypervolume", function(object) {get_volume.Hypervolume(object)})
 setMethod("get_volume","HypervolumeList", function(object) {get_volume.HypervolumeList(object)})

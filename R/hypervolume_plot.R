@@ -69,18 +69,21 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 5000,
   
   if (is.null(all))
   {
-    stop('Nothing to plot.')
+    warning('Nothing to plot.')
+    all <- matrix(0,ncol=2+alldims,nrow=1,dimnames=list(NULL,c(dimnames(x@HVList[[1]]@RandomUniformPointsThresholded)[[2]],"ID","Density")))
+    all <- as.data.frame(all)
   }
   
   if (reshuffle==TRUE)
   {
-    all <- all[sample(nrow(all),replace=FALSE),] # reorder to shuffle colors
+    all <- all[sample(nrow(all),replace=FALSE),,drop=FALSE] # reorder to shuffle colors
     alldata <- alldata[sample(nrow(alldata),replace=FALSE),]
   }
   
   if (is.null(names))
   {
-    names = names(all)[1:(ncol(all)-2)]
+    dn = dimnames(all)[[2]]
+    names = dn[1:(ncol(all)-2)]
   }  
   
   if (!is.null(varlims) & !is.list(varlims))

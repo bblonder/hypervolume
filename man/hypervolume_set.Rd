@@ -57,6 +57,8 @@ If {check_memory} is false, returns a HypervolumeList object, with six items in 
 You may find it useful to define a Jaccard-type fractional overlap between hv1 and hv2 as {hv_set@HVList$Intersection@Volume / hv_set@HVList$Union@Volume}.
   
 If {check_memory} is true, instead returns a scalar with the expected number of pairwise comparisons.
+
+If one of the input hypervolumes has no random points, returns \code{NA} with a warning.
 }
 
 \examples{

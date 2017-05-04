@@ -56,6 +56,8 @@ S3method(summary, Hypervolume)
 S3method(summary, HypervolumeList)
 S3method(plot, Hypervolume)
 S3method(plot, HypervolumeList)
+S3method("[[",HypervolumeList)
+S3method("[[<-",HypervolumeList)
 
 S3method(get_volume, Hypervolume)
 S3method(get_volume, HypervolumeList)

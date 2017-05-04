@@ -4,40 +4,10 @@ hypervolume_set <- function(hv1, hv2, npoints_max=NULL, verbose=TRUE, check_memo
   np1 = nrow(hv1@RandomUniformPointsThresholded)
   np2 = nrow(hv2@RandomUniformPointsThresholded)
   
-  # handle the cases when one of the hypervolumes is empty
-  if (np1 == 0 | is.null(np1))
-  {
-    warning('hv1 has no random points and is empty.')
-    result = new("HypervolumeList")
-    result@HVList = list(
-      HV1 = hv1,
-      HV2 = hv2,
-      Intersection = hv1, 
-      Union = hv2, 
-      Unique_1 = hv1, 
-      Unique_2 = hv2
-    )
-    
-    return(result)
-  }
-  if (np2 == 0 | is.null(np2))
-  {
-    warning('hv2 has no random points and is empty.')
-    result = new("HypervolumeList")
-    result@HVList = list(
-      HV1 = hv1,
-      HV2 = hv2,
-      Intersection = hv2, 
-      Union = hv1, 
-      Unique_1 = hv2, 
-      Unique_2 = hv1
-    )
-    
-    return(result)
-  }
-  
   hv1_point_density = np1 / hv1@Volume
+  if(is.nan(hv1_point_density)) { hv1_point_density <- NA }
   hv2_point_density = np2 / hv2@Volume
+  if(is.nan(hv2_point_density)) { hv2_point_density <- NA }
   
   dimhv1 = ncol(hv1@RandomUniformPointsThresholded)
   dimhv2 = ncol(hv2@RandomUniformPointsThresholded)
@@ -60,7 +30,7 @@ hypervolume_set <- function(hv1, hv2, npoints_max=NULL, verbose=TRUE, check_memo
   }
   
   # sample both hypervolumes down to the minimum point density
-  mindensity = min(c(hv1_point_density, hv2_point_density, npoints_max / hv1@Volume , npoints_max / hv2@Volume))
+  mindensity = min(c(hv1_point_density, hv2_point_density, npoints_max / hv1@Volume , npoints_max / hv2@Volume), na.rm=T)
   if (verbose==TRUE)
   {
     cat(sprintf('Using minimum density of %f\n', mindensity))
@@ -68,6 +38,109 @@ hypervolume_set <- function(hv1, hv2, npoints_max=NULL, verbose=TRUE, check_memo
   
   numpointstokeep_hv1 = floor(mindensity * hv1@Volume)
   numpointstokeep_hv2 = floor(mindensity * hv2@Volume)
+  
+  hv_empty <- hv1
+  hv_empty@Method = "Set operations"
+  hv_empty@Data = matrix(NaN,nrow=1,ncol=dim)
+  hv_empty@Dimensionality = dim
+  hv_empty@Volume = 0
+  hv_empty@PointDensity = mindensity
+  hv_empty@Parameters = rep(NaN,dim)
+  hv_empty@RandomUniformPointsThresholded = matrix(NA,nrow=0,ncol=dim,dimnames=dimnames(hv1@RandomUniformPointsThresholded))  
+  hv_empty@ProbabilityDensityAtRandomUniformPoints = 0
+  
+  
+  # handle the cases when one of the hypervolumes is empty
+  # hv1 empty, hv2 not
+  if ((numpointstokeep_hv1 == 0 | is.null(numpointstokeep_hv1)) & !(numpointstokeep_hv2 == 0 | is.null(numpointstokeep_hv2)))
+  {
+    warning('hv1 has no random points and is empty.')
+    
+    result = new("HypervolumeList")
+    hv_int = hv_empty
+    hv_int@Name = sprintf("Intersection of (%s, %s)", hv1@Name, hv2@Name)
+    
+    hv_union = hv2
+    hv_union@Name = sprintf("Union of (%s, %s)", hv1@Name, hv2@Name)
+    
+    hv_unique_1 = hv_empty
+    hv_unique_1@Name = sprintf("Unique component of (%s) relative to (%s)", hv1@Name, hv2@Name)
+    
+    hv_unique_2 = hv2
+    hv_unique_2@Name = sprintf("Unique component of (%s) relative to (%s)", hv2@Name, hv1@Name)
+    
+    result@HVList = list(
+      HV1 = hv1,
+      HV2 = hv2,
+      Intersection = hv_int, 
+      Union = hv_union, 
+      Unique_1 = hv_unique_1, 
+      Unique_2 = hv_unique_2
+    )
+    
+    return(result)
+  }
+  # hv2 empty, hv1 not
+  if (!(numpointstokeep_hv1 == 0 | is.null(numpointstokeep_hv1)) & (numpointstokeep_hv2 == 0 | is.null(numpointstokeep_hv2)))
+  {
+    warning('hv2 has no random points and is empty.')
+    
+    result = new("HypervolumeList")
+    hv_int = hv_empty
+    hv_int@Name = sprintf("Intersection of (%s, %s)", hv1@Name, hv2@Name)
+    
+    hv_union = hv1
+    hv_union@Name = sprintf("Union of (%s, %s)", hv1@Name, hv2@Name)
+    
+    hv_unique_1 = hv1
+    hv_unique_1@Name = sprintf("Unique component of (%s) relative to (%s)", hv1@Name, hv2@Name)
+    
+    hv_unique_2 = hv_empty
+    hv_unique_2@Name = sprintf("Unique component of (%s) relative to (%s)", hv2@Name, hv1@Name)
+    
+    result@HVList = list(
+      HV1 = hv1,
+      HV2 = hv2,
+      Intersection = hv_int, 
+      Union = hv_union, 
+      Unique_1 = hv_unique_1, 
+      Unique_2 = hv_unique_2
+    )
+    
+    return(result)
+  }
+  # hv1 and hv2 empty
+  if ((numpointstokeep_hv1 == 0 | is.null(numpointstokeep_hv1)) & (numpointstokeep_hv2 == 0 | is.null(numpointstokeep_hv2)))
+  {
+    warning('hv1 and hv2 both have no random points and are empty.')
+    
+    result = new("HypervolumeList")
+    hv_int = hv_empty
+    hv_int@Name = sprintf("Intersection of (%s, %s)", hv1@Name, hv2@Name)
+    
+    hv_union = hv_empty
+    hv_union@Name = sprintf("Union of (%s, %s)", hv1@Name, hv2@Name)
+    
+    hv_unique_1 = hv_empty
+    hv_unique_1@Name = sprintf("Unique component of (%s) relative to (%s)", hv1@Name, hv2@Name)
+    
+    hv_unique_2 = hv_empty
+    hv_unique_2@Name = sprintf("Unique component of (%s) relative to (%s)", hv2@Name, hv1@Name)
+    
+    result@HVList = list(
+      HV1 = hv1,
+      HV2 = hv2,
+      Intersection = hv_int, 
+      Union = hv_union, 
+      Unique_1 = hv_unique_1, 
+      Unique_2 = hv_unique_2
+    )
+    
+    return(result)    
+  }
+
+  
+  # if the algorithm passed returning early from any of the degenerate cases...
   
   if (verbose==TRUE | check_memory==TRUE)
   {
