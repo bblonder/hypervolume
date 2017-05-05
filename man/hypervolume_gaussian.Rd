@@ -13,7 +13,7 @@ hypervolume_gaussian(data,
 	output.density = 10^(ncol(data)), 
 	expectation.num.shifts = 1, expectation.bin.widths = 2*estimate_bandwidth(data), 
 	kde.bandwidth = estimate_bandwidth(data)/2, kde.chunksize = 10000, 
-	output.threshold = estimate_threshold_gaussian(sd.count = 1, dim = ncol(data)))
+	output.quantile.threshold = 0.5)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -41,8 +41,8 @@ A scalar or a n x 1 vector corresponding to the half-width of the box kernel in 
   \item{kde.chunksize}{
 Number of random points to process per internal step. Larger values may have better performance on machines with large amounts of free memory. Changing this parameter does not change the output of the function; only how this output is internally assembled.
 }
-  \item{output.threshold}{
-The minimum probability threshold value at which the boundary of the hypervolume is delineated. Higher values can later be chosen using \code{\link{hypervolume_quantile_threshold}}. Some value must be chosen here as Gaussian kernels do not decay to zero probability in a finite distance.
+  \item{output.quantile.threshold}{
+The minimum quantile threshold value at which the boundary of the hypervolume is delineated. Some value must be chosen here as Gaussian kernels do not decay to zero probability in a finite distance.
 }
 }
 \value{

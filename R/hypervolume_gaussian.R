@@ -1,46 +1,4 @@
-mvnorm <- function(x, mu, Sigma, k=length(x),fast=FALSE,diagonalSigma=FALSE) # fast does quadratic approximation
-{
-  xminusmu <- as.numeric(x - mu)
-  if (diagonalSigma==TRUE)
-  {
-    Sigmainv = 1/Sigma
-    Sigmadet = Sigma[diag(1,nrow(Sigma),ncol(Sigma))]	
-  }
-  else
-  {
-    Sigmainv <- solve(Sigma)
-    Sigmadet <- det(Sigma)
-  }
-  
-  argument <- (-1/2) * (t(xminusmu) %*% Sigmainv %*% (xminusmu))  
-  
-  
-  if (fast==TRUE)
-  {
-    exparg <- 1 + argument
-    if (exparg < 0)
-    {
-      exparg <- 0
-    }
-  }
-  else
-  {
-    exparg <- exp(argument)
-  }
-  
-  prefactor=1/sqrt(((2*pi)^k)*Sigmadet)
-  
-  return(as.numeric(exparg*prefactor))
-}
-
-# choose a probability value equal to the prob density of a single point at 1 s.d. distance in dimensionless coordinates
-estimate_threshold_gaussian <- function(sd.count=1, dim)
-{
-  mvnorm(rep(sd.count,dim),rep(0,dim),Sigma=diag(1,dim,dim))
-}
-
-
-hypervolume_gaussian <- function(data, name=NULL, verbose=TRUE, output.density=10^(ncol(data)), expectation.num.shifts=1, expectation.bin.widths=2*estimate_bandwidth(data), kde.bandwidth=estimate_bandwidth(data)/2, kde.chunksize=1e4, output.threshold=estimate_threshold_gaussian(sd.count=1,dim=ncol(data)))
+hypervolume_gaussian <- function(data, name=NULL, verbose=TRUE, output.density=10^(ncol(data)), expectation.num.shifts=1, expectation.bin.widths=2*estimate_bandwidth(data), kde.bandwidth=estimate_bandwidth(data)/2, kde.chunksize=1e4, output.quantile.threshold=0.5)
 {
   data <- as.matrix(data)
   
@@ -65,9 +23,6 @@ hypervolume_gaussian <- function(data, name=NULL, verbose=TRUE, output.density=1
   {
     cat('Generating adaptive grid...\n')
   }
-  print(data)
-  print(expectation.num.shifts)
-  print(expectation.bin.widths)
   
   expectation <- expectation_adaptive_box(data, density= output.density, num.shifts=expectation.num.shifts, bin.widths=expectation.bin.widths)
   if (verbose == TRUE)
@@ -111,29 +66,32 @@ hypervolume_gaussian <- function(data, name=NULL, verbose=TRUE, output.density=1
   {
     cat('...done.\n')
   }
-  points_thresholded <- expectation@RandomUniformPointsThresholded[kde.probs > output.threshold, , drop=F]
-  probs_thresholded <- kde.probs[kde.probs > output.threshold]
+  points_final <- expectation@RandomUniformPointsThresholded
+  probs_final <- kde.probs
   
-  numpoints_kde <- nrow(points_thresholded)
+  numpoints_kde <- nrow(points_final)
   vol_kde <- numpoints_kde / expectation@PointDensity
   
-  finalparams <- c(kde.bandwidth,output.threshold=output.threshold, expectation.num.shifts=expectation.num.shifts, expectation.bin.widths=expectation.bin.widths)
+  finalparams <- c(kde.bandwidth,output.quantile.threshold=output.quantile.threshold, expectation.num.shifts=expectation.num.shifts, expectation.bin.widths=expectation.bin.widths)
 
   hv_kde <- new("Hypervolume",
                 Data=as.matrix(data),
-                RandomUniformPointsThresholded= points_thresholded,
+                RandomUniformPointsThresholded= points_final,
                 PointDensity= expectation@PointDensity,
                 Volume= vol_kde,
                 Dimensionality=ncol(data),
-                ProbabilityDensityAtRandomUniformPoints= normalize_probability(probs_thresholded, expectation@PointDensity),
+                ProbabilityDensityAtRandomUniformPoints= normalize_probability(probs_final, expectation@PointDensity),
                 Name=ifelse(is.null(name), "untitled", toString(name)),
                 Method = "gaussian",
                 Parameters=finalparams)
   
-  if (nrow(hv_kde@RandomUniformPointsThresholded) < 10^ncol(data))
+  # apply quantile threshold
+  hv_kde_thresholded <- hypervolume_quantile_threshold(hv_kde, quantile.requested=output.quantile.threshold, plot=FALSE)
+  
+  if (nrow(hv_kde_thresholded@RandomUniformPointsThresholded) < 10^ncol(data))
   {
-    warning(sprintf("Hypervolume is represented by a low number of random points (%d) - suggested minimum %d.\nConsider increasing point density to improve accuracy.",nrow(hv_kde@RandomUniformPointsThresholded),10^ncol(data)))
+    warning(sprintf("Hypervolume is represented by a low number of random points (%d) - suggested minimum %d.\nConsider increasing point density to improve accuracy.",nrow(hv_kde_thresholded@RandomUniformPointsThresholded),10^ncol(data)))
   }
   
-  return(hv_kde)	
+  return(hv_kde_thresholded)	
 }

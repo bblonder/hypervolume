@@ -10,7 +10,6 @@ if (exists('doHypervolumeQuercusDemo')==TRUE)
   
   # get worldclim data from internet
   climatelayers <- getData('worldclim', var='tmin', res=0.5, lon=5, lat=45)
-
   
   # z-transform climate layers to make axes comparable
   climatelayers_ss = climatelayers[[c(1,4,12,15)]]
@@ -24,8 +23,8 @@ if (exists('doHypervolumeQuercusDemo')==TRUE)
   climate_rubra = extract(climatelayers_ss, data_rubra)
   
   # compute hypervolumes with auto-bandwidth for both species
-  hv_alba = hypervolume(climate_alba,quantile=0.0,reps=1000,bandwidth=estimate_bandwidth(climate_alba),name='alba')
-  hv_rubra = hypervolume(climate_rubra,quantile=0.0,reps=1000,bandwidth=estimate_bandwidth(climate_rubra),name='rubra')
+  hv_alba = hypervolume(climate_alba,name='alba')
+  hv_rubra = hypervolume(climate_rubra,name='rubra')
   
   # determine intersection and unique components of the overlap
   hv_set = hypervolume_set(hv_alba, hv_rubra, check_memory=FALSE)
