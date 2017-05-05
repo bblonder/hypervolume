@@ -2,7 +2,6 @@ useDynLib(hypervolume)
 
 export( 
   estimate_bandwidth, 
-  estimate_threshold_gaussian,
   expectation_adaptive_box,
   expectation_ball, 
   expectation_box, 

@@ -23,8 +23,7 @@ if (exists('doHypervolumeFinchDemo')==TRUE)
     data_this_species_log <- log10(data_this_species)
     
     # make a hypervolume using auto-bandwidth
-      hv_finches_list@HVList[[i]] <- hypervolume(data_this_species_log, 
-                                          bandwidth=estimate_bandwidth(data_this_species_log),
+      hv_finches_list@HVList[[i]] <- hypervolume(data_this_species_log,
                                           name=as.character(species_list[i]))
   }
   
@@ -40,7 +39,7 @@ if (exists('doHypervolumeFinchDemo')==TRUE)
         # compute set operations on each pair
         this_set = hypervolume_set(hv_finches_list@HVList[[i]], hv_finches_list@HVList[[j]], check_memory=FALSE)
         # calculate a Sorensen overlap index (2 x shared volume / sum of |hv1| + |hv2|)
-        overlap[i,j] = hypervolume_sorensen_overlap(this_set)
+        overlap[i,j] = hypervolume_overlap_statistics(this_set)["sorensen"]
       }
     }   
   }

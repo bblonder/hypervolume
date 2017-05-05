@@ -100,6 +100,7 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 5000,
   alphavals <- all$Density
   if (showdensity)
   {
+    alphavals[is.na(alphavals)] <- 1
     colorlist <- rgb2rgba(colorlist, alphavals)
   }
   
