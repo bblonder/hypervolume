@@ -69,8 +69,15 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 5000,
   
   if (is.null(all))
   {
-    warning('Nothing to plot.')
-    all <- matrix(0,ncol=2+alldims,nrow=1,dimnames=list(NULL,c(dimnames(x@HVList[[1]]@RandomUniformPointsThresholded)[[2]],"ID","Density")))
+    warning('No random points to plot.')
+    if (is.null(dimnames(x@HVList[[1]]@RandomUniformPointsThresholded)[[2]]))
+    {
+      all <- matrix(0,ncol=2+alldims,nrow=1,dimnames=list(NULL,c(paste("X",1:alldims,sep=""),"ID","Density")))
+    }
+    else
+    {
+      all <- matrix(0,ncol=2+alldims,nrow=1,dimnames=list(NULL,c(dimnames(x@HVList[[1]]@RandomUniformPointsThresholded)[[2]],"ID","Density")))
+    }
     all <- as.data.frame(all)
   }
   

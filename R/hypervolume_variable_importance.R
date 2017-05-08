@@ -35,7 +35,7 @@ hypervolume_variable_importance <- function(hv, verbose=TRUE)
       
       binwidths <- params[grep("expectation.bin.widths",names(params))]
       
-      hv_this <- hypervolume_gaussian(data[,vars], output.density=density, name=NULL, verbose=verbose, kde.bandwidth=bw[vars],output.threshold=params["output.threshold"], expectation.num.shifts = params["expectation.num.shifts"], expectation.bin.widths = binwidths)
+      hv_this <- hypervolume_gaussian(data[,vars], output.density=density, name=NULL, verbose=verbose, kde.bandwidth=bw[vars],threshold=params["threshold"], expectation.num.shifts = params["expectation.num.shifts"], expectation.bin.widths = binwidths)
     }
     else
     {

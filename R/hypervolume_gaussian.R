@@ -1,4 +1,19 @@
-hypervolume_gaussian <- function(data, name=NULL, verbose=TRUE, output.density=10^(ncol(data)), expectation.num.shifts=1, expectation.bin.widths=2*estimate_bandwidth(data), kde.bandwidth=estimate_bandwidth(data)/2, kde.chunksize=1e4, output.quantile.threshold=0.5)
+# choose a probability value equal to the prob density of a single point at 1 s.d. distance
+estimate_threshold_gaussian <- function(sd.count=1, bandwidth)
+{
+  k = length(bandwidth) # dimensionality
+  # standardize distance to a given number of s.d.s away
+  probs <- rep(NA, length(bandwidth))
+  for (i in 1:length(bandwidth))
+  {
+    probs[i] <- 1/sqrt(2*pi*(2*bandwidth[i])^2) * exp(-1/2*sd.count^2)
+  }
+  # total probability is product of probability along each axis (no covariance)
+  prob_final <- prod(probs)
+  return(prob_final)
+}
+
+hypervolume_gaussian <- function(data, name=NULL, verbose=TRUE, output.density=10^(ncol(data)), expectation.num.shifts=2, expectation.bin.widths=2*estimate_bandwidth(data), kde.bandwidth=estimate_bandwidth(data)/2, kde.chunksize=1e4, threshold=estimate_threshold_gaussian(sd.count=expectation.num.shifts, bandwidth=kde.bandwidth))
 {
   data <- as.matrix(data)
   
@@ -66,15 +81,20 @@ hypervolume_gaussian <- function(data, name=NULL, verbose=TRUE, output.density=1
   {
     cat('...done.\n')
   }
-  points_final <- expectation@RandomUniformPointsThresholded
-  probs_final <- kde.probs
+  
+  # threshold the edges within the adaptive grid
+  points_final <- expectation@RandomUniformPointsThresholded[kde.probs > threshold,,drop=FALSE]
+  probs_final <- kde.probs[kde.probs > threshold]
   
   numpoints_kde <- nrow(points_final)
   vol_kde <- numpoints_kde / expectation@PointDensity
   
-  finalparams <- c(kde.bandwidth,output.quantile.threshold=output.quantile.threshold, expectation.num.shifts=expectation.num.shifts, expectation.bin.widths=expectation.bin.widths)
+  finalparams <- c(kde.bandwidth, 
+                   expectation.num.shifts=expectation.num.shifts, 
+                   expectation.bin.widths=expectation.bin.widths,
+                   threshold = threshold)
 
-  hv_kde <- new("Hypervolume",
+  hv_kde_thresholded <- new("Hypervolume",
                 Data=as.matrix(data),
                 RandomUniformPointsThresholded= points_final,
                 PointDensity= expectation@PointDensity,
@@ -86,7 +106,7 @@ hypervolume_gaussian <- function(data, name=NULL, verbose=TRUE, output.density=1
                 Parameters=finalparams)
   
   # apply quantile threshold
-  hv_kde_thresholded <- hypervolume_quantile_threshold(hv_kde, quantile.requested=output.quantile.threshold, plot=FALSE)
+  #hv_kde_thresholded <- hypervolume_quantile_threshold(hv_kde, quantile.requested=output.quantile.threshold, plot=FALSE)
   
   if (nrow(hv_kde_thresholded@RandomUniformPointsThresholded) < 10^ncol(data))
   {
