@@ -1,9 +1,11 @@
 useDynLib(hypervolume)
 
 export( 
+  sample_model_metropolis,
+  sample_model_rejection,
+  
   estimate_bandwidth, 
   estimate_threshold_gaussian,
-  expectation_adaptive_box,
   expectation_ball, 
   expectation_box, 
   expectation_convex,
@@ -14,7 +16,9 @@ export(
   hypervolume_centroid,
   hypervolume_distance, 
   hypervolume_estimate_probability,
+  hypervolume_gaussian_old,
   hypervolume_gaussian,
+  hypervolume_general_model,
   hypervolume_holes, 
   hypervolume_inclusion_test, 
   hypervolume_join, 
@@ -31,6 +35,7 @@ export(
   hypervolume_thin, 
   hypervolume_variable_importance, 
   hypervolume, 
+  padded_range,
   plot.Hypervolume,
   plot.HypervolumeList,
   print.Hypervolume,
@@ -71,6 +76,9 @@ import(ks)
 import(fastcluster)
 import(compiler)
 import(e1071)
+import(mvtnorm)
+import(data.table)
+import(progress)
 importFrom("raster","raster", "getValues","values")
 
 importFrom("grDevices", "col2rgb", "rainbow", "rgb")

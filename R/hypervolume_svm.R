@@ -1,26 +1,26 @@
-hypervolume_svm <- function(data, name=NULL, verbose=TRUE, output.density=10^ncol(data), expectation.num.shifts=1, expectation.bin.widths=2*estimate_bandwidth(data), svm.nu=0.01, svm.gamma=0.5, svm.chunksize=1e4)
+hypervolume_svm <- function(data, name=NULL, verbose=TRUE, samples.per.point=10^ncol(data), range.padding.multiply.interval.amount=0.5, range.padding.add.amount=0, svm.nu=0.01, svm.gamma=0.5, chunksize=1e4)
 {
   data <- as.matrix(data)
+  if (is.null(dimnames(data)[[2]]))
+  {
+    dimnames(data)[[2]] <- paste("X",1:ncol(data),sep="")
+  }
   
-  expectation <- expectation_adaptive_box(data, density= output.density, num.shifts=expectation.num.shifts, bin.widths=expectation.bin.widths,verbose=verbose)
-  
+  num.samples = nrow(data) * samples.per.point
+
   if (svm.nu <= 0)
   {
-    stop("Parameter svm.nu must be positive")
+    stop("Parameter svm.nu must be >0.")
   }
   
   if (svm.gamma <= 0)
   {
-    stop("Parameter svm.gamma must be positive")
+    stop("Parameter svm.gamma must be >0.")
   }
   
-  if (svm.chunksize <= 100 | svm.chunksize > 1e7)
-  {
-    stop("Parameter svm.chunksize may be in range that will produce poor performance.")
-  }
   if (verbose == TRUE)
   {
-    cat('Building support vector machine model')
+    cat('Building support vector machine model...')
   }
   svm.model<-e1071::svm(data,
                         y=NULL,
@@ -31,59 +31,20 @@ hypervolume_svm <- function(data, name=NULL, verbose=TRUE, output.density=10^nco
                         kernel="radial")	
   if (verbose == TRUE)
   {
-    cat('...done\n')
+    cat(' done\n')
   }
   
-  np <- nrow(expectation@RandomUniformPointsThresholded)
+  # delineate the hyperbox over which the function will be evaluated
+  range.box <- padded_range(data, multiply.interval.amount = range.padding.multiply.interval.amount, add.amount = range.padding.add.amount)
+  dimnames(range.box) <- list(NULL, dimnames(data)[[2]])
   
-  if (verbose == TRUE)
-  {
-    cat(sprintf('Sampling %d random points from support vector machine, %d per chunk.\n',np, svm.chunksize))
-  }
-  num.samples.completed <- 0
-  num.chunks <- ceiling(np/svm.chunksize)
-  svm.probs <- vector(mode="list",length=num.chunks)
-  for (i in 1:num.chunks)
-  {
-    if (verbose == TRUE)
-    {
-      cat(sprintf('Running chunk %d / %d\n', i, num.chunks))
-    }
-    num.samples.to.take <- min(svm.chunksize, np - num.samples.completed)
-    
-    inputdata.this <- expectation@RandomUniformPointsThresholded[num.samples.completed:(num.samples.completed+num.samples.to.take-1),]
-    
-    svm.pred.this <- predict(svm.model,inputdata.this)
-    svm.pred.this.pos <- inputdata.this[svm.pred.this==TRUE,]
-    
-    svm.probs[[i]] <- svm.pred.this.pos
-    num.samples.completed <- num.samples.completed + num.samples.to.take
-  }
-  svm.probs <- do.call("rbind",svm.probs)
-  dimnames(svm.probs) <- list(NULL,dimnames(data)[[2]])
-  if (verbose == TRUE)
-  {
-    cat('done.\n')	
-  }
+  # do rejection sampling over the hyperbox
+  hv_svm = hypervolume_general_model(svm.model, name=name, verbose=verbose, range.box = range.box, num.samples=num.samples, chunksize=chunksize, min.value=0)
+  hv_svm@Parameters = c(svm.nu=svm.nu, svm.gamma=svm.gamma, range.padding.multiply.interval.amount=range.padding.multiply.interval.amount, range.padding.add.amount=range.padding.add.amount, samples.per.point=samples.per.point)
+  hv_svm@Method = 'One-class support vector machine'
+  hv_svm@Data = data
   
-  numpoints_svm <- nrow(svm.probs)
-  vol_svm <- numpoints_svm / expectation@PointDensity
-  
-  hv_svm <- new("Hypervolume",
-                Data=data,
-                Method = "svm",
-                RandomUniformPointsThresholded= svm.probs,
-                PointDensity= expectation@PointDensity,
-                Volume= vol_svm,
-                Dimensionality=ncol(svm.probs),
-                ProbabilityDensityAtRandomUniformPoints=normalize_probability(rep(1,nrow(svm.probs)),expectation@PointDensity),
-                Name=ifelse(is.null(name), "untitled", toString(name)),
-                Parameters=c(svm.nu=svm.nu, svm.gamma=svm.gamma, expectation.num.shifts=expectation.num.shifts, expectation.bin.widths=expectation.bin.widths))
-  
-  if (nrow(hv_svm@RandomUniformPointsThresholded) < 10^ncol(data))
-  {
-    warning(sprintf("Hypervolume is represented by a low number of random points (%d) - suggested minimum %d.\nConsider increasing point density to improve accuracy.",nrow(hv_svm@RandomUniformPointsThresholded),10^ncol(data)))
-  }
+  #samples <- sample_model_metropolis(svm.model, data, verbose=verbose, Nsamples = num_samples*(1+burnin.fraction), burnin = burnin.fraction*num_samples, thin.by=thin.by)
   
   return(hv_svm)	
 }

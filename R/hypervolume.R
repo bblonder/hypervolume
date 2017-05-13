@@ -1,4 +1,4 @@
-hypervolume <- function(data, method="box", ...)
+hypervolume <- function(data, method="gaussian", ...)
 {
   data <- as.matrix(data)
   

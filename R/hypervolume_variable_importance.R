@@ -3,7 +3,11 @@ hypervolume_variable_importance <- function(hv, verbose=TRUE)
   method <- hv@Method
   data <- hv@Data
   params <- hv@Parameters
-  density <- hv@PointDensity
+  
+  if (is.null(dimnames(data)[[2]]))
+  {
+    dimnames(data) <- list(NULL, paste("X",1:ncol(data),sep=""))
+  }
   
   hv_others <- rep(NA, ncol(data))
   
@@ -11,35 +15,31 @@ hypervolume_variable_importance <- function(hv, verbose=TRUE)
   {
     if (verbose==TRUE)
     {
-      cat('* Repeating hypervolumes for ')
+      cat(sprintf('* Repeating hypervolumes for dimension %s\n', dimnames(data)[[2]][i]))
     }
     vars <- setdiff(1:ncol(data),i)
 
-    if (method=="box")
+    if (method=="Box kernel density estimate")
     {
-      bw <- params[grep("bandwidth",names(params))]
-      names(bw) <- gsub("bandwidth.","",names(bw),fixed=TRUE)
+      bw <- params[grep("kde.bandwidth",names(params),fixed=TRUE)]
+      names(bw) <- gsub("kde.bandwidth.","",names(bw),fixed=TRUE)
 
-      hv_this <- hypervolume_box(data[,vars], output.density=density, name=NULL, verbose=verbose, bandwidth=bw[vars])
+      hv_this <- hypervolume_box(data[,vars,drop=FALSE], samples.per.point=params["samples.per.point"], name=NULL, verbose=verbose, kde.bandwidth=bw[vars])
     }
-    else if (method=="svm")
+    else if (method=="One-class support vector machine")
     {
-      binwidths <- params[grep("expectation.bin.widths",names(params))]
-      
-      hv_this <- hypervolume_svm(data[,vars], output.density=density, name=NULL, verbose=verbose, svm.nu=params["svm.nu"],svm.gamma=params["svm.gamma"],expectation.num.shifts = params["expectation.num.shifts"], expectation.bin.widths = binwidths)
+      hv_this <- hypervolume_svm(data[,vars,drop=FALSE], samples.per.point=params["samples.per.point"], name=NULL, verbose=verbose, svm.nu=params["svm.nu"],svm.gamma=params["svm.gamma"], range.padding.multiply.interval.amount=params["range.padding.multiply.interval.amount"], range.padding.add.amount=params["range.padding.add.amount"])
     }
-    else if (method=="gaussian")
+    else if (method=="Gaussian kernel density estimate")
     {
       bw <- params[grep("kde.bandwidth",names(params))]
       names(bw) <- gsub("kde.bandwidth.","",names(bw),fixed=TRUE)
-      
-      binwidths <- params[grep("expectation.bin.widths",names(params))]
-      
-      hv_this <- hypervolume_gaussian(data[,vars], output.density=density, name=NULL, verbose=verbose, kde.bandwidth=bw[vars],threshold=params["threshold"], expectation.num.shifts = params["expectation.num.shifts"], expectation.bin.widths = binwidths)
+
+      hv_this <- hypervolume_gaussian(data[,vars,drop=FALSE], samples.per.point=params["samples.per.point"], name=NULL, verbose=verbose, kde.bandwidth=bw[vars], threshold.sd.count=params["threshold.sd.count"])
     }
     else
     {
-      stop('Importance calculation only possible when hypervolume has @Data and @Method available.')
+      stop('Importance calculation only possible for restricted set of hypervolume types and for those with @Data slot.')
     }
     
     hv_others[i] <- hv_this@Volume

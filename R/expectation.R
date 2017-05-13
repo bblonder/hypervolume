@@ -1,159 +1,3 @@
-bindata_padded <- function(data, bin.widths, num.shifts, verbose=TRUE)
-{	
-  data_cut <- as.matrix(data)
-  num_dims <- ncol(data)
-  
-  if (length(bin.widths)==1)
-  {
-    bin.widths = rep(bin.widths, num_dims)
-  }
-  if (verbose == TRUE)
-  {
-    cat("Defining shifts\n")
-  }
-  
-  # figure out every possible shift in every direction
-  grid_shifts <- as.matrix(expand.grid(rep(list(c(-1,0,1)),num_dims)))
-  
-  data_cut_index <- data_cut
-  
-  # slice data into grid cells
-  cuts <- vector(mode="list",length=num_dims)
-  names(cuts) <- dimnames(data_cut)[[2]]
-  for (i in 1:ncol(data_cut))
-  {
-    cuts[[i]] <- seq(min(data_cut[,i])-bin.widths[i], max(data_cut[,i])+bin.widths[i],by=bin.widths[i])
-    data_cut_index[,i] <- as.numeric(cut(data_cut[,i],breaks=cuts[[i]], ordered=TRUE,include.lowest=TRUE))
-  }
-  
-  # reduce to unique cases
-  data_cut_index_shifted <- unique(data_cut_index)
-  
-  # recursively shift the larger dataset
-  for (i in setdiff(0:num.shifts,0))
-  {
-    if (verbose == TRUE)
-    {
-      cat(sprintf('Dataset shifts %d - %d to complete\n', i, nrow(grid_shifts)))
-    }
-    # do shifts in all directions in indexed coordinates
-    data_cut_index_shifted_list <- lapply(1:nrow(grid_shifts), function(index) { 
-      if (verbose == TRUE)
-      {
-        cat('.')
-        if (i %% 80 == 0)
-        {
-          cat('\n')
-        }
-      }
-      return(t(t(data_cut_index_shifted) + grid_shifts[index,])) 
-    })
-    if (verbose == TRUE)
-    {
-      cat('done.\n')
-    }
-    data_cut_index_shifted <- do.call("rbind", data_cut_index_shifted_list)
-    # reduce again to unique cases
-    data_cut_index_shifted <- unique(data_cut_index_shifted)
-    # shift indices up by one to account for new lowest position
-    data_cut_index_shifted <- data_cut_index_shifted + 1
-    
-    # add data to the cut ranges
-    # add row at top and bottom for next lowest cut
-    cuts <- lapply(1:num_dims, function(index) { c(cuts[[index]][1]-bin.widths[index], cuts[[index]], cuts[[index]][length(cuts[[index]])]+bin.widths[index]) })
-  }
-  
-  # keep original dimension names
-  dimnames(data_cut_index_shifted) <- list(NULL, dimnames(data)[[2]])
-  
-  return(list(data_cut= data_cut_index_shifted, cuts=cuts))
-}
-
-expectation_adaptive_box <- function(data, bin.widths, num.shifts=1, density=10^(3+ncol(data)), verbose=TRUE) # eventually convert num.shifts to a 
-{
-  binneddata <- bindata_padded(data, bin.widths=bin.widths, num.shifts=num.shifts,verbose=verbose)
-  
-  # take only filled unique grid cells
-  data_cut <- unique(binneddata$data_cut)
-  
-  cuts = binneddata$cuts
-  
-  nbins.filled <- nrow(data_cut)
-  nbins.possible <- nrow(cuts)^ncol(cuts)
-  
-  bin_fraction = nbins.filled / nbins.possible # number of bins that we found divided by possible number of bins
-  if (verbose == TRUE)
-  {
-    cat(sprintf('Exploring %d / %.0f bins\n',nbins.filled, nbins.possible))
-  }
-  rp_all <- vector(mode="list",length=nrow(data_cut))
-  volume_all <- rep(NA, nrow(data_cut))
-  
-  if (verbose == TRUE)
-  {
-    cat(sprintf('Random sampling within %d hyperboxes\n', nrow(data_cut)))
-  }
-  for (i in 1:nrow(data_cut))
-  {	
-    if (verbose == TRUE)
-    {
-      cat('.')
-      if (i %% 80 == 0)
-      {
-        cat('\n')
-      }
-    }
-    lower <- sapply(1:length(cuts),function(dim) {cuts[[dim]][data_cut[i,dim]]})
-    higher <- sapply(1:length(cuts),function(dim) {cuts[[dim]][data_cut[i,dim]+1]})
-    
-    volume <- prod(higher - lower) # hyperbox volume of this grid cell
-    np <- ceiling(density*volume)
-    
-    
-    randpoints <- replicate(length(cuts),runif(n=np)) # get unit box of random points
-    
-    randpoints <- matrix(randpoints, ncol=ncol(data))
-    
-    for (column_index in 1:ncol(randpoints)) # rescale random points to right locations
-    {
-      randpoints[, column_index] <- randpoints[, column_index] * (higher[column_index] - lower[column_index]) + lower[column_index]
-    }
-    
-    rp_all[[i]] <- randpoints
-    volume_all[i] <- volume
-  }
-  if (verbose == TRUE)
-  {
-    cat('done\n')
-  }
-  
-  if (verbose == TRUE)
-  {
-    cat(sprintf('Binding rows...'))
-  }
-  rp_all <- do.call("rbind",rp_all) # bind all together
-  if (verbose == TRUE)
-  {
-    cat(sprintf('done\n'))
-  }
-  volume_all <- sum(volume_all)
-  dimnames(rp_all) <- list(NULL, dimnames(data_cut)[[2]])
-  
-  result <- new("Hypervolume",
-                Data=as.matrix(data),
-                Method="Expectation (adaptive box)",
-                RandomUniformPointsThresholded=rp_all,
-                PointDensity=density,
-                Volume= volume_all,
-                Dimensionality=ncol(data),
-                ProbabilityDensityAtRandomUniformPoints=normalize_probability(rep(1/nrow(rp_all),nrow(rp_all)), density),
-                Name=sprintf("Expectation - adaptive box (%d/%d bins)",nbins.filled, nbins.possible))
-  
-  return(result)
-}
-
-
-
 randsphere <- function(m,n,r)
 {
   X = matrix(data=rnorm(m*n),nrow=m,ncol=n)
@@ -181,7 +25,7 @@ expectation_maximal <- function(input, ...)
   }
 }
 
-expectation_box <- function(input, point_density=NULL, userandom=FALSE)
+expectation_box <- function(input, point.density=NULL, num.points=NULL, userandom=FALSE)
 {
   if (class(input)=="Hypervolume")
   {
@@ -197,28 +41,34 @@ expectation_box <- function(input, point_density=NULL, userandom=FALSE)
   else
   {
     data <- input
-    
-    
   }
   
   minv <- apply(data,2,min)
   maxv <- apply(data,2,max)
   
   volume = prod(maxv - minv)
- 
-  if (is.null(point_density))
+  
+  if (is.null(point.density) & !is.null(num.points))
   {
-    if (class(input)=="Hypervolume")
-    {
-      point_density = input@PointDensity
-    }
-    else
-    {
-      point_density <- 10^ncol(data)
-    }
+    npoints = num.points
+    point.density = npoints / volume
   }
-
-  npoints <- ceiling(point_density * volume)
+  else
+  {
+    if (is.null(point.density))
+    {
+      if (class(input)=="Hypervolume")
+      {
+        point.density = input@PointDensity
+      }
+      else
+      {
+        point.density <- 10^ncol(data)
+      }
+    }
+  
+    npoints <- ceiling(point.density * volume)
+  }
   
   result <- matrix(NA, nrow=npoints, ncol=length(minv), dimnames=list(NULL, dimnames(data)[[2]]))
   
@@ -229,21 +79,21 @@ expectation_box <- function(input, point_density=NULL, userandom=FALSE)
   
   hv_box <- new("Hypervolume",
                 Name=sprintf("Box expectation for %s", ifelse(class(input)=="Hypervolume", input@Name, deparse(substitute(data))[1])),
-                Method="Ball expectation",
+                Method="Box expectation",
                 Data = as.matrix(data),
                 RandomUniformPointsThresholded=result, 
                 Dimensionality=ncol(data), 
                 Volume=volume,
-                PointDensity=point_density, 
+                PointDensity=point.density, 
                 Parameters= NaN,
-                ProbabilityDensityAtRandomUniformPoints = normalize_probability(rep(1, npoints),point_density)
+                ProbabilityDensityAtRandomUniformPoints = normalize_probability(rep(1, npoints),point.density)
   )  
   
   return(hv_box)
 }
 
 
-expectation_ball <- function(input, point_density=NULL, userandom=FALSE)
+expectation_ball <- function(input, point.density=NULL, num.points=NULL, userandom=FALSE)
 {
   if (class(input)=="Hypervolume")
   {
@@ -260,27 +110,37 @@ expectation_ball <- function(input, point_density=NULL, userandom=FALSE)
   {
     data <- input
   }
-  
-  if (is.null(point_density))
-  {
-    if (class(input)=="Hypervolume")
-    {
-      point_density = input@PointDensity
-    }
-    else
-    {
-      point_density <- 10^ncol(data)
-    }
-  }
-  
+
   center <- apply(data,2,mean,na.rm=TRUE)
   data_centered <- sweep(data, 2, center, "-")
   radii = sqrt(rowSums(data_centered^2))
   maxradius = max(radii)
   
-  volume = nball_volume(n=ncol(data),r=maxradius)
+  volume = nball_volume(n=ncol(data),r=maxradius)  
   
-  npoints <- ceiling(point_density * volume)
+  if (is.null(point.density) & !is.null(num.points))
+  {
+    npoints = num.points
+    point.density = npoints / volume
+  }
+  else
+  {  
+    if (is.null(point.density))
+    {
+      if (class(input)=="Hypervolume")
+      {
+        point.density = input@PointDensity
+      }
+      else
+      {
+        point.density <- 10^ncol(data)
+      }
+    }
+  }
+  
+
+  
+  npoints <- ceiling(point.density * volume)
 
   result <- randsphere(m=npoints, n=ncol(data), r=maxradius)
   result <- sweep(result, 2, center,"+")
@@ -293,9 +153,9 @@ expectation_ball <- function(input, point_density=NULL, userandom=FALSE)
                  RandomUniformPointsThresholded=result, 
                  Dimensionality=ncol(data), 
                  Volume=volume,
-                 PointDensity=point_density, 
+                 PointDensity=point.density, 
                  Parameters= NaN, 
-                 ProbabilityDensityAtRandomUniformPoints = normalize_probability(rep(1, npoints),point_density)
+                 ProbabilityDensityAtRandomUniformPoints = normalize_probability(rep(1, npoints),point.density)
   )  
   
   return(hv_ball)
@@ -433,7 +293,7 @@ hullToConstr <- function(calpts, hull) {
 
 
 
-expectation_convex <- function(input, point_density=NULL, npoints_onhull=NULL, check_memory=TRUE, verbose=TRUE, userandom=FALSE, method="rejection", chunksize=1e3)
+expectation_convex <- function(input, point.density=NULL, num.points=NULL, num.points.on.hull=NULL, check_memory=TRUE, verbose=TRUE, userandom=FALSE, method="rejection", chunksize=1e3)
 {
   if (class(input)=="Hypervolume")
   {
@@ -450,28 +310,40 @@ expectation_convex <- function(input, point_density=NULL, npoints_onhull=NULL, c
   {
     data <- input
     
-  }  
+  } 
   
-  if (is.null(point_density))
+  if (is.null(num.points.on.hull))
   {
-    point_density = 10^ncol(data)
+    num.points.on.hull <- nrow(data)
   }
   
   
-  if (is.null(npoints_onhull))
-  {
-    #npoints_onhull <- min(nrow(data),floor(10^ncol(data)))
-    npoints_onhull <- nrow(data)
-  }
-
   # sample data down if needed, weighting further points more
-  data_reduced <- data[sample(nrow(data), npoints_onhull, replace=FALSE, prob=rowSums(scale(data, center=TRUE, scale=FALSE)^2)^4),]
+  data_reduced <- data[sample(nrow(data), num.points.on.hull, replace=FALSE, prob=rowSums(scale(data, center=TRUE, scale=FALSE)^2)^4),]
   
   # FIND THE CONVEX HULL of the reduced data  
   convexhull <- geometry::convhulln(data_reduced,options="FA")
   hull_matrix <- convexhull$hull #extract coordinates of vertices
   hull_volume <- convexhull$vol # extract volume
   
+ 
+  if (is.null(point.density) & !is.null(num.points))
+  {
+    np = num.points
+    point.density = np / hull_volume
+  }
+  else
+  {   
+    if (is.null(point.density))
+    {
+      point.density = 10^ncol(data)
+    }
+    np <- ceiling(point.density * hull_volume)
+  }
+  
+  
+
+
 
   
   if (check_memory==TRUE)
@@ -489,7 +361,7 @@ expectation_convex <- function(input, point_density=NULL, npoints_onhull=NULL, c
     stop('Set check_memory=F to continue.\n')
   }
   
-  np <- ceiling(point_density * hull_volume)
+  
   
   if (method=="hitandrun")
   {
@@ -538,10 +410,10 @@ expectation_convex <- function(input, point_density=NULL, npoints_onhull=NULL, c
     hv_hull <- new("Hypervolume",
                    Data=data,
                    RandomUniformPointsThresholded= samples,
-                   PointDensity=point_density,
+                   PointDensity=point.density,
                    Volume= volume_convexhull,
                    Dimensionality=ncol(samples),
-                   ProbabilityDensityAtRandomUniformPoints=normalize_probability(rep(1, nrow(samples)),point_density),
+                   ProbabilityDensityAtRandomUniformPoints=normalize_probability(rep(1, nrow(samples)),point.density),
                    Name=sprintf("Convex expectation for %s", ifelse(class(input)=="Hypervolume", input@Name, deparse(substitute(data))[1])),
                    Method="Adaptive hit and run convex expectation")	
     
@@ -586,7 +458,7 @@ expectation_convex <- function(input, point_density=NULL, npoints_onhull=NULL, c
     inpoints <- inpoints[1:np,]
     dimnames(inpoints) <- list(NULL,dimnames(data)[[2]])
     
-    point_density <- nrow(inpoints) / hull_volume
+    point.density <- nrow(inpoints) / hull_volume
     
     # MAKE a new hypervolume with the convex hull shape and volume
     hv_chull <- new("Hypervolume",
@@ -596,9 +468,9 @@ expectation_convex <- function(input, point_density=NULL, npoints_onhull=NULL, c
                     RandomUniformPointsThresholded=inpoints, 
                     Dimensionality=ncol(inpoints), 
                     Volume=hull_volume,
-                    PointDensity = point_density,
+                    PointDensity = point.density,
                     Parameters= NaN,
-                    ProbabilityDensityAtRandomUniformPoints = normalize_probability(rep(1, nrow(inpoints)),point_density)
+                    ProbabilityDensityAtRandomUniformPoints = normalize_probability(rep(1, nrow(inpoints)),point.density)
     )
     
     return(hv_chull)    

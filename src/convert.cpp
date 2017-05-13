@@ -72,14 +72,13 @@ SEXP kdtree_ball_query_multiple(SEXP tr, SEXP ptlist, SEXP nr, SEXP nc, SEXP r, 
     // store the number of points within the ball for each point
     finalCounts.push_back(thisIndices.size());
     
-    if (verbose==1 && (i%10000)==1)
+    
+    int deltax = floor(nrow/20);
+    if (verbose==1 && (i%deltax==0))
     {
-      Rcpp::Rcout << " " << 1.0*i/nrow << " ";
-      if ((i%50000)==1)
-      {
-        Rcpp::Rcout << "\n";
-      }
+      Rcpp::Rcout << ".";
     }
+     
   }
   
   return(wrap(finalCounts));
@@ -126,14 +125,13 @@ SEXP kdtree_ball_query_id_multiple(SEXP tr, SEXP ptlist, SEXP nr, SEXP nc, SEXP 
       finalIDs.push_back(empty);
     }
     
-    if (verbose==1 && (i%10000)==1)
+    
+    int deltax = floor(nrow/20);
+    if (verbose==1 && (i%deltax==0))
     {
-      Rcpp::Rcout << " " << 1.0*i/nrow << " ";
-      if ((i%50000)==1)
-      {
-        Rcpp::Rcout << "\n";
-      }
+      Rcpp::Rcout << ".";
     }
+     
   }
   
   return(wrap(finalIDs));
@@ -177,14 +175,12 @@ SEXP kdtree_range_query_multiple(SEXP tr, SEXP pminlist, SEXP pmaxlist, SEXP nr,
     // store the number of points within the ball for each point
     finalCounts.push_back(thisIndices.size());
     
-    if (verbose==1 && (i%10000)==1)
+   int deltax = floor(nrow/20);
+    if (verbose==1 && (i%deltax==0))
     {
-      Rcpp::Rcout << " " << 1.0*i/nrow << " ";
-      if ((i%50000)==1)
-      {
-        Rcpp::Rcout << "\n";
-      }
+      Rcpp::Rcout << ".";
     }
+     
   }
   
   return(wrap(finalCounts));

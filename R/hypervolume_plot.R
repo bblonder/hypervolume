@@ -25,15 +25,21 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 5000,
                                  cex.random=0.5,cex.data=0.75,cex.axis=0.75,cex.names=1.0,cex.legend=0.75,
                                  legend=TRUE, varlims=NULL, showcontour=TRUE, contour.lwd=1, contour.filled=FALSE,contour.filled.alpha=0.5,contour.factor=0.05,
                                  showcentroid=TRUE, cex.centroid=3,
-                                 pairplot=TRUE,whichaxes=NULL,...)
+                                 pairplot=TRUE,whichaxes=NULL,verbose=TRUE,...)
 {
   sapply(x@HVList, function(z)
   {
-    cat(sprintf("Showing %d random points of %d for %s\n",min(nrow(z@RandomUniformPointsThresholded), npmax_random), nrow(z@RandomUniformPointsThresholded), z@Name))
+    if (verbose==TRUE)
+    {
+      cat(sprintf("Showing %d random points of %d for %s\n",min(nrow(z@RandomUniformPointsThresholded), npmax_random), nrow(z@RandomUniformPointsThresholded), z@Name))
+    }
     if (showdata && length(z@Data) > 0)
     {
       npd <- ifelse(all(is.nan(z@Data)), 0, nrow(z@Data))
-      cat(sprintf("Showing %d data points of %d for %s\n",min(npmax_data, npd), npd, z@Name))
+      if (verbose==TRUE)
+      {
+        cat(sprintf("Showing %d data points of %d for %s\n",min(npmax_data, npd), npd, z@Name))
+      }
     }    
     
   })
@@ -84,7 +90,7 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 5000,
   if (reshuffle==TRUE)
   {
     all <- all[sample(nrow(all),replace=FALSE),,drop=FALSE] # reorder to shuffle colors
-    alldata <- alldata[sample(nrow(alldata),replace=FALSE),]
+    alldata <- alldata[sample(nrow(alldata),replace=FALSE),,drop=FALSE]
   }
   
   if (is.null(names))
@@ -104,15 +110,27 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 5000,
   }
   
   colorlist <- colors[all$ID]
-  alphavals <- all$Density
-  if (showdensity)
+  alphavals <- (all$Density - quantile(all$Density, 0.05, na.rm=T)) / (quantile(all$Density, 0.95, na.rm=T) - quantile(all$Density,0.05, na.rm=T))
+  alphavals[is.nan(alphavals)] <- 0.5 # in case the quantile is un-informative
+  alphavals[alphavals < 0] <- 0
+  alphavals[alphavals > 1] <- 1
+  alphavals <- 0.25 + 0.75*alphavals
+  
+  if (showdensity==F)
   {
     alphavals[is.na(alphavals)] <- 1
-    colorlist <- rgb2rgba(colorlist, alphavals)
+  }
+  
+  for (i in 1:length(colorlist))
+  {
+    colorlist[i] <- rgb_2_rgba(colorlist[i], alphavals[i])
   }
   
   colorlistdata = colors[alldata$ID]
-  colorlistdata <- rgb2rgbdark(colorlistdata, darkfactor)
+  for (i in 1:length(colorlistdata))
+  {
+    colorlistdata[i] <- rgb_2_set_hsv(colorlistdata[i], v=darkfactor)
+  }
   
   
   if (ncol(all) < 2)
@@ -185,7 +203,7 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 5000,
                   kde2dresults <- kde2d(contourx, contoury, n=50,lims=c(extendrange(all[,j]),extendrange(all[,i])))
                   
                   .filled.contour(kde2dresults$x,kde2dresults$y, kde2dresults$z,
-                                  col=c(NA,rgb2rgba(colors[whichid],contour.filled.alpha),NA),
+                                  col=c(NA,rgb_2_rgba(colors[whichid],contour.filled.alpha),NA),
                                   levels=c(0,min(kde2dresults$z)+diff(range(kde2dresults$z))*contour.factor,max(kde2dresults$z)))
                 }
               }
@@ -262,7 +280,14 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 5000,
       axesnames <- names
     }
 
-    rgl::plot3d(all[,whichaxes],col=colorlist,xlab=axesnames[1], ylab=axesnames[2], zlab=axesnames[3], xlim=varlims[[1]],ylim=varlims[[2]],zlim=varlims[[3]],size=cex.random,type='p',expand=1.05)
+    if (showdensity==TRUE)
+    {
+      for (i in 1:length(colorlist))
+      {
+        colorlist[i] <- rgb_2_set_hsv(colorlist[i], s=(alphavals[i]^2)) # should do this with alpha, but a workaround for non-transparent OpenGL implementations...
+      }
+    }
+    rgl::plot3d(all[,whichaxes],col=colorlist,expand=1.05, xlab=axesnames[1], ylab=axesnames[2], zlab=axesnames[3], xlim=varlims[[1]],ylim=varlims[[2]],zlim=varlims[[3]],size=cex.random,type='p')
     
     if (legend==TRUE)
     {

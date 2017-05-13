@@ -199,6 +199,8 @@ hypervolume_set <- function(hv1, hv2, npoints_max=NULL, verbose=TRUE, check_memo
   
   num_points_to_sample_in_intersection = floor(point_density * final_volume_intersection) # choose the right number of points to keep the point density constant
   
+  print(nrow(final_points_intersection))
+  print(num_points_to_sample_in_intersection)
   p_in_1_and_2 = final_points_intersection[sample(1:nrow(final_points_intersection), size=num_points_to_sample_in_intersection),,drop=FALSE] # randomly sample the intersection to grab
   
   final_volume_union = hv1@Volume + hv2@Volume - final_volume_intersection # union is sum minus intersection 

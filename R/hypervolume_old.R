@@ -162,9 +162,9 @@ hypervolume_old <- function(data, repsperpoint=NULL, bandwidth, quantile=0.0, na
   result@ProbabilityDensityAtRandomUniformPoints = density_uniform_final
   
   # add new slots for forward compatibility
-  names(bandwidth) <- paste("bandwidth",dimnames(data)[[2]],sep=".")
-  result@Parameters = c(bandwidth, RepsPerPoint=repsperpoint)
-  result@Method = "old"
+  names(bandwidth) <- paste("kde.bandwidth",dimnames(data)[[2]],sep=".")
+  result@Parameters = c(bandwidth, RepsPerPoint=repsperpoint, samples.per.point=repsperpoint)
+  result@Method = "Box kernel density estimate"
   
   if (verbose==TRUE)
   {
