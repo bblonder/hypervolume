@@ -1,5 +1,7 @@
 if (exists('doHypervolumeQuercusDemo')==TRUE)
 {
+  message('Demo structure and results have changed due to improvements between version 1.4.x and version 2.x of the package.\nTo replicate results seen in our 2014 GEB paper please use an older version of the package.')
+  
   require(raster)
   require(maps)
   
@@ -9,7 +11,7 @@ if (exists('doHypervolumeQuercusDemo')==TRUE)
   data_rubra = subset(quercus, Species=="Quercus rubra")[,c("Longitude","Latitude")]
   
   # get worldclim data from internet
-  climatelayers <- getData('worldclim', var='tmin', res=0.5, lon=5, lat=45)
+  climatelayers <- getData('worldclim', var='bio', res=10)
   
   # z-transform climate layers to make axes comparable
   climatelayers_ss = climatelayers[[c(1,4,12,15)]]
@@ -17,48 +19,47 @@ if (exists('doHypervolumeQuercusDemo')==TRUE)
   {
     climatelayers_ss[[i]] <- (climatelayers_ss[[i]] - cellStats(climatelayers_ss[[i]], 'mean')) / cellStats(climatelayers_ss[[i]], 'sd') 
   }
+  climatelayers_ss_cropped = crop(climatelayers_ss, extent(-150,-50,15,60))
   
   # extract transformed climate values
-  climate_alba = extract(climatelayers_ss, data_alba)
-  climate_rubra = extract(climatelayers_ss, data_rubra)
+  climate_alba = extract(climatelayers_ss_cropped, data_alba)
+  climate_rubra = extract(climatelayers_ss_cropped, data_rubra)
   
   # compute hypervolumes with auto-bandwidth for both species
-  hv_alba = hypervolume(climate_alba,name='alba')
-  hv_rubra = hypervolume(climate_rubra,name='rubra')
+  hv_alba = hypervolume(climate_alba,name='alba',samples.per.point=10)
+  hv_rubra = hypervolume(climate_rubra,name='rubra',samples.per.point=10)
   
   # determine intersection and unique components of the overlap
   hv_set = hypervolume_set(hv_alba, hv_rubra, check_memory=FALSE)
   
   # put all the output volumes in one convenient place
-  volumes <- c(Alba=get_volume(hv_alba), Rubra=get_volume(hv_rubra), get_volume(hv_set))
+  volumes <- get_volume(hv_set)
   
   # do species distribution modeling
-  # get all the climate values
-  climatevalues = data.frame(getValues(climatelayers_ss))
+  rubra_map = hypervolume_project(hv_rubra, climatelayers_ss_cropped, )
+  alba_map = hypervolume_project(hv_alba, climatelayers_ss_cropped)
+ 
+  #pairs(getValues(climatelayers_ss_cropped),col=rainbow(100,alpha=0.8)[cut(getValues(alba_map),80)],cex=0.1)
+  # now show results
   
-  rubra_inout = hypervolume_inclusion_test(hv_rubra, climatevalues)
-  alba_inout = hypervolume_inclusion_test(hv_alba, climatevalues)
-  
-  # convert to rasters by setting values in rasters with same extent/resolution
-  rubra_map = raster(climatelayers_ss[[1]]); values(rubra_map) <- rubra_inout
-  alba_map = raster(climatelayers_ss[[1]]); values(alba_map) <- alba_inout
   
   # then barplot of hypervolumes of each component
-  barplot(volumes,horiz=TRUE,las=2,main="Hypervolume")
+  op=par(mar=c(3,10,1,1))
+  barplot(volumes,horiz=TRUE,las=2,main="Hypervolume",cex.names=0.5,col='lightblue')
   
   # then pairs plot of the set operations
-  plot(hv_set)
+  par(op)
+  plot(hv_set[[c(3,5,6)]]) # only the unique components of each + intersection
   
   # plot the geographic projections of the ranges
-  par(mfrow=c(1,2))
-  plot(rubra_map,col=c(NA,rgb(1,0,0,0.5)),legend=FALSE,xlim=c(-100,-50),ylim=c(20,60),main='Quercus rubra')
+  plot(rubra_map,col=colorRampPalette(c(rgb(1,1,1),rgb(1,0,0)))(100),legend=FALSE,main='Quercus rubra')
   map('world',add=TRUE)
-  points(Latitude~Longitude,data=data_rubra,pch=3,cex=0.25)
+  points(Latitude~Longitude,data=data_rubra,pch=3,cex=0.1)
   
-  plot(alba_map,col=c(NA,rgb(0,0,1,0.5)),legend=FALSE,xlim=c(-100,-50),ylim=c(20,60),main='Quercus alba')
+  plot(alba_map,col=colorRampPalette(c(rgb(1,1,1),rgb(0,0,1)))(100),legend=FALSE,main='Quercus alba')
   map('world',add=TRUE)
-  points(Latitude~Longitude,data=data_alba,pch=3,cex=0.25)
-  par(mfrow=c(1,1))
+  points(Latitude~Longitude,data=data_alba,pch=3,cex=0.1)
+  
   
   rm(doHypervolumeQuercusDemo)
 } else

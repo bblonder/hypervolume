@@ -4,6 +4,10 @@ export(
   sample_model_metropolis,
   sample_model_rejection,
   
+  #kdtree_build,
+  #evalfrectangular,
+  #evalfspherical,
+  
   estimate_bandwidth, 
   estimate_threshold_gaussian,
   expectation_ball, 
@@ -11,12 +15,12 @@ export(
   expectation_convex,
   expectation_convex, 
   expectation_maximal, 
+  get_centroid,
   get_volume, 
   hypervolume_box,
-  hypervolume_centroid,
   hypervolume_distance, 
   hypervolume_estimate_probability,
-  hypervolume_gaussian_old,
+  #hypervolume_gaussian_old,
   hypervolume_gaussian,
   hypervolume_general_model,
   hypervolume_holes, 
@@ -79,6 +83,8 @@ import(e1071)
 import(mvtnorm)
 import(data.table)
 import(progress)
+import(pdist)
+import(hexbin)
 importFrom("raster","raster", "getValues","values")
 
 importFrom("grDevices", "col2rgb", "rainbow", "rgb")

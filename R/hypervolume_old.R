@@ -106,7 +106,7 @@ hypervolume_old <- function(data, repsperpoint=NULL, bandwidth, quantile=0.0, na
   {
     cat('Evaluating probability density...\n')
   }
-  point_counts = evalfrectangular(data, bandwidth, data_points,verbose=verbose)
+  point_counts = evalfrectangular(data=data, bandwidth=bandwidth, points=data_points)
   if (verbose == TRUE)
   {
     cat('Finished evaluating probability density.\n')

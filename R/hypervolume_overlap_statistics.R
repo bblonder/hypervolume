@@ -14,8 +14,7 @@ hypervolume_overlap_statistics <- function(hvlist)
 hypervolume_sorensen_overlap <- function(hvlist)
 {
   warning("This function is deprecated; use hypervolume_overlap_statistics instead.");
-  warning("The definition of overpa has changed since version 1.2 - a prefactor of 2 instead of 1.")
+  warning("The definition of overlap has changed since version 1.2 - a prefactor of 2 instead of 1.")
   
-  value <- 2 * hvlist@HVList$Intersection@Volume / (hvlist@HVList$HV1@Volume + hvlist@HVList$HV2@Volume)
-  return(value)
+  return(hypervolume_overlap_statistics(hvlist)$sorensen)
 }

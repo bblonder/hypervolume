@@ -106,13 +106,13 @@ A length-three vector of integer IDs corresponding to the axes to be plotted whe
 None; used for the side-effect of producing a plot.
 }
 \note{
-Note that contour lines are drawn only for convenience and visual presentation. They are calculated using \code{MASS::kde2d} using projected data with a five percent quantile threshold. The true hypervolume boundary (on which volumes and set operations are calculated) is reflected by the less smooth uniformly random set of points drawn by \code{showrandom=TRUE}. 
+Note that contour lines are drawn only for convenience and visual presentation. They are calculated using \code{MASS::kde2d} using a hexagonal binning of projected data with a five percent quantile threshold. The true hypervolume boundary (on which volumes and set operations are calculated) is reflected by the less smooth uniformly random set of points drawn by \code{showrandom=TRUE}. 
 }
 
 \examples{
 data(iris)
-hv1 = hypervolume(subset(iris, Species=="setosa")[,1:4],reps=1000,bandwidth=0.2)
+hv1 = hypervolume(subset(iris, Species=="setosa")[,1:4])
 
 # choose fixed axes
-plot(hv1, pair=TRUE, varlims=list(c(3,6),c(2,5),c(0,3),c(-1,1)))
+plot(hv1, show.)
 }

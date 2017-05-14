@@ -38,7 +38,7 @@ importance_weights = function(q, min_density) {
   return((q > min_density) / q)
 }
 
-hypervolume_gaussian <- function(data, kde.bandwidth=estimate_bandwidth(data)/2, samples.per.point=10^ncol(data), threshold.sd.count=3, name=NULL, verbose=TRUE)
+hypervolume_gaussian <- function(data, kde.bandwidth=estimate_bandwidth(data), samples.per.point=ceiling((10^(1+ncol(data)))/nrow(data)), threshold.sd.count=3, name=NULL, verbose=TRUE)
 {
 	data = as.matrix(data)
 	d = ncol(data)

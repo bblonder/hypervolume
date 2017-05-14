@@ -1,4 +1,4 @@
-hypervolume_box <- function(data, name=NULL, verbose=TRUE, samples.per.point=10^ncol(data), kde.bandwidth=estimate_bandwidth(data), tree.chunksize=1e4)
+hypervolume_box <- function(data, name=NULL, verbose=TRUE, samples.per.point=ceiling((10^(1+ncol(data)))/nrow(data)), kde.bandwidth=estimate_bandwidth(data), tree.chunksize=1e4)
 {
   data <- as.matrix(data)
   
@@ -51,7 +51,7 @@ hypervolume_box <- function(data, name=NULL, verbose=TRUE, samples.per.point=10^
     data_points[[i]] = random_points + offset 
     
     # determine the probability density at each random point
-    points.all[[i]] = evalfrectangular(data, kde.bandwidth, data_points[[i]],verbose=verbose)
+    points.all[[i]] = evalfrectangular(data=data, bandwidth=kde.bandwidth, points=data_points[[i]])
     
     num.samples.completed <- num.samples.completed + num.samples.to.take
   }

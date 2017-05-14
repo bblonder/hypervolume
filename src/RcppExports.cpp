@@ -7,15 +7,16 @@
 using namespace Rcpp;
 
 // kdtree_build_intl
-SEXP kdtree_build_intl(SEXP d, SEXP nr, SEXP nc);
-RcppExport SEXP hypervolume_kdtree_build_intl(SEXP dSEXP, SEXP nrSEXP, SEXP ncSEXP) {
+SEXP kdtree_build_intl(SEXP d, SEXP nr, SEXP nc, SEXP verb);
+RcppExport SEXP hypervolume_kdtree_build_intl(SEXP dSEXP, SEXP nrSEXP, SEXP ncSEXP, SEXP verbSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type d(dSEXP);
     Rcpp::traits::input_parameter< SEXP >::type nr(nrSEXP);
     Rcpp::traits::input_parameter< SEXP >::type nc(ncSEXP);
-    rcpp_result_gen = Rcpp::wrap(kdtree_build_intl(d, nr, nc));
+    Rcpp::traits::input_parameter< SEXP >::type verb(verbSEXP);
+    rcpp_result_gen = Rcpp::wrap(kdtree_build_intl(d, nr, nc, verb));
     return rcpp_result_gen;
 END_RCPP
 }

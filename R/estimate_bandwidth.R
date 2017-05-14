@@ -11,13 +11,15 @@ estimate_bandwidth <- function(data,method="silverman")
     
     normal_silverman_bw = 1.06 * stdev * npoints ^ (-1/5)
     
+    return(normal_silverman_bw)
+    
     # scale to box width
-    rect_bw = 2*normal_silverman_bw
+    #rect_bw = 2*normal_silverman_bw
     
     # remove names
-    names(rect_bw) <- NULL
+    #names(rect_bw) <- NULL
     
-    return(rect_bw)    
+    #return(rect_bw)    
   }
   else
   {

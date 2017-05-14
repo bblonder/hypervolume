@@ -19,26 +19,33 @@ extendrange <- function(x,factor=0.5)
   return(result)
 }
 
-plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 5000, 
-                                 colors=rainbow(floor(length(x@HVList)*1.5),alpha=4/5), names=NULL, 
-                                 reshuffle=TRUE, showrandom=TRUE, showdensity=TRUE,showdata=TRUE,darkfactor=0.5,
+plot.HypervolumeList <- function(x, 
+                                 show.3d=FALSE,plot.3d.axes.id=NULL,
+                                 show.axes=TRUE, show.frame=TRUE,
+                                 show.random=TRUE, show.density=TRUE,show.data=TRUE,
+                                 names=NULL, show.legend=TRUE, limits=NULL, 
+                                 show.contour=TRUE, contour.lwd=1, 
+                                  contour.filled=FALSE,contour.filled.alpha=0.5,contour.factor=0.5,
+                                 show.centroid=TRUE, cex.centroid=3,
+                                 colors=rainbow(floor(length(x@HVList)*1.5),alpha=0.8), 
+                                 point.alpha.min=0.3, point.dark.factor=0.5,
                                  cex.random=0.5,cex.data=0.75,cex.axis=0.75,cex.names=1.0,cex.legend=0.75,
-                                 legend=TRUE, varlims=NULL, showcontour=TRUE, contour.lwd=1, contour.filled=FALSE,contour.filled.alpha=0.5,contour.factor=0.05,
-                                 showcentroid=TRUE, cex.centroid=3,
-                                 pairplot=TRUE,whichaxes=NULL,verbose=TRUE,...)
+                                 num.points.max.data = 1000, num.points.max.random = 2000, reshuffle=TRUE, 
+                                 verbose=FALSE,
+                                 ...)
 {
   sapply(x@HVList, function(z)
   {
     if (verbose==TRUE)
     {
-      cat(sprintf("Showing %d random points of %d for %s\n",min(nrow(z@RandomUniformPointsThresholded), npmax_random), nrow(z@RandomUniformPointsThresholded), z@Name))
+      cat(sprintf("Showing %d random points of %d for %s\n",min(nrow(z@RandomUniformPointsThresholded), num.points.max.random), nrow(z@RandomUniformPointsThresholded), z@Name))
     }
-    if (showdata && length(z@Data) > 0)
+    if (show.data && length(z@Data) > 0)
     {
       npd <- ifelse(all(is.nan(z@Data)), 0, nrow(z@Data))
       if (verbose==TRUE)
       {
-        cat(sprintf("Showing %d data points of %d for %s\n",min(npmax_data, npd), npd, z@Name))
+        cat(sprintf("Showing %d data points of %d for %s\n",min(num.points.max.data, npd), npd, z@Name))
       }
     }    
     
@@ -52,7 +59,7 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 5000,
   alldata <- NULL
   for (i in 1:length(x@HVList))
   {
-    ivals = sample(nrow(x@HVList[[i]]@RandomUniformPointsThresholded), min(c(npmax_random, nrow(x@HVList[[i]]@RandomUniformPointsThresholded))))
+    ivals = sample(nrow(x@HVList[[i]]@RandomUniformPointsThresholded), min(c(num.points.max.random, nrow(x@HVList[[i]]@RandomUniformPointsThresholded))))
     subsampledpoints = data.frame(x@HVList[[i]]@RandomUniformPointsThresholded[ivals,,drop=FALSE])
     densityvals = x@HVList[[i]]@ProbabilityDensityAtRandomUniformPoints[ivals]
     
@@ -66,11 +73,11 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 5000,
     thisdata=x@HVList[[i]]@Data
     alldata <- rbind(alldata, cbind(thisdata, ID=rep(i,nrow(thisdata))))
   }  
-  #all <- unique(all)
+
   alldata <- as.data.frame(alldata)
-  if (npmax_data < nrow(alldata) && !is.null(npmax_data))
+  if (num.points.max.data < nrow(alldata) && !is.null(num.points.max.data))
   {
-  	alldata <- alldata[sample(nrow(alldata), min(c(npmax_data, nrow(alldata)))),]
+  	alldata <- alldata[sample(nrow(alldata), min(c(num.points.max.data, nrow(alldata)))),]
   }
   
   if (is.null(all))
@@ -93,20 +100,24 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 5000,
     alldata <- alldata[sample(nrow(alldata),replace=FALSE),,drop=FALSE]
   }
   
+  no_names_supplied = FALSE
+  
   if (is.null(names))
   {
     dn = dimnames(all)[[2]]
     names = dn[1:(ncol(all)-2)]
+    
+    no_names_supplied = TRUE
   }  
   
-  if (!is.null(varlims) & !is.list(varlims))
+  if (!is.null(limits) & !is.list(limits))
   {
     varlimlist = vector('list',ncol(all)-2)
     for (i in 1:length(varlimlist))
     {
-      varlimlist[[i]] <- varlims
+      varlimlist[[i]] <- limits
     }
-    varlims = varlimlist
+    limits = varlimlist
   }
   
   colorlist <- colors[all$ID]
@@ -114,11 +125,11 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 5000,
   alphavals[is.nan(alphavals)] <- 0.5 # in case the quantile is un-informative
   alphavals[alphavals < 0] <- 0
   alphavals[alphavals > 1] <- 1
-  alphavals <- 0.25 + 0.75*alphavals
+  alphavals <- point.alpha.min + (1 - point.alpha.min)*alphavals
   
-  if (showdensity==F)
+  if (show.density==FALSE)
   {
-    alphavals[is.na(alphavals)] <- 1
+    alphavals <- rep(1, length(colorlist))
   }
   
   for (i in 1:length(colorlist))
@@ -129,16 +140,15 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 5000,
   colorlistdata = colors[alldata$ID]
   for (i in 1:length(colorlistdata))
   {
-    colorlistdata[i] <- rgb_2_set_hsv(colorlistdata[i], v=darkfactor)
+    colorlistdata[i] <- rgb_2_set_hsv(colorlistdata[i], v=1-point.dark.factor)
   }
-  
   
   if (ncol(all) < 2)
   {
     stop('Plotting only available in n>=2 dimensions.')
   }
   
-  if (pairplot)
+  if (show.3d==FALSE)
   {
     op = par(no.readonly = T)
     
@@ -153,23 +163,21 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 5000,
         if (j > i)
         {
           # set up axes with right limits
-          plot(all[,j], all[,i],type="n",axes=FALSE,xlim=varlims[[j]], ylim=varlims[[i]])
-  
-          
+          plot(all[,j], all[,i],type="n",axes=FALSE,xlim=limits[[j]], ylim=limits[[i]],bty='n')
           
           # draw random points
-          if(showrandom==TRUE)
+          if(show.random==TRUE)
           {
             points(all[,j], all[,i], col=colorlist,cex=cex.random,pch=16)
           }
           
           # show data
-          if (showdata & nrow(alldata) > 0)
+          if (show.data & nrow(alldata) > 0)
           {
             points(alldata[,j], alldata[,i], col=colorlistdata,cex=cex.data,pch=16)
           }
           
-          if (showcentroid == TRUE)
+          if (show.centroid == TRUE)
           {
             for (whichid in 1:length(unique(all$ID)))
             {
@@ -186,21 +194,23 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 5000,
           
           
           # calculate contours
-          if (showcontour==TRUE)
+          if (show.contour==TRUE)
           {
             if (contour.filled==TRUE)
             {
               # draw shaded centers
               for (whichid in 1:length(unique(all$ID)))
               {
-                allss <- subset(all, all$ID==whichid)
+                allss <- subset(all, all$ID==whichid) # remove oversampling of some points
                 
                 if (nrow(allss) > 0)
                 {     
                   contourx <- allss[,j]
                   contoury <- allss[,i]
                   
-                  kde2dresults <- kde2d(contourx, contoury, n=50,lims=c(extendrange(all[,j]),extendrange(all[,i])))
+                  hb = hexbin::hexbin(x=contourx, y=contoury,xbnds=extendrange(all[,j]), ybnds=extendrange(all[,i]))
+                  
+                  kde2dresults <- kde2d(hb@xcm, hb@ycm, n=50,lims=c(extendrange(all[,j]),extendrange(all[,i])))
                   
                   .filled.contour(kde2dresults$x,kde2dresults$y, kde2dresults$z,
                                   col=c(NA,rgb_2_rgba(colors[whichid],contour.filled.alpha),NA),
@@ -221,7 +231,9 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 5000,
                 
                 if (length(contourx) > 1 & length(contoury) > 1)
                 {
-                  kde2dresults <- kde2d(contourx, contoury, n=50,lims=c(extendrange(contourx),extendrange(contoury)))
+                  hb = hexbin(x=contourx, y=contoury,xbnds=extendrange(all[,j]), ybnds=extendrange(all[,i]))
+                  
+                  kde2dresults <- kde2d(hb@xcm, hb@ycm, n=50,lims=c(extendrange(all[,j]),extendrange(all[,i])))
                   
                   contour(kde2dresults,
                           col=colors[whichid],
@@ -233,7 +245,10 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 5000,
             }
           }
           
-          box()
+          if (show.frame==TRUE)
+          {
+            box()
+          }
         }
         else if (j == i)
         {
@@ -244,7 +259,7 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 5000,
         {
           plot(0,0,type="n",xlim=c(0,1),ylim=c(0,1),axes=FALSE)
           
-          if (legend == TRUE)
+          if (show.legend == TRUE)
           {
             legend('topleft',legend=allnames,text.col=colors,bty='n',cex=cex.legend)
           }
@@ -256,8 +271,11 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 5000,
         
         if (j==i+1)
         {
-          axis(side=1,cex.axis=cex.axis)
-          axis(side=2,cex.axis=cex.axis)
+          if (show.axes==TRUE)
+          {
+            axis(side=1,cex.axis=cex.axis)
+            axis(side=2,cex.axis=cex.axis)
+          }
         }
       }
     }  
@@ -265,31 +283,32 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 5000,
   }
   else
   {
-    if (is.null(whichaxes))
+    if (is.null(plot.3d.axes.id))
     {
-      whichaxes=1:3  
+      plot.3d.axes.id=1:3  
     }
-    if (is.null(names))
-    {
-      names <- names(data)
-    }
-    if(length(whichaxes)!=3) { stop('Must specify three axes') }
     
-    if (all(is.numeric(whichaxes)))
+    if (no_names_supplied==TRUE)
+    {
+      axesnames <- names[plot.3d.axes.id]
+    }
+    else
     {
       axesnames <- names
     }
+    
+    if(length(plot.3d.axes.id)!=3) { stop('Must specify three axes') }
 
-    if (showdensity==TRUE)
+    if (show.density==TRUE)
     {
       for (i in 1:length(colorlist))
       {
         colorlist[i] <- rgb_2_set_hsv(colorlist[i], s=(alphavals[i]^2)) # should do this with alpha, but a workaround for non-transparent OpenGL implementations...
       }
     }
-    rgl::plot3d(all[,whichaxes],col=colorlist,expand=1.05, xlab=axesnames[1], ylab=axesnames[2], zlab=axesnames[3], xlim=varlims[[1]],ylim=varlims[[2]],zlim=varlims[[3]],size=cex.random,type='p')
+    rgl::plot3d(all[,plot.3d.axes.id],col=colorlist,expand=1.05, xlab=axesnames[1], ylab=axesnames[2], zlab=axesnames[3], xlim=limits[[1]],ylim=limits[[2]],zlim=limits[[3]],size=cex.random,type='p',box=show.frame,axes=show.axes)
     
-    if (legend==TRUE)
+    if (show.legend==TRUE)
     {
       for (i in 1:length(allnames))
       {
@@ -297,22 +316,22 @@ plot.HypervolumeList <- function(x, npmax_data = 1000, npmax_random = 5000,
       }
     }
     
-    if (showdata)
+    if (show.data)
     {
-      if (!any(is.nan(as.matrix(alldata[,whichaxes]))))
+      if (!any(is.nan(as.matrix(alldata[,plot.3d.axes.id]))))
       {
-        rgl::points3d(x=alldata[,whichaxes[1]], y=alldata[,whichaxes[2]], z=alldata[,whichaxes[3]], col=colorlistdata,cex=cex.data,pch=16)
+        rgl::points3d(x=alldata[,plot.3d.axes.id[1]], y=alldata[,plot.3d.axes.id[2]], z=alldata[,plot.3d.axes.id[3]], col=colorlistdata,cex=cex.data,pch=16)
       }
     }
     
-    if (showcentroid == TRUE)
+    if (show.centroid == TRUE)
     {
       for (whichid in 1:length(unique(all$ID)))
       {
         allss <- subset(all, all$ID==whichid)
-        centroid_1 <- mean(allss[,whichaxes[1]],na.rm=TRUE)
-        centroid_2 <- mean(allss[,whichaxes[2]],na.rm=TRUE)
-        centroid_3 <- mean(allss[,whichaxes[3]],na.rm=TRUE)
+        centroid_1 <- mean(allss[,plot.3d.axes.id[1]],na.rm=TRUE)
+        centroid_2 <- mean(allss[,plot.3d.axes.id[2]],na.rm=TRUE)
+        centroid_3 <- mean(allss[,plot.3d.axes.id[3]],na.rm=TRUE)
         
         # draw point
         rgl::points3d(x=centroid_1, y=centroid_2, z=centroid_3, col=colors[whichid],cex=cex.centroid,pch=16)

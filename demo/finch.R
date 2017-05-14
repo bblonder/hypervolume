@@ -1,5 +1,8 @@
 if (exists('doHypervolumeFinchDemo')==TRUE)
 {
+  message('Demo structure and results have changed due to improvements between version 1.4.x and version 2.x of the package.\nTo replicate results seen in our 2014 GEB paper please use an older version of the package.')
+  
+  
   data(morphSnodgrassHeller)
   finch_isabela <- morphSnodgrassHeller[morphSnodgrassHeller$IslandID=="Isa_Alb",]
 

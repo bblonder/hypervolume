@@ -118,8 +118,8 @@ class KDTree {
      * 				   the number of points and the dimensionality is inferred 
      *                 by the data
      */
-	public: KDTree(const vector<vector<double> >& points){
-
+	public: KDTree(const vector<vector<double> >& points, bool verbose){
+      
     
     	// initialize data
     	this -> npoints   = points.size();
@@ -129,16 +129,23 @@ class KDTree {
         workarray.resize( npoints, -1 ); //used in sorting based construction
         
 	    // create the heap structure to support the tree creation
+	    
+	    
 	    vector< MinHeap<double> > heaps(ndim, npoints);
-	    for( int dIdx=0; dIdx<ndim; dIdx++ )
-	    	for( int pIdx=0; pIdx<npoints; pIdx++ )
+	    for( int dIdx=0; dIdx<ndim; dIdx++ ) {
+	    	for( int pIdx=0; pIdx<npoints; pIdx++ ) {
 	    		heaps[dIdx].push( points[pIdx][dIdx], pIdx );
+	    	}
+	    }
 		   
 	    // Invoke heap sort generating indexing vectors
 	    // indexes[dim][i]: in dimension dim, which is the index of the i-th smallest element?
 	    vector< vector<int> > indexes( ndim, vector<int>(npoints,0) );
-	    for( int dIdx=0; dIdx<ndim; dIdx++ )
-	    	heaps[dIdx].heapsort( indexes[dIdx] );    
+
+	    
+	    for( int dIdx=0; dIdx<ndim; dIdx++ ) {
+	    	heaps[dIdx].heapsort( indexes[dIdx] );
+	    }
     
 	    // Invert the indexing structure!! 
 	    // srtidx[dim][j]: in dimension dim, which is ordering number of point j-th?
@@ -167,7 +174,9 @@ class KDTree {
 	    // First partition is on every single point ([1:npoints])
 	    vector<int> pidx(npoints,0);
 	    for (int i = 0; i < npoints; i++) pidx[i] = i;
+
 	    build_recursively(srtidx, pidx, 0);
+
     }
 	
 	/// @return the number of points in the kd-tree
