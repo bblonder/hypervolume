@@ -27,7 +27,6 @@ export(
   hypervolume_inclusion_test, 
   hypervolume_join, 
   hypervolume_old,
-  hypervolume_other,
   hypervolume_overlap_statistics,
   hypervolume_project,
   hypervolume_prune, 
