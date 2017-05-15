@@ -1,4 +1,4 @@
-hypervolume_set <- function(hv1, hv2, npoints_max=NULL, verbose=TRUE, check_memory=TRUE, distance_factor=1.0)
+hypervolume_set <- function(hv1, hv2, num.points.max=NULL, verbose=TRUE, check.memory=TRUE, distance.factor=1.0)
 {
   # determine dataset sizes and dimensionality
   np1 = nrow(hv1@RandomUniformPointsThresholded)
@@ -20,17 +20,17 @@ hypervolume_set <- function(hv1, hv2, npoints_max=NULL, verbose=TRUE, check_memo
   # define the consistent dimensionality
   dim = dimhv1
   
-  if (is.null(npoints_max))
+  if (is.null(num.points.max))
   {
-    npoints_max = floor(100*10^sqrt(hv1@Dimensionality))
+    num.points.max = floor(100*10^sqrt(hv1@Dimensionality))
     if (verbose==TRUE)
     {
-      cat(sprintf('Choosing npoints_max=%.0f (use a larger value for more accuracy.)\n',npoints_max))  
+      cat(sprintf('Choosing num.points.max=%.0f (use a larger value for more accuracy.)\n',num.points.max))  
     }
   }
   
   # sample both hypervolumes down to the minimum point density
-  mindensity = min(c(hv1_point_density, hv2_point_density, npoints_max / hv1@Volume , npoints_max / hv2@Volume), na.rm=T)
+  mindensity = min(c(hv1_point_density, hv2_point_density, num.points.max / hv1@Volume , num.points.max / hv2@Volume), na.rm=T)
   if (verbose==TRUE)
   {
     cat(sprintf('Using minimum density of %f\n', mindensity))
@@ -142,12 +142,12 @@ hypervolume_set <- function(hv1, hv2, npoints_max=NULL, verbose=TRUE, check_memo
   
   # if the algorithm passed returning early from any of the degenerate cases...
   
-  if (verbose==TRUE | check_memory==TRUE)
+  if (verbose==TRUE | check.memory==TRUE)
   {
     cat(sprintf('Retaining %d points in hv1 and %d points in hv2.\n', numpointstokeep_hv1, numpointstokeep_hv2))
-    if (check_memory == TRUE)
+    if (check.memory == TRUE)
     {
-      ans <- message(sprintf('This will require %.0f pairwise comparisons. Re-run function with check_memory=FALSE if acceptable; otherwise use a smaller value of reduction_factor.\n', numpointstokeep_hv1*numpointstokeep_hv2))
+      ans <- message(sprintf('This will require %.0f pairwise comparisons. Re-run function with check.memory=FALSE if acceptable; otherwise use a smaller value of reduction_factor.\n', numpointstokeep_hv1*numpointstokeep_hv2))
       return(NULL)
     }
   }
@@ -158,7 +158,7 @@ hypervolume_set <- function(hv1, hv2, npoints_max=NULL, verbose=TRUE, check_memo
   point_density = nrow(hv1_points_ss) / hv1@Volume
   
   # calculate characteristic distances
-  cutoff_dist = point_density^(-1/dim) * distance_factor
+  cutoff_dist = point_density^(-1/dim) * distance.factor
   
   
   # figure out which points are 'close enough' to other points

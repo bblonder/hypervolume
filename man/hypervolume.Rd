@@ -8,7 +8,7 @@ Hypervolume construction methods
 Constructs hypervolumes using one of several possible methods after error-checking input data.
 }
 \usage{
-hypervolume(data, method = "box", ...)
+hypervolume(data, method = "gaussian", ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -16,7 +16,7 @@ hypervolume(data, method = "box", ...)
 A m x n matrix or data frame, where m is the number of observations and n is the dimensionality.
 }
   \item{method}{
-One of \code{"box"} (hyperbox kernel density estimation), \code{"gaussian"} (Gaussian kernel density estimation), or \code{"svm"} (one-class support vector machine). See respective functions for details.
+One of \code{"box"} (box kernel density estimation), \code{"gaussian"} (Gaussian kernel density estimation), or \code{"svm"} (one-class support vector machine). See respective functions for details.
 }
   \item{\dots}{
 Further arguments passed to \code{\link{hypervolume_box}}, \code{\link{hypervolume_gaussian}}, or \code{\link{hypervolume_svm}}.
@@ -33,6 +33,6 @@ A \code{\link{Hypervolume-class}} object corresponding to the inferred hypervolu
 }
 \examples{
 data(iris)
-hv = hypervolume(data=subset(iris, Species=="setosa")[,1:3],method='box')
+hv = hypervolume(data=subset(iris, Species=="setosa")[,1:2],method='box')
 summary(hv)
 }

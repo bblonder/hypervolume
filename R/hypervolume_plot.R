@@ -210,11 +210,14 @@ plot.HypervolumeList <- function(x,
                   
                   hb = hexbin::hexbin(x=contourx, y=contoury,xbnds=extendrange(all[,j]), ybnds=extendrange(all[,i]))
                   
-                  kde2dresults <- kde2d(hb@xcm, hb@ycm, n=50,lims=c(extendrange(all[,j]),extendrange(all[,i])))
+                  if (length(hb@xcm) > 2)
+                  {
+                    kde2dresults <- kde2d(hb@xcm, hb@ycm, n=50,lims=c(extendrange(all[,j]),extendrange(all[,i])))
                   
-                  .filled.contour(kde2dresults$x,kde2dresults$y, kde2dresults$z,
+                    .filled.contour(kde2dresults$x,kde2dresults$y, kde2dresults$z,
                                   col=c(NA,rgb_2_rgba(colors[whichid],contour.filled.alpha),NA),
                                   levels=c(0,min(kde2dresults$z)+diff(range(kde2dresults$z))*contour.factor,max(kde2dresults$z)))
+                  }
                 }
               }
             }
@@ -231,15 +234,18 @@ plot.HypervolumeList <- function(x,
                 
                 if (length(contourx) > 1 & length(contoury) > 1)
                 {
-                  hb = hexbin(x=contourx, y=contoury,xbnds=extendrange(all[,j]), ybnds=extendrange(all[,i]))
+                  hb = hexbin::hexbin(x=contourx, y=contoury,xbnds=extendrange(all[,j]), ybnds=extendrange(all[,i]))
                   
-                  kde2dresults <- kde2d(hb@xcm, hb@ycm, n=50,lims=c(extendrange(all[,j]),extendrange(all[,i])))
-                  
-                  contour(kde2dresults,
-                          col=colors[whichid],
-                          levels=min(kde2dresults$z)+diff(range(kde2dresults$z))*contour.factor,
-                          lwd=contour.lwd,
-                          drawlabels=FALSE,add=TRUE)
+                  if (length(hb@xcm) > 2)
+                  {
+                    kde2dresults <- kde2d(hb@xcm, hb@ycm, n=50,lims=c(extendrange(all[,j]),extendrange(all[,i])))
+                    
+                    contour(kde2dresults,
+                            col=colors[whichid],
+                            levels=min(kde2dresults$z)+diff(range(kde2dresults$z))*contour.factor,
+                            lwd=contour.lwd,
+                            drawlabels=FALSE,add=TRUE)
+                  }
                 }
               }
             }

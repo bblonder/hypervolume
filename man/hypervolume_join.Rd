@@ -13,7 +13,7 @@ hypervolume_join(...)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{\dots}{
-One or more objects of class \code{Hypervolume} or \code{HypervolumeList}
+One or more objects of class \code{Hypervolume} or \code{HypervolumeList}, or a \code{list()} of \code{Hypervolume} objects.
 }
 }
 
@@ -22,13 +22,8 @@ A \code{HypervolumeList} containing all hypervolumes in all arguments.
 }
 
 \examples{
-# UNCOMMENT TO RUN - disabled to meet CRAN runtime guidelines
-
-#data(iris)
-#hv1 = hypervolume(subset(iris, Species=="setosa")[,1:4],bandwidth=0.2,name='setosa')
-#hv2 = hypervolume(subset(iris, Species=="versicolor")[,1:4],bandwidth=0.2,name='versicolor')
-
-#hv_all = hypervolume_join(hv1, hv2)
-
-#plot(hv_all)
+# data(iris)
+# data_split = split(iris[,1:3],iris$Species)
+# hvs_split = lapply(data_split, hypervolume); 
+# hvs_joined = hypervolume_join(hvs_split)
 }

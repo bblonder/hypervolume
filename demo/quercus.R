@@ -11,7 +11,7 @@ if (exists('doHypervolumeQuercusDemo')==TRUE)
   data_rubra = subset(quercus, Species=="Quercus rubra")[,c("Longitude","Latitude")]
   
   # get worldclim data from internet
-  climatelayers <- getData('worldclim', var='bio', res=10)
+  climatelayers <- getData('worldclim', var='bio', res=10, path=tempdir())
   
   # z-transform climate layers to make axes comparable
   climatelayers_ss = climatelayers[[c(1,4,12,15)]]
@@ -26,11 +26,11 @@ if (exists('doHypervolumeQuercusDemo')==TRUE)
   climate_rubra = extract(climatelayers_ss_cropped, data_rubra)
   
   # compute hypervolumes with auto-bandwidth for both species
-  hv_alba = hypervolume(climate_alba,name='alba',samples.per.point=10)
-  hv_rubra = hypervolume(climate_rubra,name='rubra',samples.per.point=10)
+  hv_alba = hypervolume_gaussian(climate_alba,name='alba',samples.per.point=10)
+  hv_rubra = hypervolume_gaussian(climate_rubra,name='rubra',samples.per.point=10)
   
   # determine intersection and unique components of the overlap
-  hv_set = hypervolume_set(hv_alba, hv_rubra, check_memory=FALSE)
+  hv_set = hypervolume_set(hv_alba, hv_rubra, check.memory=FALSE)
   
   # put all the output volumes in one convenient place
   volumes <- get_volume(hv_set)

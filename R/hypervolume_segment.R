@@ -1,4 +1,4 @@
-hypervolume_segment <- function(hv,distancefactor=hv@Dimensionality, npmax=NULL, verbose=TRUE, check_memory=TRUE)
+hypervolume_segment <- function(hv,distance.factor=1, num.points.max=NULL, verbose=TRUE, check.memory=TRUE)
 {
   if(class(hv) != "Hypervolume")
   {
@@ -6,16 +6,16 @@ hypervolume_segment <- function(hv,distancefactor=hv@Dimensionality, npmax=NULL,
   }
   
   # thin the input
-  if (!is.null(npmax))
+  if (!is.null(num.points.max))
   {
-    hv <- hypervolume_thin(hv, npoints=npmax)
+    hv <- hypervolume_thin(hv, num.points=num.points.max)
   }
   
   hvrp <- hv@RandomUniformPointsThresholded
   
-  if (check_memory==TRUE)
+  if (check.memory==TRUE)
   {
-    stop(sprintf('Analysis will require storage of %d numbers. Re-run with check_memory=FALSE to continue.', nrow(hvrp)^2))
+    stop(sprintf('Analysis will require storage of %d numbers. Re-run with check.memory=FALSE to continue.', nrow(hvrp)^2))
   }
   
   characteristicdistance <- (1/hv@PointDensity)^(1/hv@Dimensionality)
@@ -34,7 +34,7 @@ hypervolume_segment <- function(hv,distancefactor=hv@Dimensionality, npmax=NULL,
   {
     cat('Segmenting clusters...')
   }
-  membership <- cutree(hc, h = characteristicdistance * distancefactor)
+  membership <- cutree(hc, h = characteristicdistance * distance.factor)
   if (verbose==TRUE)
   {
     cat('Done.\n ')
@@ -59,6 +59,7 @@ hypervolume_segment <- function(hv,distancefactor=hv@Dimensionality, npmax=NULL,
     hv_temp@Volume <- hv@Volume * nrow(hv_temp@RandomUniformPointsThresholded) / nrow(hv@RandomUniformPointsThresholded)
     hv_temp@Method <- "Segmentation hypervolume"
     hv_temp@Name <- sprintf("%s (cluster %d/%d)", hv@Name, i, ngroups)
+    hv_temp@Parameters = hv@Parameters
     
     hvs[[i]] <- hv_temp
   }

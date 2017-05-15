@@ -25,7 +25,7 @@ hypervolume_box <- function(data, name=NULL, verbose=TRUE, samples.per.point=cei
   # figure out the hypervolume of one kernel and the random point density within it
   hyperbox_volume = prod(2*kde.bandwidth) # hyperbox is in both + and - dimensions
   
-  point_density = floor(samples.per.point / hyperbox_volume)
+  point_density = ceiling(samples.per.point / hyperbox_volume)
 
   # generate random point cloud around each data point
   num.samples.completed <- 0
@@ -87,7 +87,7 @@ hypervolume_box <- function(data, name=NULL, verbose=TRUE, samples.per.point=cei
   invweight = 1 / point_counts_final[,ncol(point_counts_final)]
   ow <- getOption('warn')
   options(warn=-1)
-  weightedsample = sample(x=1:nrow(point_counts_final),size=floor(vc$final_volume * point_density),replace=TRUE,prob=invweight)
+  weightedsample = sample(x=1:nrow(point_counts_final),size=ceiling(vc$final_volume * point_density),replace=TRUE,prob=invweight)
   options(warn=ow)
   # keep only unique points
   weightedsample = unique(weightedsample)

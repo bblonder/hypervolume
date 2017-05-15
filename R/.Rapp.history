@@ -189,8 +189,6 @@ for (i in 1:10)#
 }
 library(e1071)
 ?svm
-?svm
-?svm
 data(iris)
 library(svm)
 svm.model<-e1071::svm(iris[,1:3],#
