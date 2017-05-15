@@ -8,8 +8,8 @@ Set operations (intersection / union / unique components)
 Computes the intersection, union, and unique components of two hypervolumes.
 }
 \usage{
-hypervolume_set(hv1, hv2, npoints_max = NULL, 
-  verbose = TRUE, check_memory = TRUE, distance_factor = 1)
+hypervolume_set(hv1, hv2, num.points.max = NULL, 
+  verbose = TRUE, check.memory = TRUE, distance.factor = 1)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -19,16 +19,16 @@ A n-dimensional hypervolume
   \item{hv2}{
 A n-dimensional hypervolume
 }
-  \item{npoints_max}{
+  \item{num.points.max}{
 Maximum number of random points to use for set operations. If \code{NULL} defaults to 100*10^sqrt(n) where n is the dimensionality of the input hypervolumes. Note that this default parameter value has been increased by a factor of 10 since the 1.2 release of this package.
 }
   \item{verbose}{
 Logical value; print diagnostic output if true.
 }
-  \item{check_memory}{
+  \item{check.memory}{
 Logical value; returns information about expected memory usage if true.
 }
-  \item{distance_factor}{
+  \item{distance.factor}{
 Numeric value; multiplicative factor applied to the critical distance for all inclusion tests (see below). Recommended to not change this parameter.
 }
 }
@@ -37,14 +37,14 @@ Uses the inclusion test approach to identify points in the first hypervolume tha
 
 The intersection is the points in both hypervolumes, the union those in either hypervolume, and the unique components the points in one hypervolume but not the other.
 
-By default, the function uses {check_memory=TRUE} which will provide an estimate of the computational cost of the set operations. The function should then be re-run with {check_memory=FALSE} if the cost is acceptable. This algorithm's memory and time cost scale quadratically with the number of input points, so large datasets can have disproportionately high costs. This error-checking is intended to prevent the user from large accidental memory allocation. 
+By default, the function uses \code{check.memory=TRUE} which will provide an estimate of the computational cost of the set operations. The function should then be re-run with {check_memory=FALSE} if the cost is acceptable. This algorithm's memory and time cost scale quadratically with the number of input points, so large datasets can have disproportionately high costs. This error-checking is intended to prevent the user from large accidental memory allocation. 
 
-The computation is actually performed on a random sample from both input hypervolumes, constraining each to have the same point density given by the minimum of the point density of each input hypervolume, and the point density calculated using the volumes of each input hypervolume divided by \code{npoints_max}.
+The computation is actually performed on a random sample from both input hypervolumes, constraining each to have the same point density given by the minimum of the point density of each input hypervolume, and the point density calculated using the volumes of each input hypervolume divided by \code{num.points.max}.
 
 Because this algorithm is based on distances calculated between the distributions of random points, the critical distance (point density ^ (-1/n)) can be scaled by a user-specified factor to provide more or less liberal estimates (\code{distance_factor} greater than or less than 1).
 }
 \value{
-If {check_memory} is false, returns a HypervolumeList object, with six items in its HVList slot:
+If \code{check_memory} is false, returns a HypervolumeList object, with six items in its HVList slot:
   \item{HV1 }{The input hypervolume hv1}
   \item{HV2 }{The input hypervolume hv2}
   \item{Intersection }{The intersection of hv1 and hv2}
@@ -54,9 +54,9 @@ If {check_memory} is false, returns a HypervolumeList object, with six items in 
   
   Note that the output hypervolumes will have lower random point densities than the input hypervolumes. 
   
-You may find it useful to define a Jaccard-type fractional overlap between hv1 and hv2 as {hv_set@HVList$Intersection@Volume / hv_set@HVList$Union@Volume}.
+You may find it useful to define a Jaccard-type fractional overlap between hv1 and hv2 as \code{hv_set@HVList$Intersection@Volume / hv_set@HVList$Union@Volume}.
   
-If {check_memory} is true, instead returns a scalar with the expected number of pairwise comparisons.
+If \code{check_memory} is true, instead returns a scalar with the expected number of pairwise comparisons.
 
 If one of the input hypervolumes has no random points, returns \code{NA} with a warning.
 }
@@ -64,15 +64,15 @@ If one of the input hypervolumes has no random points, returns \code{NA} with a 
 \examples{
 data(iris)
 
-hv1 = hypervolume(subset(iris, Species=="setosa")[,1:4],
-reps=1000,bandwidth=0.2,name='setosa')
-hv2 = hypervolume(subset(iris, Species=="virginica")[,1:4],
-  reps=1000,bandwidth=0.2,name='virginica')
-hv3 = hypervolume(subset(iris, Species=="versicolor")[,1:4],
-  reps=1000,bandwidth=0.2,name='versicolor')
+hv1 = hypervolume_gaussian(subset(iris, Species=="setosa")[,1:3],
+  name='setosa')
+hv2 = hypervolume_gaussian(subset(iris, Species=="virginica")[,1:3],
+  name='virginica')
+hv3 = hypervolume_gaussian(subset(iris, Species=="versicolor")[,1:3],
+  name='versicolor')
 
-hv_set12 = hypervolume_set(hv1, hv2, check_memory=FALSE)
-hv_set23 = hypervolume_set(hv2, hv3, check_memory=FALSE)
+hv_set12 = hypervolume_set(hv1, hv2, check.memory=FALSE)
+hv_set23 = hypervolume_set(hv2, hv3, check.memory=FALSE)
 
 # no overlap found between setosa and virginica
 hypervolume_overlap_statistics(hv_set12)

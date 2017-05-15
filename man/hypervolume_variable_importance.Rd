@@ -31,6 +31,6 @@ A named vector with importance scores for each axis. Note that these scores are 
 }
 \examples{
 data(iris)
-hv = hypervolume(subset(iris, Species=="versicolor")[,1:4],reps=1000,bandwidth=0.2)
+hv = hypervolume_gaussian(subset(iris, Species=="versicolor")[,1:3])
 hypervolume_variable_importance(hv)
 }

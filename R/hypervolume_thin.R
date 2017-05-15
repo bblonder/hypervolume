@@ -1,4 +1,4 @@
-hypervolume_thin <- function(hv, factor=NULL, npoints=NULL)
+hypervolume_thin <- function(hv, factor=NULL, num.points=NULL)
 {
   rp <- hv@RandomUniformPointsThresholded
   nrp <- nrow(rp)  
@@ -10,29 +10,29 @@ hypervolume_thin <- function(hv, factor=NULL, npoints=NULL)
       stop("Thinning factor must be in (0,1).")
     }
   }
-  else if (!is.null(npoints))
+  else if (!is.null(num.points))
   {
-    if (npoints < 1)
+    if (num.points < 1)
     {
       stop("Number of points must be greater than zero.")
     }
 
     if (!is.null(factor))
     {
-      stop("Cannot specify both factor and npoints.")
+      stop("Cannot specify both factor and num.points.")
     }
     else
     {
       # make sure we don't take more points than exist in the dataset
-      npoints <- min(nrp, npoints)
+      num.points <- min(nrp, num.points)
       
       # recast in terms of a factor
-      factor <- npoints / nrp
+      factor <- num.points / nrp
     }
   }
   else
   {
-    stop("Must specify either factor or npoints.")
+    stop("Must specify either factor or num.points.")
   }
   
   hv_out <- hv

@@ -27,10 +27,10 @@ if (exists('doHypervolumeHolesFinchDemo')==TRUE)
   hv_finch_thresholded@Name <- "Finches"
   
   # compute convex expectation
-  ec_finch <- expectation_convex(hv_finch_thresholded, check_memory=FALSE, use.random=TRUE)
+  ec_finch <- expectation_convex(hv_finch_thresholded, check.memory=FALSE, use.random=TRUE)
   ec_finch@Name <- "Convex expectation"
   # find holes
-  holes_finch <- hypervolume_holes(hv_finch_thresholded, ec_finch, set_check_memory=FALSE)
+  holes_finch <- hypervolume_holes(hv_finch_thresholded, ec_finch, set.check.memory=FALSE)
   holes_finch@Name <- "Holes"
   
   # extract volume statistics

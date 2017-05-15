@@ -1,4 +1,4 @@
-hypervolume_distance <- function(hv1, hv2, type="centroid", npmax=1000, check_memory=TRUE)
+hypervolume_distance <- function(hv1, hv2, type="centroid", num.points.max=1000, check.memory=TRUE)
 {
   hv1p <- hv1@RandomUniformPointsThresholded
   hv2p <- hv2@RandomUniformPointsThresholded
@@ -14,14 +14,15 @@ hypervolume_distance <- function(hv1, hv2, type="centroid", npmax=1000, check_me
   }
   else if (type=="minimum")
   {    
-    hv1p_ss <- hv1p[ sample(1:nrow(hv1p), min(npmax, nrow(hv1p)))  ,]
-    hv2p_ss <- hv2p[ sample(1:nrow(hv2p), min(npmax, nrow(hv2p)))  ,]
+    hv1p_ss <- hv1p[ sample(1:nrow(hv1p), min(num.points.max, nrow(hv1p)))  ,]
+    hv2p_ss <- hv2p[ sample(1:nrow(hv2p), min(num.points.max, nrow(hv2p)))  ,]
     
-    message(sprintf('Calculation will require %d pairwise distance calculations.',nrow(hv1p_ss)*nrow(hv2p_ss)))
 
-    if (check_memory==TRUE)
+    if (check.memory==TRUE)
     {
-      message('Re-run with check_memory=FALSE to continue.')
+      cat(sprintf('Calculation will require %d pairwise distance calculations.\n',nrow(hv1p_ss)*nrow(hv2p_ss)))
+      
+      message('Re-run with check.memory=FALSE to continue.')
       stop()
     }
 

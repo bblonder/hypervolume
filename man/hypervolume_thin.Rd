@@ -8,7 +8,7 @@ Reduces the number of random points in a hypervolume
 Many hypervolume algorithms have computational complexities that scale with the number of random points used to characterize a hypervolume (\code{@RandomUniformPointsThresholded}). This value can be reduced to improve runtimes at the cost of lower resolution.
 }
 \usage{
-hypervolume_thin(hv, factor = NULL, npoints = NULL)
+hypervolume_thin(hv, factor = NULL, num.points = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -18,7 +18,7 @@ An object of class \code{Hypervolume}
   \item{factor}{
 A number in (0,1) describing the fraction of random points to keep.
 }
-  \item{npoints}{
+  \item{num.points}{
 A number describing the number random points to keep.
 }
 }
@@ -30,8 +30,9 @@ A \code{Hypervolume} object
 }
 \examples{
 data(iris)
-hv1 = hypervolume(subset(iris, Species=="setosa")[,1:4],bandwidth=0.2)
+hv1 = hypervolume_gaussian(subset(iris, Species=="setosa")[,1:3])
 
 # downsample to 1000 random points
-hv1_thinned = hypervolume_thin(hv1, npoints=1000)
+hv1_thinned = hypervolume_thin(hv1, num.points=1000)
+hv1_thinned
 }

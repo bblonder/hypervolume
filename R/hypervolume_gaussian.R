@@ -51,7 +51,7 @@ hypervolume_gaussian <- function(data, kde.bandwidth=estimate_bandwidth(data), s
 	}
 	if(ncol(data)!=length(kde.bandwidth))
 	{
-		Stop('Data and kde.bandwidth must have same dimensionality')
+		stop('data and kde.bandwidth must have same dimensionality')
 	}
 	
 	if (any(kde.bandwidth==0))

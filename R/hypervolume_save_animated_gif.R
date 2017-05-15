@@ -1,7 +1,5 @@
 hypervolume_save_animated_gif <- function(image.size=400, axis=c(0,0,1),rpm=4,duration=15,fps=10,file.name='movie',directory.output='.',...)
 {
-  require(magick)
-  
   td = tempdir()
   tf = basename(tempfile(tmpdir=td))
   

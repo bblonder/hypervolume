@@ -287,7 +287,7 @@ hullToConstr <- function(calpts, hull) {
 
 
 
-expectation_convex <- function(input, point.density=NULL, num.points=NULL, num.points.on.hull=NULL, check_memory=TRUE, verbose=TRUE, use.random=FALSE, method="rejection", chunksize=1e3)
+expectation_convex <- function(input, point.density=NULL, num.points=NULL, num.points.on.hull=NULL, check.memory=TRUE, verbose=TRUE, use.random=FALSE, method="rejection", chunksize=1e3)
 {
   if (class(input)=="Hypervolume")
   {
@@ -348,7 +348,7 @@ expectation_convex <- function(input, point.density=NULL, num.points=NULL, num.p
 
 
   
-  if (check_memory==TRUE)
+  if (check.memory==TRUE)
   {  
     if (verbose==TRUE)
     {
@@ -360,7 +360,7 @@ expectation_convex <- function(input, point.density=NULL, num.points=NULL, num.p
       warning(sprintf("Algorithm may be very slow on high dimensional data (n>5: here, n=%d)",ncol(data)))
     }
     
-    stop('Set check_memory=F to continue.\n')
+    stop('Set check.memory=F to continue.\n')
   }
   
   

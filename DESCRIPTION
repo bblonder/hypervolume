@@ -2,7 +2,7 @@ Package: hypervolume
 Type: Package
 Title: High Dimensional Geometry and Set Operations Using Kernel Density Estimation, Support Vector Machines, and Convex Polytopes
 Version: 2.0.3
-Date: 2017-05-04
+Date: 2017-05-15
 Author: Benjamin Blonder
 Maintainer: Benjamin Blonder <bblonder@gmail.com>
 Description: Estimates the shape and volume of high-dimensional datasets and performs set operations: intersection / overlap, union, unique components, inclusion test, and hole detection. Uses stochastic geometry approach to high-dimensional kernel density estimation, support vector machine delineation, and convex polytope generation. Applications include modeling trait and niche hypervolumes and species distribution modeling.
@@ -10,4 +10,4 @@ License: GPL-3
 Depends: Rcpp, rgl, methods, R (>= 3.0.0)
 LinkingTo: Rcpp, RcppArmadillo, progress
 Imports: raster, maps, MASS, geometry, ks, pdist, fastcluster, compiler, e1071, hitandrun, progress, mvtnorm, data.table, hexbin
-Suggests: randomForest, magick
+Suggests: magick

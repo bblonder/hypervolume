@@ -1,31 +1,31 @@
-hypervolume_prune <- function(hvlist, minnp=NULL, minvol=NULL, returnids=FALSE)
+hypervolume_prune <- function(hvlist, num.points.min=NULL, volume.min=NULL, return.ids=FALSE)
 {
-  if (!is.null(minnp))
+  if (!is.null(num.points.min))
   {
-    if (minnp < 0)
+    if (num.points.min < 0)
     {
-      stop("minnp must be at least zero.")
+      stop("num.points.min must be at least zero.")
     }
-    if (!is.null(minvol))
+    if (!is.null(volume.min))
     {
-      stop("Cannot specify both minvol and minnp.")
+      stop("Cannot specify both volume.min and num.points.min.")
     }
   }
-  else if (!is.null(minvol))
+  else if (!is.null(volume.min))
   {
-    if (minvol < 0)
+    if (volume.min < 0)
     {
-      stop("minvol must be at least zero.")
+      stop("volume.min must be at least zero.")
     }
     
-    if (!is.null(minnp))
+    if (!is.null(num.points.min))
     {
-      stop("Cannot specify both minvol and minnp.")
+      stop("Cannot specify both volume.min and num.points.min.")
     }
   }
   else
   {
-    stop("Must specify either minvol or minnp")
+    stop("Must specify either volume.min or num.points.min")
   }  
   
   if(class(hvlist) != "HypervolumeList")
@@ -40,16 +40,16 @@ hypervolume_prune <- function(hvlist, minnp=NULL, minvol=NULL, returnids=FALSE)
     np <- nrow(hvlist@HVList[[i]]@RandomUniformPointsThresholded)
     vol <- hvlist@HVList[[i]]@Volume
     
-    if (!is.null(minnp))
+    if (!is.null(num.points.min))
     {
-      if (np < minnp)
+      if (np < num.points.min)
       {
         dodrop[i] <- TRUE
       }
     }
-    if (!is.null(minvol))
+    if (!is.null(volume.min))
     {
-      if (vol < minvol)
+      if (vol < volume.min)
       {
         dodrop[i] <- TRUE
       }
@@ -58,7 +58,7 @@ hypervolume_prune <- function(hvlist, minnp=NULL, minvol=NULL, returnids=FALSE)
   
   hvlist@HVList <- hvlist@HVList[!dodrop]
   
-  if (returnids)
+  if (return.ids)
   {
     return(list(HVList=hvlist, IDs=which(!dodrop)))
   }

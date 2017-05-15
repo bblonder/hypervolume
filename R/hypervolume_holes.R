@@ -1,25 +1,25 @@
-hypervolume_holes <- function(hv_obs, hv_exp, set_npoints_max=NULL, set_check_memory=TRUE)
+hypervolume_holes <- function(hv.obs, hv.exp, set.num.points.max=NULL, set.check.memory=TRUE)
 {		
   # initialize result
   finalresult <- NULL
   
-  if (is.null(set_npoints_max))
+  if (is.null(set.num.points.max))
   {
-    set_npoints_max = floor(100*10^sqrt(hv_obs@Dimensionality))
-    cat(sprintf('Choosing set_npoints_max=%.0f (choose a larger value for more accuracy.)\n',set_npoints_max))    
+  set.num.points.max = floor(100*10^sqrt(hv.obs@Dimensionality))
+    cat(sprintf('Choosing set.num.points.max=%.0f (choose a larger value for more accuracy.)\n',set.num.points.max))    
   }
   
-  if (hv_obs@Dimensionality != hv_exp@Dimensionality)
+  if (hv.obs@Dimensionality != hv.exp@Dimensionality)
   {
     stop('Observed and expected hypervolumes must have same dimensionality.')
   }
   
   # FIND THE DIFFERENCE between the convex hull shape and the real hypervolume
   cat("Beginning set operations (resampling to minimum density)...")
-  hvs_overlap <- hypervolume_set(hv_obs, hv_exp, check_memory=set_check_memory, npoints_max=set_npoints_max)
-  if (set_check_memory)
+  hvs_overlap <- hypervolume_set(hv.obs, hv.exp, check.memory=set.check.memory, num.points.max=set.num.points.max)
+  if (set.check.memory==TRUE)
   {
-    stop('Set set_check_memory=F to continue.\n')
+    stop('Set set.check.memory=F to continue.\n')
   }
   cat("Finished set operations.\n")
   
@@ -47,7 +47,7 @@ hypervolume_holes <- function(hv_obs, hv_exp, set_npoints_max=NULL, set_check_me
     thishv <- hvs_overlap@HVList$Unique_2 # copy base information
     thishv@RandomUniformPointsThresholded <- randompoints_trimmed
     thishv@Volume <- hvs_overlap@HVList$Unique_2@Volume * nrow(randompoints_trimmed) / nrow(randompoints)
-    thishv@Name <- sprintf("Hole in %s relative to %s", hv_obs@Name, hv_exp@Name)
+    thishv@Name <- sprintf("Hole in %s relative to %s", hv.obs@Name, hv.exp@Name)
     
     finalresult <- thishv
 

@@ -26,12 +26,13 @@ export(
   hypervolume_holes, 
   hypervolume_inclusion_test, 
   hypervolume_join, 
-  hypervolume_old,
+  #hypervolume_old,
   hypervolume_overlap_statistics,
   hypervolume_project,
   hypervolume_prune, 
   hypervolume_quantile_threshold,
   hypervolume_redundancy,
+  hypervolume_save_animated_gif,
   hypervolume_segment, 
   hypervolume_set, 
   hypervolume_svm,
@@ -83,14 +84,14 @@ import(mvtnorm)
 import(data.table)
 import(progress)
 import(pdist)
-import(hexbin)
+importFrom("hexbin","hexbin")
 importFrom("raster","raster", "getValues","values")
 
-importFrom("grDevices", "col2rgb", "rainbow", "rgb")
+importFrom("grDevices", "col2rgb", "rainbow", "rgb", "hsv", "rgb2hsv")
 importFrom("graphics", ".filled.contour", "axis", "box", "contour","par", "plot", "points", "text")
-importFrom("stats", "cor", "cutree", "dist", "na.omit", "pgamma","rnorm", "runif", "sd")
+importFrom("stats", "cor", "cutree", "dist", "na.omit", "pgamma","rnorm", "runif", "sd", "median", "quantile")
 importFrom("utils", "data", "head")
 importFrom("maps", "map")
-  importFrom("graphics", "abline", "legend", "mtext")
-  importFrom("stats", "predict", "var")
-  importFrom("utils", "str")
+importFrom("graphics", "abline", "legend", "mtext")
+importFrom("stats", "predict", "var")
+importFrom("utils", "str")

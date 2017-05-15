@@ -8,18 +8,21 @@ Hyperbox expectation
 Generates expectation hypervolume corresponding to an axis-aligned hyperbox that minimally encloses the data.
 }
 \usage{
-expectation_box(input, point_density = NULL, userandom = FALSE)
+expectation_box(input, point.density = NULL, num.points = NULL, use.random = FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{input}{
 A m x n matrix or data frame, where m is the number of observations and n is the dimensionality.
 }
-  \item{point_density}{
-The point density of the output expectation. If \code{NULL}, defaults to \code{10^ncol(d)} where \code{d} is the dimensionality of the input
+  \item{point.density}{
+The point density of the output expectation. If \code{NULL}, defaults to \code{v / num.points} where \code{d} is the dimensionality of the input and v is the volume of the hypersphere.
 }
-  \item{userandom}{
-If \code{TRUE} and the input is of class \code{Hypervolume}, sets boundaries based on the \code{@Random} slot; otherwise uses \code{@RandomUniformPointsThresholded}. Otherwise this flag is ignored.
+  \item{num.points}{
+The number of points in the output expectation. If \code{NULL}, defaults to \code{10^(1+ncol(d))} where \code{d} is the dimensionality of the input. \code{num.points} has priority over \code{point.density}; both cannot be specified.
+}
+  \item{use.random}{
+If \code{TRUE} and the \code{input} is of class \code{Hypervolume}, sets boundaries based on the \code{@RandomUniformPointsThresholded} slot; otherwise uses \code{@Data}.
 }
 }
 \value{
@@ -27,5 +30,5 @@ A \code{Hypervolume-class} object corresponding to the expectation.
 }
 \examples{
 data(iris)
-e_box <- expectation_box(iris[,1:3],point_density=NULL)
+e_box <- expectation_box(iris[,1:3])
 }

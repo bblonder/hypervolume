@@ -8,7 +8,8 @@ Distance between two hypervolumes
 Calculates the distance between two hypervolumes either defined as the Euclidean distance between centroids or as the minimum Euclidean distance between the random points comprising either hypervolume.
 }
 \usage{
-hypervolume_distance(hv1, hv2, type = "centroid", npmax = 1000, check_memory = TRUE)
+hypervolume_distance(hv1, hv2, type = "centroid", 
+  num.points.max = 1000, check.memory = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -21,10 +22,10 @@ A \code{Hypervolume} object.
   \item{type}{
 If 'centroid', the centroid distance; if 'minimum', the minimum distance.
 }
-  \item{npmax}{
+  \item{num.points.max}{
 The number of random points to subsample from each input hypervolume. Ignored if \code{type='centroid'}.
 }
-  \item{check_memory}{
+  \item{check.memory}{
 If \code{TRUE}, prints expected memory usage and returns an error before allocating memory. Ignored if \code{type='centroid'}.
 }
 }
@@ -37,10 +38,10 @@ The distance between the two hypervolumes.
 
 \examples{
 data(iris)
-hv1 = hypervolume(subset(iris, Species=="setosa")[,1:4],reps=1000,bandwidth=0.2)
-hv2 = hypervolume(subset(iris, Species=="virginica")[,1:4],reps=1000,bandwidth=0.2)
+hv1 = hypervolume_gaussian(subset(iris, Species=="setosa")[,1:3])
+hv2 = hypervolume_gaussian(subset(iris, Species=="virginica")[,1:3])
 
 # note that minimum distance is smaller than centroid distance as expected
 hypervolume_distance(hv1, hv2, type='centroid')
-hypervolume_distance(hv1, hv2, type='minimum', npmax=500, check_memory=FALSE)
+hypervolume_distance(hv1, hv2, type='minimum', num.points.max=500, check.memory=FALSE)
 }
