@@ -23,7 +23,7 @@ Further arguments passed to \code{\link{hypervolume_box}}, \code{\link{hypervolu
 }
 }
 \details{
-Checks for collinearity and missingness of input data and generates warning/errors as appropriate. The method-specific functions called by this function
+Checks for collinearity,  missingness of input data, and appropriate random point coverage. Generates warning/errors as appropriate.
 }
 \value{
 A \code{\link{Hypervolume-class}} object corresponding to the inferred hypervolume.

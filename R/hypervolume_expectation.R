@@ -507,7 +507,3 @@ expectation_convex <- function(input, point.density=NULL, num.points=NULL, num.p
     stop(sprintf('Unrecognized method %s',method))
   }
 }
-
-
-
-

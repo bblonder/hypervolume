@@ -12,14 +12,6 @@ estimate_bandwidth <- function(data,method="silverman")
     normal_silverman_bw = 1.06 * stdev * npoints ^ (-1/5)
     
     return(normal_silverman_bw)
-    
-    # scale to box width
-    #rect_bw = 2*normal_silverman_bw
-    
-    # remove names
-    #names(rect_bw) <- NULL
-    
-    #return(rect_bw)    
   }
   else
   {
@@ -29,8 +21,8 @@ estimate_bandwidth <- function(data,method="silverman")
      {
        bw_plugin <- ks::Hpi.diag(data, nstage=2, pilot="samse",pre="scale")
        
-       # convert estimated variances to standard deviations and then box-widths
-       bw_plugin_scaled <- 2*sqrt(diag(bw_plugin))
+       # convert estimated variances to standard deviations
+       bw_plugin_scaled <- sqrt(diag(bw_plugin))
        
        return(bw_plugin_scaled)
      }
@@ -38,8 +30,8 @@ estimate_bandwidth <- function(data,method="silverman")
      {
        bw_crossvalidation <- ks::Hscv.diag(data, pilot="samse", pre="scale")
        
-       # convert estimated variances to standard deviations and then box-widths
-       bw_crossvalidation_scaled <- 2*sqrt(diag(bw_crossvalidation))
+       # convert estimated variances to standard deviations
+       bw_crossvalidation_scaled <- sqrt(diag(bw_crossvalidation))
        
        return(bw_crossvalidation_scaled)
      }

@@ -1,5 +1,7 @@
 hypervolume_box <- function(data, name=NULL, verbose=TRUE, samples.per.point=ceiling((10^(1+ncol(data)))/nrow(data)), kde.bandwidth=estimate_bandwidth(data), tree.chunksize=1e4)
 {
+  
+  
   data <- as.matrix(data)
   
   dim = ncol(data)
@@ -22,7 +24,12 @@ hypervolume_box <- function(data, name=NULL, verbose=TRUE, samples.per.point=cei
   
   names(kde.bandwidth) <- paste("kde.bandwidth",dimnames(data)[[2]],sep=".")
   
+  # double the bandwidth as for other functions it is interpreted as a box half-width
+  # but in this function is interpreted as a box full-width.
+  #kde.bandwidth = 2*kde.bandwidth
+  
   # figure out the hypervolume of one kernel and the random point density within it
+  # note this used to have a factor of 2 in previous versions
   hyperbox_volume = prod(2*kde.bandwidth) # hyperbox is in both + and - dimensions
   
   point_density = ceiling(samples.per.point / hyperbox_volume)
@@ -47,7 +54,7 @@ hypervolume_box <- function(data, name=NULL, verbose=TRUE, samples.per.point=cei
     }
     num.samples.to.take <- min(tree.chunksize, np - num.samples.completed)
     random_points = 2*(matrix(runif(samples.per.point*num.samples.to.take*dim,min=0,max=1),nrow=samples.per.point*num.samples.to.take, ncol=dim) - 0.5) * repmat(t(as.matrix(kde.bandwidth)), samples.per.point*num.samples.to.take, 1)
-    offset = repmat(as.matrix(data[(num.samples.completed+1):(num.samples.completed+num.samples.to.take),]), samples.per.point, 1)  
+    offset = repmat(as.matrix(data[(num.samples.completed+1):(num.samples.completed+num.samples.to.take),,drop=FALSE]), samples.per.point, 1)  
     data_points[[i]] = random_points + offset 
     
     # determine the probability density at each random point
@@ -107,11 +114,6 @@ hypervolume_box <- function(data, name=NULL, verbose=TRUE, samples.per.point=cei
   hv_box@Parameters = c(kde.bandwidth, samples.per.point=samples.per.point)
   hv_box@RandomUniformPointsThresholded = as.matrix(points_uniform_final);  
   hv_box@ProbabilityDensityAtRandomUniformPoints = normalize_probability(density_uniform_final, point_density_final)
-
-  if (nrow(hv_box@RandomUniformPointsThresholded) < 10^ncol(data))
-  {
-    warning(sprintf("Hypervolume is represented by a low number of random points (%d) - suggested minimum %d.\nConsider increasing point density to improve accuracy.",nrow(hv_box@RandomUniformPointsThresholded),10^ncol(data)))
-  }
   
   return(hv_box)  
 

@@ -15,7 +15,7 @@ hypervolume_general_model <- function(model, name=NULL, verbose=TRUE, data=NULL,
   
   if(is.null(dimnames(range.box)[[2]]))
   {
-    dimnames(range.box)[[2]] <- paste("X",1:d,sep="")
+    dimnames(range.box) <- list(NULL,paste("X",1:d,sep=""))
   }
   
   # delineate the hyperbox over which the function will be evaluated
@@ -46,11 +46,6 @@ hypervolume_general_model <- function(model, name=NULL, verbose=TRUE, data=NULL,
   if (!is.null(data))
   {
     hv@Data = data
-  }
-  
-  if (nrow(hv@RandomUniformPointsThresholded) < 10^d)
-  {
-    warning(sprintf("Hypervolume is represented by a low number of random points (%d) - suggested minimum %d.\nConsider increasing point density to improve accuracy.",nrow(hv@RandomUniformPointsThresholded),10^ncol(data)))
   }
   
   return(hv)	

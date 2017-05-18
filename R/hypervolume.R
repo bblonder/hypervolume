@@ -59,18 +59,25 @@ hypervolume <- function(data, method="gaussian", ...)
   
   if (method=="box")
   {
-    return(hypervolume_box(data=data, ...))
+    hv = (hypervolume_box(data=data, ...))
   }
   else if (method=="svm")
   {
-    return(hypervolume_svm(data=data, ...))
+    hv = (hypervolume_svm(data=data, ...))
   }
   else if (method=="gaussian")
   {
-    return(hypervolume_gaussian(data=data, ...))
+    hv = (hypervolume_gaussian(data=data, ...))
   }
   else
   {
     stop(sprintf("Method %s not recognized.",method))
   }
+  
+  if (nrow(hv@RandomUniformPointsThresholded) < 10^hv@Dimensionality)
+  {
+    warning(sprintf("Hypervolume is represented by a low number of random points (%d) - suggested minimum %d.\nConsider increasing point density to improve accuracy.",nrow(hv@RandomUniformPointsThresholded),10^hv@Dimensionality))
+  }
+  
+  return(hv)
 }

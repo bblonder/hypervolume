@@ -3,7 +3,7 @@ hypervolume_svm <- function(data, name=NULL, verbose=TRUE, samples.per.point=cei
   data <- as.matrix(data)
   if (is.null(dimnames(data)[[2]]))
   {
-    dimnames(data)[[2]] <- paste("X",1:ncol(data),sep="")
+    dimnames(data) <- list(NULL,paste("X",1:ncol(data),sep=""))
   }
   
   num.samples = nrow(data) * samples.per.point
@@ -43,8 +43,6 @@ hypervolume_svm <- function(data, name=NULL, verbose=TRUE, samples.per.point=cei
   hv_svm@Parameters = c(svm.nu=svm.nu, svm.gamma=svm.gamma, range.padding.multiply.interval.amount=range.padding.multiply.interval.amount, range.padding.add.amount=range.padding.add.amount, samples.per.point=samples.per.point)
   hv_svm@Method = 'One-class support vector machine'
   hv_svm@Data = data
-  
-  #samples <- sample_model_metropolis(svm.model, data, verbose=verbose, Nsamples = num_samples*(1+burnin.fraction), burnin = burnin.fraction*num_samples, thin.by=thin.by)
   
   return(hv_svm)	
 }

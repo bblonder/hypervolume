@@ -35,60 +35,6 @@ rwmetro <- function(target,N,x,VCOV, verbose=TRUE) # target = function to sample
   return(samples)
 }
 
-sample_model_metropolis <- function(model, data, start=NULL, sd = NULL, N.samples=1e4, burnin=0, thin.by=1, verbose=TRUE)
-{
-  # set dimensionality
-  d = ncol(data)
-  
-  # choose sd vector
-  if (is.null(sd))
-  {
-    sd = as.numeric(0.1*diff(apply(data,2,quantile,c(0.05,0.95))))
-  }
-  
-  normalization = prod(sqrt(2*pi*sd^2))
-  
-  # choose a starting point
-  if (is.null(start))
-  {
-    start = apply(data, 2, median, na.rm=T)
-  }
-  
-  target <- function(x) { 
-    predict(model, newdata=matrix(x,ncol=d)) 
-  }
-  
-  # perform Metropolis sampling
-  if (verbose == TRUE)
-  {
-    cat('Metropolis sampling of model...\n')
-  }
-  samples = rwmetro(target, N=N.samples, x=start, VCOV=sd*diag(d), verbose=verbose)
-  if (verbose == TRUE)
-  {
-    cat(' done.\n')
-  }
-  
-  if (verbose == TRUE)
-  {
-    cat('Thinning samples...')
-  }
-  # remove burn-in samples
-  samples = samples[(1+burnin):nrow(samples),]
-  
-  # thin results to reduce autocorrelation
-  samples = samples[seq(1,nrow(samples),by=thin.by),]
-  if (verbose == TRUE)
-  {
-    cat(' done...\n')
-  }
-  
-  dimnames(samples) <- list(NULL, c(names(start),"value"))
-  
-  # return result
-  return(samples)
-}
-
 sample_model_rejection <- function(model, range, N.samples, chunksize=1e3, verbose=TRUE, min.value=0, ...) # range should be the output of e.g. apply(data, 2, range) (2 x n matrix)
 {
   # determine dimensionality
@@ -96,7 +42,7 @@ sample_model_rejection <- function(model, range, N.samples, chunksize=1e3, verbo
   
   if (is.null(dimnames(range)[[2]]))
   {
-    dimnames(range)[[2]] <- paste("X",1:d,sep="")
+    dimnames(range) <- list(NULL,paste("X",1:d,sep=""))
   }
   
   if (verbose==TRUE)
@@ -108,7 +54,10 @@ sample_model_rejection <- function(model, range, N.samples, chunksize=1e3, verbo
   total_accepted <- 0
   while(total_accepted < N.samples)
   {
-    pb$update(total_accepted/N.samples)
+    if (verbose==TRUE)
+    {
+      pb$update(total_accepted/N.samples)
+    }
     
     # generate random points
     random_points <- data.frame(matrix(data=runif(chunksize*d),ncol=d,nrow=chunksize,dimnames=list(NULL, dimnames(range)[[2]])))

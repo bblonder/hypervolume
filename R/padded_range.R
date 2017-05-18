@@ -21,7 +21,7 @@ padded_range <- function(data, multiply.interval.amount=0, add.amount=0)
   
   if (is.null(dimnames(data)[[2]]))
   {
-    dimnames(data)[[2]] <- paste("X",1:ncol(data),sep="")
+    dimnames(data) <- list(NULL,paste("X",1:ncol(data),sep=""))
   }
   dimnames(result_final) <- list(c("low","high"),dimnames(data)[[2]])
   

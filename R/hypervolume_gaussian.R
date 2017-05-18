@@ -134,11 +134,6 @@ hypervolume_gaussian <- function(data, kde.bandwidth=estimate_bandwidth(data), s
                 Name=ifelse(is.null(name), "untitled", toString(name)),
                 Method = "Gaussian kernel density estimate",
                 Parameters=finalparams)   
-  
-  if (nrow(hv_kde_thresholded@RandomUniformPointsThresholded) < 10^ncol(data))
-  {
-    warning(sprintf("Hypervolume is represented by a low number of random points (%d) - suggested minimum %d.\nConsider increasing point density to improve accuracy.",nrow(hv_kde_thresholded@RandomUniformPointsThresholded),10^ncol(data)))
-  }
                 
   return(hv_kde_thresholded) 
 }
