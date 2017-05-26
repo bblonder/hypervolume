@@ -3,13 +3,14 @@ useDynLib(hypervolume)
 export( 
   #sample_model_metropolis,
   #sample_model_rejection,
+  #sample_model_ellipsoid,
   
   #kdtree_build,
   #evalfrectangular,
   #evalfspherical,
   
   estimate_bandwidth, 
-  estimate_threshold_gaussian,
+  #estimate_threshold_gaussian,
   expectation_ball, 
   expectation_box, 
   expectation_convex,
@@ -30,7 +31,7 @@ export(
   hypervolume_overlap_statistics,
   hypervolume_project,
   hypervolume_prune, 
-  hypervolume_quantile_threshold,
+  hypervolume_threshold,
   hypervolume_redundancy,
   hypervolume_save_animated_gif,
   hypervolume_segment, 
@@ -88,8 +89,8 @@ importFrom("hexbin","hexbin")
 importFrom("raster","raster", "getValues","values")
 
 importFrom("grDevices", "col2rgb", "rainbow", "rgb", "hsv", "rgb2hsv")
-importFrom("graphics", ".filled.contour", "axis", "box", "contour","par", "plot", "points", "text")
-importFrom("stats", "cor", "cutree", "dist", "na.omit", "pgamma","rnorm", "runif", "sd", "median", "quantile")
+importFrom("graphics", ".filled.contour", "axis", "box", "contour","par", "plot", "points", "text","lines")
+importFrom("stats", "cor", "cutree", "dist", "na.omit", "pgamma","rnorm", "runif", "sd", "median", "quantile","rbinom")
 importFrom("utils", "data", "head")
 importFrom("maps", "map")
 importFrom("graphics", "abline", "legend", "mtext")

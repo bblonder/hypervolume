@@ -1,8 +1,10 @@
 hypervolume_box <- function(data, name=NULL, verbose=TRUE, samples.per.point=ceiling((10^(1+ncol(data)))/nrow(data)), kde.bandwidth=estimate_bandwidth(data), tree.chunksize=1e4)
 {
-  
-  
   data <- as.matrix(data)
+  if (is.null(dimnames(data)[[2]]))
+  {
+    dimnames(data)[[2]] <- paste("X",1:ncol(data))
+  }
   
   dim = ncol(data)
   np = nrow(data)
@@ -22,7 +24,7 @@ hypervolume_box <- function(data, name=NULL, verbose=TRUE, samples.per.point=cei
     stop('Bandwidth must be non-zero.')
   }
   
-  names(kde.bandwidth) <- paste("kde.bandwidth",dimnames(data)[[2]],sep=".")
+  names(kde.bandwidth) <- dimnames(data)[[2]]
   
   # double the bandwidth as for other functions it is interpreted as a box half-width
   # but in this function is interpreted as a box full-width.
@@ -111,9 +113,9 @@ hypervolume_box <- function(data, name=NULL, verbose=TRUE, samples.per.point=cei
   hv_box@Dimensionality = dim
   hv_box@Volume = vc$final_volume
   hv_box@PointDensity = point_density_final
-  hv_box@Parameters = c(kde.bandwidth, samples.per.point=samples.per.point)
+  hv_box@Parameters = list(kde.bandwidth=kde.bandwidth, samples.per.point=samples.per.point)
   hv_box@RandomUniformPointsThresholded = as.matrix(points_uniform_final);  
-  hv_box@ProbabilityDensityAtRandomUniformPoints = normalize_probability(density_uniform_final, point_density_final)
+  hv_box@ProbabilityDensityAtRandomUniformPoints = density_uniform_final
   
   return(hv_box)  
 

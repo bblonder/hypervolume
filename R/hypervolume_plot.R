@@ -28,7 +28,7 @@ plot.HypervolumeList <- function(x,
                                   contour.filled=FALSE,contour.filled.alpha=0.5,contour.factor=0.5,
                                  show.centroid=TRUE, cex.centroid=3,
                                  colors=rainbow(floor(length(x@HVList)*1.5),alpha=0.8), 
-                                 point.alpha.min=0.3, point.dark.factor=0.5,
+                                 point.alpha.min=0.2, point.dark.factor=0.5,
                                  cex.random=0.5,cex.data=0.75,cex.axis=0.75,cex.names=1.0,cex.legend=0.75,
                                  num.points.max.data = 1000, num.points.max.random = 2000, reshuffle=TRUE, 
                                  verbose=FALSE,
@@ -121,7 +121,7 @@ plot.HypervolumeList <- function(x,
   }
   
   colorlist <- colors[all$ID]
-  alphavals <- (all$Density - quantile(all$Density, 0.05, na.rm=T)) / (quantile(all$Density, 0.95, na.rm=T) - quantile(all$Density,0.05, na.rm=T))
+  alphavals <- (all$Density - quantile(all$Density, 0.025, na.rm=T)) / (quantile(all$Density, 0.975, na.rm=T) - quantile(all$Density,0.025, na.rm=T))
   alphavals[is.nan(alphavals)] <- 0.5 # in case the quantile is un-informative
   alphavals[alphavals < 0] <- 0
   alphavals[alphavals > 1] <- 1
@@ -212,7 +212,7 @@ plot.HypervolumeList <- function(x,
                   
                   if (length(hb@xcm) > 2)
                   {
-                    kde2dresults <- kde2d(hb@xcm, hb@ycm, n=50,lims=c(extendrange(all[,j]),extendrange(all[,i])))
+                    kde2dresults <- kde2d(hb@xcm, hb@ycm, n=100,lims=c(extendrange(all[,j]),extendrange(all[,i])))
                   
                     .filled.contour(kde2dresults$x,kde2dresults$y, kde2dresults$z,
                                   col=c(NA,rgb_2_rgba(colors[whichid],contour.filled.alpha),NA),
@@ -238,7 +238,7 @@ plot.HypervolumeList <- function(x,
                   
                   if (length(hb@xcm) > 2)
                   {
-                    kde2dresults <- kde2d(hb@xcm, hb@ycm, n=50,lims=c(extendrange(all[,j]),extendrange(all[,i])))
+                    kde2dresults <- kde2d(hb@xcm, hb@ycm, n=100,lims=c(extendrange(all[,j]),extendrange(all[,i])))
                     
                     contour(kde2dresults,
                             col=colors[whichid],

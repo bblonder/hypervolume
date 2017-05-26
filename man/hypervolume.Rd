@@ -29,7 +29,7 @@ Checks for collinearity,  missingness of input data, and appropriate random poin
 A \code{\link{Hypervolume-class}} object corresponding to the inferred hypervolume.
 }
 \seealso{
-\code{\link{weight_data}}, \code{\link{estimate_bandwidth}}, \code{\link{expectation_convex}}, \code{\link{expectation_ball}}, \code{\link{expectation_box}}, \code{\link{hypervolume_quantile_threshold}}
+\code{\link{weight_data}}, \code{\link{estimate_bandwidth}}, \code{\link{expectation_convex}}, \code{\link{expectation_ball}}, \code{\link{expectation_box}}, \code{\link{hypervolume_threshold}}
 }
 \examples{
 data(iris)

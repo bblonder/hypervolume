@@ -10,7 +10,7 @@ Uses rejection sampling to obtain predicted values of a model object at uniforml
 \usage{
 hypervolume_general_model(model, name = NULL, verbose = TRUE, 
   data = NULL, range.box = NULL, num.samples = 10^(1 + ncol(range.box)), 
-  chunksize = 10000, min.value = 0, ...)
+  chunk.size = 10000, min.value = 0, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -32,7 +32,7 @@ A 2 x n matrix, where n is the number of dimensions of the data, and the first r
   \item{num.samples}{
 Number of samples to draw from the range box.
 }
-  \item{chunksize}{
+  \item{chunk.size}{
 Number of samples to process in each \code{predict} call. Changing this value may affect the speed of function return but not the returned values.
 }
   \item{min.value}{

@@ -39,13 +39,13 @@ Constructs a kernel density estimate by overlaying hyperbox kernels on each data
 
 Note that when comparing among hypervolumes constructed with fixed bandwidth, volume will be approximately a an approximately linear function of the number of input data points.
 
-Note that this function returns an unthresholded hypervolume. To assign a quantile threshold, use \code{\link{hypervolume_quantile_threshold}}.
+Note that this function returns an unthresholded hypervolume. To assign a quantile threshold, use \code{\link{hypervolume_threshold}}.
 }
 \value{
 A \code{\link{Hypervolume-class}} object corresponding to the inferred hypervolume.
 }
 \seealso{
-\code{\link{hypervolume_quantile_threshold}}, \code{\link{estimate_bandwidth}}
+\code{\link{hypervolume_threshold}}, \code{\link{estimate_bandwidth}}
 }
 \examples{
 data(iris)

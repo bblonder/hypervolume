@@ -30,7 +30,9 @@ The algorithm can only be used on Hypervolumes that have a \code{Data} and \code
 A named vector with importance scores for each axis. Note that these scores are not dimensionless but rather have units corresponding to the original units of each variable.
 }
 \examples{
+# low parameter values for speed
 data(iris)
-hv = hypervolume_gaussian(subset(iris, Species=="versicolor")[,1:3])
-hypervolume_variable_importance(hv)
+hv = hypervolume_gaussian(subset(iris, Species=="versicolor")[,1:2],samples.per.point=10)
+varimp = hypervolume_variable_importance(hv,verbose=FALSE)
+barplot(varimp)
 }

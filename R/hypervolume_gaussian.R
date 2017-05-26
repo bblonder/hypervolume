@@ -1,6 +1,8 @@
-
+# s is a test point
+# means is the centers of each data point
+# kernel_sd is the kernel bandwidth (in natural units, not squared, diagonal only)
 calculate_density <- function(s, means, kernel_sd, chunksize=10, verbose=TRUE) {
-
+  
   d = ncol(means)
   n_points = nrow(means)
   density = 0
@@ -11,132 +13,104 @@ calculate_density <- function(s, means, kernel_sd, chunksize=10, verbose=TRUE) {
   
   if (verbose==TRUE)
   {
-	  pb <- progress_bar$new(total = num_chunks)
-	  pb$tick()
+    pb <- progress_bar$new(total = num_chunks)
+    pb$tick()
   }
   
   for (chunk_this in 1:num_chunks)
   {
-  	index_vals = (1:n_points)[which(chunks==chunk_this)]
-  	
-  	for (i in index_vals) 
-  	{ 
-    	density = dmvnorm(s, mean = means[i, ], sigma = kernel_sd^2 * diag(d)) + density
-  	}
-  	
-  	if (verbose==TRUE) 
-  	{
-  		pb$tick()
-  	}
+    index_vals = (1:n_points)[which(chunks==chunk_this)]
+    
+    for (i in index_vals) 
+    { 
+      density = density + dmvnorm(s, mean = means[i, ], sigma = kernel_sd^2 * diag(d))
+    }
+    
+    if (verbose==TRUE) 
+    {
+      pb$tick()
+    }
   }
-
+  
   density = density / n_points
   return(density)
 }
 
-importance_weights = function(q, min_density) {
-  return((q > min_density) / q)
-}
 
-hypervolume_gaussian <- function(data, kde.bandwidth=estimate_bandwidth(data), samples.per.point=ceiling((10^(1+ncol(data)))/nrow(data)), threshold.sd.count=3, name=NULL, verbose=TRUE)
+hypervolume_gaussian <- function(data, name=NULL, samples.per.point=ceiling((10^(1+ncol(data)))/nrow(data)), kde.bandwidth=estimate_bandwidth(data), sd.count=3, quantile.requested=0.95, quantile.requested.type="probability", chunk.size=1e3, verbose=TRUE, ...)
 {
-	data = as.matrix(data)
-	d = ncol(data)
-	np = nrow(data)
-	
-	# do error check on kde.bandwidth vector
-	if (length(kde.bandwidth)==1)
-	{
-		kde.bandwidth = rep(kde.bandwidth, ncol(data))
-	}
-	if(ncol(data)!=length(kde.bandwidth))
-	{
-		stop('data and kde.bandwidth must have same dimensionality')
-	}
-	
-	if (any(kde.bandwidth==0))
-	  {
-	    stop('Bandwidth must be non-zero.')
-	  }
-	  
-  names(kde.bandwidth) <- paste("kde.bandwidth",dimnames(data)[[2]],sep=".")
+  data = as.matrix(data)
+  d = ncol(data)
+  np = nrow(data)
   
-	
-	# generate uniform random points around each data point out to a certain number of standard deviations (add one to make sure we 'see' enough of the shape)
-	s = lapply(1:nrow(data),
-           function(x){
-             result = rmvnorm(samples.per.point, data[x, ], kde.bandwidth^2 * diag(d))
-             return(data.frame(result))
-             
-             })
-	s = as.matrix(rbindlist(s))
-
-	# calculate probability density at each point
-	if (verbose==TRUE)
-	{
-		cat('Calculating density...\n')
-	}
-	density = calculate_density(s, data, kde.bandwidth, verbose)
-	if (verbose==TRUE)
-	{
-		cat('done.\n')
-	}
-	
-	# calculate the volume for points above a minimum threshold value corresponding to the probability value a certain distance from an isolated point
-	min_density_threshold = estimate_threshold_gaussian(sd.count=threshold.sd.count, kde.bandwidth=kde.bandwidth)
-	min_density = min_density_threshold
-	# do importance sampling
-	if (verbose==TRUE)
-	{
-	  cat('Doing importance sampling...\n')
-	}
-	w = importance_weights(density, min_density)
-	# calculate volume
-	volume = mean(w) # Estimated volume
-	if (verbose==TRUE)
-	{
-		cat('done.\n')
-	}
-
-	# resample to a uniform density (possibly repeating points)
-	if (verbose==TRUE)
-	{
-		cat('Resampling to uniform density...\n')
-	}
-	inside_sample_rows = sample.int(nrow(s), 
-                          samples.per.point * np,
-                          replace = TRUE, 
-                          prob = w)
-	if (verbose==TRUE)
-	{
-		cat('done.\n')
-	}
-   
-	# apply threshold
-  random_points_thresholded = s[inside_sample_rows, ,drop=FALSE]
-  # some introduction of very small noise is needed to avoid problems with duplicated points
-  random_points_thresholded = random_points_thresholded + matrix(rnorm(n=prod(dim(random_points_thresholded)),mean=0,sd=mean(kde.bandwidth)*1e-6),nrow=nrow(random_points_thresholded),ncol=ncol(random_points_thresholded))
-  probability_thresholded = density[inside_sample_rows]
+  if (is.null(dimnames(data)[[2]]))
+  {
+    dimnames(data)[[2]] <- paste("X",1:ncol(data))
+  }
   
-  point_density = nrow(random_points_thresholded) / volume 	
-    
-  finalparams <- c(kde.bandwidth, 
-                   samples.per.point = samples.per.point, 
-                   threshold.sd.count = threshold.sd.count)
+  if (sd.count<3)
+  {
+    warning(sprintf("Values of sd.count (%d) is low.\nRecommended minimum value is 3, with higher values giving better performance.\nBoundaries and volumes may be inaccurate.",sd.count))
+  }
+  
+  # do error check on kde.bandwidth vector
+  if (length(kde.bandwidth)==1)
+  {
+    kde.bandwidth = rep(kde.bandwidth, ncol(data))
+  }
+  if(ncol(data)!=length(kde.bandwidth))
+  {
+    stop('data and kde.bandwidth must have same dimensionality')
+  }
+  
+  if (any(kde.bandwidth==0))
+  {
+    stop('Bandwidth must be non-zero.')
+  }
+  
+  names(kde.bandwidth) <- dimnames(data)[[2]]
+  
+  predict_function_gaussian <- function(x)
+  {
+    return(calculate_density(s=x,means=data,kernel_sd=kde.bandwidth))
+  }
+  
+  # do elliptical sampling over the hyperbox
+  samples_all = sample_model_ellipsoid(
+    predict_function = predict_function_gaussian,
+    data = data,
+    scales = kde.bandwidth * (sd.count), # distance out to sample
+    min.value = 0,
+    samples.per.point = samples.per.point, 
+    chunk.size=chunk.size, 
+    verbose=verbose)
+  
+  random_points = samples_all$samples[,1:d,drop=FALSE]
+  values_accepted = samples_all$samples[,d+1]
+  volume <- samples_all$volume
+  
+  point_density = nrow(random_points) / volume
 
-  hv_kde_thresholded <- new("Hypervolume",
-                Data=as.matrix(data),
-                RandomUniformPointsThresholded= random_points_thresholded,
+  hv_gaussian <- new("Hypervolume",
+                Data=data,
+                Method = 'Gaussian kernel density estimate',
+                RandomUniformPointsThresholded= random_points,
                 PointDensity= point_density,
                 Volume= volume,
-                Dimensionality=ncol(data),
-                ProbabilityDensityAtRandomUniformPoints= normalize_probability(probability_thresholded, point_density),
+                Dimensionality=d,
+                ProbabilityDensityAtRandomUniformPoints=values_accepted,
                 Name=ifelse(is.null(name), "untitled", toString(name)),
-                Method = "Gaussian kernel density estimate",
-                Parameters=finalparams)   
-                
-  return(hv_kde_thresholded) 
+                Parameters = list(kde.bandwidth=kde.bandwidth, samples.per.point=samples.per.point, sd.count=sd.count, quantile.requested=quantile.requested, quantile.requested.type=quantile.requested.type))
+  
+  # apply desired threshold type
+  hv_gaussian_thresholded = hypervolume_threshold(hv_gaussian, 
+                                                  quantile.requested=quantile.requested,
+                                                  quantile.requested.type=quantile.requested.type, 
+                                                  uniform.density = FALSE, # keep probability values
+                                                  verbose=verbose,
+                                                  num.thresholds = 1000, # give higher resolution to obtain the desired quantile
+                                                  plot=FALSE, ...)[["HypervolumesThresholded"]]
+  hv_gaussian_thresholded@Name = hv_gaussian@Name
+  
+  return(hv_gaussian_thresholded)	
 }
-
-
-

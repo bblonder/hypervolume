@@ -1,5 +1,5 @@
 ## should reference padded_range in the 
-hypervolume_general_model <- function(model, name=NULL, verbose=TRUE, data=NULL, range.box=NULL, num.samples=10^(1+ncol(range.box)), chunksize=1e4, min.value=0, ...)
+hypervolume_general_model <- function(model, name=NULL, verbose=TRUE, data=NULL, range.box=NULL, num.samples=10^(1+ncol(range.box)), chunk.size=1e4, min.value=0, ...)
 {
   if (!is.null(data) & is.null(range.box))
   {
@@ -21,7 +21,7 @@ hypervolume_general_model <- function(model, name=NULL, verbose=TRUE, data=NULL,
   # delineate the hyperbox over which the function will be evaluated
   range.box_volume <- prod(apply(range.box, 2, diff))
   
-  samples <- sample_model_rejection(model, range=range.box, verbose=verbose, N.samples = num.samples, min.value=min.value, chunksize=chunksize, ...)
+  samples <- sample_model_rejection(model, range=range.box, verbose=verbose, N.samples = num.samples, min.value=min.value, chunk.size=chunk.size, ...)
   samples_accepted <- samples[samples[,ncol(samples)]>min.value,1:(ncol(samples)-1),drop=FALSE] # last column contains the values
   dimnames(samples_accepted) <- list(NULL, dimnames(range.box)[[2]])
   values_accepted <- samples[samples[,ncol(samples)]>min.value,ncol(samples)]
@@ -39,9 +39,9 @@ hypervolume_general_model <- function(model, name=NULL, verbose=TRUE, data=NULL,
                 PointDensity= point_density,
                 Volume= volume,
                 Dimensionality=d,
-                ProbabilityDensityAtRandomUniformPoints=normalize_probability(values_accepted,point_density),
+                ProbabilityDensityAtRandomUniformPoints=values_accepted,
                 Name=ifelse(is.null(name), "untitled", toString(name))) # no parameters
-  hv@Parameters = c(num.samples=num.samples, min.value=min.value)
+  hv@Parameters = list(num.samples=num.samples, min.value=min.value)
   
   if (!is.null(data))
   {

@@ -5,20 +5,11 @@ setClass("Hypervolume", slots=c(
     Dimensionality="numeric",
     Volume="numeric",
     PointDensity="numeric",
-    Parameters="numeric",
+    Parameters="list",
 
     RandomUniformPointsThresholded="matrix",
     ProbabilityDensityAtRandomUniformPoints="numeric"
     ))
-
-setClass("HypervolumeOld",
-         slots=list(
-              Bandwidth="numeric",
-              RepsPerPoint="numeric",
-              DisjunctFactor="numeric",
-              QuantileThresholdDesired="numeric",
-              QuantileThresholdObtained="numeric"),
-         contains="Hypervolume")
 
 setClass("HypervolumeList", slots=c(
     HVList="list"
@@ -35,7 +26,15 @@ summary.Hypervolume <- function(object, ...)
   cat(sprintf("Volume: %f\n",object@Volume))
   cat(sprintf("Random point density: %f\n",object@PointDensity))
   cat(sprintf("Number of random points: %d\n",nrow(object@RandomUniformPointsThresholded)))
-  cat(sprintf("Parameters:\n\t%s\n",paste("",paste(names(object@Parameters), format(object@Parameters,digits=3), sep=": "),collapse='\n\t')))
+  cat(sprintf("Random point values:\n\tmin: %.3f\n\tmean: %.3f\n\tmedian: %.3f\n\tmax:%.3f\n",
+                min(object@ProbabilityDensityAtRandomUniformPoints),
+                mean(object@ProbabilityDensityAtRandomUniformPoints),
+                median(object@ProbabilityDensityAtRandomUniformPoints),
+                max(object@ProbabilityDensityAtRandomUniformPoints)))
+  cat(sprintf("Parameters:\n"))
+  lapply(1:length(object@Parameters), function(x) {
+    cat(sprintf("\t%s: %s\n",names(object@Parameters)[x], paste(format(object@Parameters[[x]]),collapse=" ")))
+  })    
 }
 
 summary.HypervolumeList <- function(object, ...)

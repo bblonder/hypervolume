@@ -21,21 +21,34 @@ hypervolume_variable_importance <- function(hv, verbose=TRUE)
 
     if (method=="Box kernel density estimate")
     {
-      bw <- params[grep("kde.bandwidth",names(params),fixed=TRUE)]
-      names(bw) <- gsub("kde.bandwidth.","",names(bw),fixed=TRUE)
-
-      hv_this <- hypervolume_box(data[,vars,drop=FALSE], samples.per.point=params["samples.per.point"], name=NULL, verbose=verbose, kde.bandwidth=bw[vars])
+      hv_this <- hypervolume_box(data[,vars,drop=FALSE], 
+                                 samples.per.point=params[["samples.per.point"]], 
+                                 name=NULL, 
+                                 verbose=verbose, 
+                                 kde.bandwidth=params[["kde.bandwidth"]][vars]
+                                 )
     }
     else if (method=="One-class support vector machine")
     {
-      hv_this <- hypervolume_svm(data[,vars,drop=FALSE], samples.per.point=params["samples.per.point"], name=NULL, verbose=verbose, svm.nu=params["svm.nu"],svm.gamma=params["svm.gamma"], range.padding.multiply.interval.amount=params["range.padding.multiply.interval.amount"], range.padding.add.amount=params["range.padding.add.amount"])
+      hv_this <- hypervolume_svm(data[,vars,drop=FALSE], 
+                                 samples.per.point=params[["samples.per.point"]], 
+                                 name=NULL, 
+                                 verbose=verbose, 
+                                 svm.nu=params[["svm.nu"]],
+                                 svm.gamma=params[["svm.gamma"]]
+                                 )
     }
     else if (method=="Gaussian kernel density estimate")
     {
-      bw <- params[grep("kde.bandwidth",names(params))]
-      names(bw) <- gsub("kde.bandwidth.","",names(bw),fixed=TRUE)
-
-      hv_this <- hypervolume_gaussian(data[,vars,drop=FALSE], samples.per.point=params["samples.per.point"], name=NULL, verbose=verbose, kde.bandwidth=bw[vars], threshold.sd.count=params["threshold.sd.count"])
+      hv_this <- hypervolume_gaussian(data[,vars,drop=FALSE], 
+                                      samples.per.point=params[["samples.per.point"]], 
+                                      name=NULL, 
+                                      verbose=verbose, 
+                                      kde.bandwidth=params[["kde.bandwidth"]][vars], 
+                                      sd.count=params[["sd.count"]],
+                                      quantile.requested=params[["quantile.requested"]],
+                                      quantile.requested.type=params[["quantile.requested.type"]]
+                                      )
     }
     else
     {

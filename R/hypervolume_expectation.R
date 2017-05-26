@@ -83,8 +83,8 @@ expectation_box <- function(input, point.density=NULL, num.points=NULL, use.rand
                 Dimensionality=ncol(data), 
                 Volume=volume,
                 PointDensity=point.density, 
-                Parameters= NaN,
-                ProbabilityDensityAtRandomUniformPoints = normalize_probability(rep(1, npoints),point.density)
+                Parameters= list(),
+                ProbabilityDensityAtRandomUniformPoints = rep(1, npoints)
   )  
   
   return(hv_box)
@@ -148,8 +148,8 @@ expectation_ball <- function(input, point.density=NULL, num.points=NULL, use.ran
                  Dimensionality=ncol(data), 
                  Volume=volume,
                  PointDensity=point.density, 
-                 Parameters= NaN, 
-                 ProbabilityDensityAtRandomUniformPoints = normalize_probability(rep(1, npoints),point.density)
+                 Parameters= list(), 
+                 ProbabilityDensityAtRandomUniformPoints = rep(1, npoints)
   )  
   
   return(hv_ball)
@@ -420,7 +420,7 @@ expectation_convex <- function(input, point.density=NULL, num.points=NULL, num.p
                    PointDensity=point.density,
                    Volume= volume_convexhull,
                    Dimensionality=ncol(samples),
-                   ProbabilityDensityAtRandomUniformPoints=normalize_probability(rep(1, nrow(samples)),point.density),
+                   ProbabilityDensityAtRandomUniformPoints=rep(1, nrow(samples)),
                    Name=sprintf("Convex expectation for %s", ifelse(class(input)=="Hypervolume", input@Name, deparse(substitute(data))[1])),
                    Method="Adaptive hit and run convex expectation")	
     
@@ -495,8 +495,8 @@ expectation_convex <- function(input, point.density=NULL, num.points=NULL, num.p
                     Dimensionality=ncol(inpoints), 
                     Volume=hull_volume,
                     PointDensity = point.density,
-                    Parameters= NaN,
-                    ProbabilityDensityAtRandomUniformPoints = normalize_probability(rep(1, nrow(inpoints)),point.density)
+                    Parameters= list(),
+                    ProbabilityDensityAtRandomUniformPoints = rep(1, nrow(inpoints))
     )
     
     return(hv_chull)    

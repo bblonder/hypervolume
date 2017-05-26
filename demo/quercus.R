@@ -35,13 +35,9 @@ if (exists('doHypervolumeQuercusDemo')==TRUE)
   # put all the output volumes in one convenient place
   volumes <- get_volume(hv_set)
   
-  # do species distribution modeling
-  rubra_map = hypervolume_project(hv_rubra, climatelayers_ss_cropped, )
-  alba_map = hypervolume_project(hv_alba, climatelayers_ss_cropped)
- 
-  #pairs(getValues(climatelayers_ss_cropped),col=rainbow(100,alpha=0.8)[cut(getValues(alba_map),80)],cex=0.1)
-  # now show results
-  
+  # do species distribution modeling (reduce point density by factor of 10 for demo speed)
+  rubra_map = hypervolume_project(hv_rubra, climatelayers_ss_cropped,reduction.factor=0.1)
+  alba_map = hypervolume_project(hv_alba, climatelayers_ss_cropped,reduction.factor=0.1)
   
   # then barplot of hypervolumes of each component
   op=par(mar=c(3,10,1,1))

@@ -18,7 +18,7 @@ Plots a single hypervolume or multiple hypervolumes as either a pairs plot (all 
     contour.filled=FALSE,contour.filled.alpha=0.5,contour.factor=0.5,
    show.centroid=TRUE, cex.centroid=3,
    colors=rainbow(floor(length(x@HVList)*1.5),alpha=0.8), 
-   point.alpha.min=0.3, point.dark.factor=0.5,
+   point.alpha.min=0.2, point.dark.factor=0.5,
    cex.random=0.5,cex.data=0.75,cex.axis=0.75,cex.names=1.0,cex.legend=0.75,
    num.points.max.data = 1000, num.points.max.random = 2000, reshuffle=TRUE, 
    verbose=FALSE,

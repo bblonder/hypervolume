@@ -37,6 +37,7 @@ A \code{Hypervolume} object containing a uniformly random set of points describi
 }
 
 \examples{
+\dontrun{
 # generate annulus data
 data_annulus <- data.frame(matrix(data=runif(4000),ncol=2))
 names(data_annulus) <- c("x","y")
@@ -44,10 +45,12 @@ data_annulus  <- subset(data_annulus,
 sqrt((x-0.5)^2+(y-0.5)^2) > 0.4 & sqrt((x-0.5)^2+(y-0.5)^2) < 0.5)
 
 # MAKE HYPERVOLUME (low reps for fast execution)
-hv_annulus <- hypervolume_gaussian(data_annulus,kde.bandwidth=0.05,name='annulus')
+hv_annulus <- hypervolume_gaussian(data_annulus,
+                kde.bandwidth=0.05,name='annulus',samples.per.point=1)
 
 # GET CONVEX EXPECTATION
-hv_convex <- expectation_convex(hv_annulus, check.memory=FALSE,use.random=TRUE)
+hv_convex <- expectation_convex(hypervolume_thin(hv_annulus,num.points=500),
+                check.memory=FALSE,use.random=TRUE)
 
 # DETECT HOLES (low npoints for fast execution)
 features_annulus <- hypervolume_holes(
@@ -56,9 +59,12 @@ features_annulus <- hypervolume_holes(
                       set.check.memory=FALSE)
 
 # CLEAN UP RESULTS
-features_segmented <- hypervolume_segment(features_annulus, check.memory=FALSE,distance.factor=2)
-features_segmented_pruned <- hypervolume_prune(features_segmented, volume.min=0.02)
+features_segmented <- hypervolume_segment(features_annulus, 
+                        check.memory=FALSE,distance.factor=2)
+features_segmented_pruned <- hypervolume_prune(features_segmented, 
+                                volume.min=0.02)
 
 # PLOT RETAINED HOLE(S)
 plot(hypervolume_join(hv_annulus, features_segmented_pruned))
+}
 }

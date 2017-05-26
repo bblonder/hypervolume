@@ -21,20 +21,21 @@ if (exists('doHypervolumeHolesFinchDemo')==TRUE)
   bw_plugin <- c(0.5278828, 0.4883812, 0.5951435, 0.4480163)
   
   # get overall community hypervolume
-  hv_finch <- hypervolume_gaussian(trait_data_scaled,kde.bandwidth=bw_plugin)
-  # threshold to reasonable density
-  hv_finch_thresholded <- hypervolume_quantile_threshold(hv_finch, quantile.requested=0.5)
-  hv_finch_thresholded@Name <- "Finches"
+  hv_finch <- hypervolume_gaussian(trait_data_scaled,kde.bandwidth=bw_plugin, quantile.requested=0.5, quantile.requested.type="volume")
+  hv_finch@Name <- "Finches"
   
   # compute convex expectation
-  ec_finch <- expectation_convex(hv_finch_thresholded, check.memory=FALSE, use.random=TRUE)
+  # first thin the hypervolume
+  hv_finch_thinned = hypervolume_thin(hv_finch, num.points=500)
+  
+  ec_finch <- expectation_convex(hv_finch_thinned, check.memory=FALSE, use.random=TRUE)
   ec_finch@Name <- "Convex expectation"
   # find holes
-  holes_finch <- hypervolume_holes(hv_finch_thresholded, ec_finch, set.check.memory=FALSE)
+  holes_finch <- hypervolume_holes(hv_finch, ec_finch, set.check.memory=FALSE)
   holes_finch@Name <- "Holes"
   
   # extract volume statistics
-  volumes <- get_volume(hypervolume_join(hv_finch_thresholded, ec_finch, holes_finch))
+  volumes <- get_volume(hypervolume_join(hv_finch, ec_finch, holes_finch))
   # plot volume fractions
   barplot(volumes)
   
@@ -45,10 +46,10 @@ if (exists('doHypervolumeHolesFinchDemo')==TRUE)
   print(length_ratio <- hole_volume_ratio ^ (1/4))
   
   # plot holes
-  plot(hypervolume_join(hv_finch_thresholded, holes_finch),
+  plot(hypervolume_join(hv_finch, holes_finch),
        col=c('purple','green'),
        names=c("Body length","Wing length","Tail length", "Beak width"),
-       show.legend=FALSE,cex.names=1.5,contour.lwd=3)
+       show.legend=FALSE,cex.names=1.5,contour.lwd=2)
   
   
   # calculate (in transformed coordinates) the centroid of the holes	

@@ -1,13 +1,12 @@
-hypervolume_svm <- function(data, name=NULL, verbose=TRUE, samples.per.point=ceiling((10^(1+ncol(data)))/nrow(data)), range.padding.multiply.interval.amount=0.5, range.padding.add.amount=0, svm.nu=0.01, svm.gamma=0.5, chunksize=1e4)
+hypervolume_svm <- function(data, name=NULL, samples.per.point=ceiling((10^(1+ncol(data)))/nrow(data)), svm.nu=0.01, svm.gamma=0.5, chunk.size=1e3, verbose=TRUE)
 {
   data <- as.matrix(data)
+  d <- ncol(data)
   if (is.null(dimnames(data)[[2]]))
   {
-    dimnames(data) <- list(NULL,paste("X",1:ncol(data),sep=""))
+    dimnames(data) <- list(NULL,paste("X",1:d,sep=""))
   }
   
-  num.samples = nrow(data) * samples.per.point
-
   if (svm.nu <= 0)
   {
     stop("Parameter svm.nu must be >0.")
@@ -22,7 +21,7 @@ hypervolume_svm <- function(data, name=NULL, verbose=TRUE, samples.per.point=cei
   {
     cat('Building support vector machine model...')
   }
-  svm.model<-e1071::svm(data,
+  svm_this <- e1071::svm(data,
                         y=NULL,
                         type='one-classification',
                         nu= svm.nu,
@@ -33,16 +32,48 @@ hypervolume_svm <- function(data, name=NULL, verbose=TRUE, samples.per.point=cei
   {
     cat(' done\n')
   }
+
+  # Assuming all of the support vectors were right on top of each other,
+  # how far could we move away from that point before we left the interior
+  # of the hypervolume? 
+  # `solve b * exp(-g d_2) == r for d_2` into Wolfram Alpha, where
+  #    * "b" is the sum of the SVM coefficients
+  #    * "g" is the SVM kernel bandwidth (gamma)
+  #    * "r" is the minimum kernel density of the hypervolume (rho)
+  #    * "d_2" is squared distance  
+  squared_scaled_dist = log(sum(svm_this$coefs) / svm_this$rho) / svm.gamma
+  scales = apply(data, 2, sd) * sqrt(squared_scaled_dist)  
+
+  predict_function_svm <- function(x)
+  {
+    return(predict(svm_this, x))
+  }  
   
-  # delineate the hyperbox over which the function will be evaluated
-  range.box <- padded_range(data, multiply.interval.amount = range.padding.multiply.interval.amount, add.amount = range.padding.add.amount)
-  dimnames(range.box) <- list(NULL, dimnames(data)[[2]])
+  # do elliptical sampling over the hyperbox
+  samples_all = sample_model_ellipsoid(
+              predict_function = predict_function_svm,
+              data = data,
+              scales = scales, 
+              min.value = 0, # because output is binary
+              samples.per.point = samples.per.point, 
+              chunk.size=chunk.size, 
+              verbose=TRUE)
   
-  # do rejection sampling over the hyperbox
-  hv_svm = hypervolume_general_model(svm.model, name=name, verbose=verbose, range.box = range.box, num.samples=num.samples, chunksize=chunksize, min.value=0)
-  hv_svm@Parameters = c(svm.nu=svm.nu, svm.gamma=svm.gamma, range.padding.multiply.interval.amount=range.padding.multiply.interval.amount, range.padding.add.amount=range.padding.add.amount, samples.per.point=samples.per.point)
-  hv_svm@Method = 'One-class support vector machine'
-  hv_svm@Data = data
+  random_points = samples_all$samples[,1:d]
+  values_accepted <- samples_all$samples[,d+1]
+  volume <- samples_all$volume
+  point_density = volume / nrow(random_points)
+  
+  hv_svm <- new("Hypervolume",
+            Data=data,
+            Method = 'One-class support vector machine',
+            RandomUniformPointsThresholded= random_points,
+            PointDensity= point_density,
+            Volume= volume,
+            Dimensionality=d,
+            ProbabilityDensityAtRandomUniformPoints=values_accepted,
+            Name=ifelse(is.null(name), "untitled", toString(name)),
+            Parameters = list(svm.nu=svm.nu, svm.gamma=svm.gamma, samples.per.point=samples.per.point))
   
   return(hv_svm)	
 }

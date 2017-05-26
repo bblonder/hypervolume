@@ -26,8 +26,8 @@ if (exists('doHypervolumeFinchDemo')==TRUE)
     data_this_species_log <- log10(data_this_species)
     
     # make a hypervolume using auto-bandwidth
-      hv_finches_list@HVList[[i]] <- hypervolume(data_this_species_log,
-                                          name=as.character(species_list[i]))
+      hv_finches_list@HVList[[i]] <- hypervolume_gaussian(data_this_species_log,
+                                          name=as.character(species_list[i]),verbose=FALSE)
   }
   
   # compute all pairwise overlaps
@@ -54,7 +54,7 @@ if (exists('doHypervolumeFinchDemo')==TRUE)
   
   # show pairwise overlaps - note that actually very few species overlap in four dimensions
   op <- par(mar=c(10,10,1,1))
-  image(x=1:nrow(overlap), y=1:nrow(overlap), z=overlap,axes=FALSE,xlab='',ylab='',col=rainbow(5))
+  image(x=1:nrow(overlap), y=1:nrow(overlap), z=overlap,axes=FALSE,xlab='',ylab='',col=colorRampPalette(c("lightgray","red"))(100))
   box()
   axis(side=1, at=1:(length(dimnames(overlap)[[1]])),dimnames(overlap)[[1]],las=2,cex.axis=0.75)
   axis(side=2, at=1:(length(dimnames(overlap)[[2]])),dimnames(overlap)[[2]],las=1,cex.axis=0.75)
