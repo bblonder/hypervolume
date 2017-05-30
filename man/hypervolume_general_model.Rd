@@ -9,7 +9,7 @@ Uses rejection sampling to obtain predicted values of a model object at uniforml
 }
 \usage{
 hypervolume_general_model(model, name = NULL, verbose = TRUE, 
-  data = NULL, range.box = NULL, num.samples = 10^(1 + ncol(range.box)), 
+  data = NULL, range.box = NULL, num.samples = ceiling(10^(2 + sqrt(ncol(range.box)))), 
   chunk.size = 10000, min.value = 0, ...)
 }
 %- maybe also 'usage' for other objects documented here.

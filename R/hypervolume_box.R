@@ -1,4 +1,4 @@
-hypervolume_box <- function(data, name=NULL, verbose=TRUE, samples.per.point=ceiling((10^(1+ncol(data)))/nrow(data)), kde.bandwidth=estimate_bandwidth(data), tree.chunksize=1e4)
+hypervolume_box <- function(data, name=NULL, verbose=TRUE, samples.per.point=ceiling((10^(2+sqrt(ncol(data))))/nrow(data)), kde.bandwidth=estimate_bandwidth(data), tree.chunksize=1e4)
 {
   data <- as.matrix(data)
   if (is.null(dimnames(data)[[2]]))

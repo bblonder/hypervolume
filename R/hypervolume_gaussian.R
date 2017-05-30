@@ -37,7 +37,7 @@ calculate_density <- function(s, means, kernel_sd, chunksize=10, verbose=TRUE) {
 }
 
 
-hypervolume_gaussian <- function(data, name=NULL, samples.per.point=ceiling((10^(1+ncol(data)))/nrow(data)), kde.bandwidth=estimate_bandwidth(data), sd.count=3, quantile.requested=0.95, quantile.requested.type="probability", chunk.size=1e3, verbose=TRUE, ...)
+hypervolume_gaussian <- function(data, name=NULL, samples.per.point=ceiling((10^(2+sqrt(ncol(data))))/nrow(data)), kde.bandwidth=estimate_bandwidth(data), sd.count=3, quantile.requested=0.95, quantile.requested.type="probability", chunk.size=1e3, verbose=TRUE, ...)
 {
   data = as.matrix(data)
   d = ncol(data)
@@ -75,7 +75,7 @@ hypervolume_gaussian <- function(data, name=NULL, samples.per.point=ceiling((10^
     return(calculate_density(s=x,means=data,kernel_sd=kde.bandwidth))
   }
   
-  # do elliptical sampling over the hyperbox
+  # do elliptical sampling
   samples_all = sample_model_ellipsoid(
     predict_function = predict_function_gaussian,
     data = data,

@@ -1,6 +1,8 @@
 useDynLib(hypervolume)
 
 export( 
+  #hypervolume_svm_old,
+  
   #sample_model_metropolis,
   #sample_model_rejection,
   #sample_model_ellipsoid,

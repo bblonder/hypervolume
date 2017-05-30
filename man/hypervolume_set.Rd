@@ -20,7 +20,7 @@ A n-dimensional hypervolume
 A n-dimensional hypervolume
 }
   \item{num.points.max}{
-Maximum number of random points to use for set operations. If \code{NULL} defaults to 100*10^sqrt(n) where n is the dimensionality of the input hypervolumes. Note that this default parameter value has been increased by a factor of 10 since the 1.2 release of this package.
+Maximum number of random points to use for set operations. If \code{NULL} defaults to 10^(2+sqrt(n)) where n is the dimensionality of the input hypervolumes. Note that this default parameter value has been increased by a factor of 10 since the 1.2 release of this package.
 }
   \item{verbose}{
 Logical value; print diagnostic output if true.

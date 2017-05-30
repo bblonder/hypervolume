@@ -146,6 +146,8 @@ sample_model_ellipsoid <- function(predict_function=NULL, data, scales, min.valu
                           })
     full_samples = as.matrix(rbindlist(full_samples))
     
+
+    
     # Discard samples from regions that were over-sampled.
     iweight = ellipsoid_inverse_weight(full_samples, centers = data, 
                                        scales = scales, verbose = verbose)
@@ -162,8 +164,6 @@ sample_model_ellipsoid <- function(predict_function=NULL, data, scales, min.valu
     
     # now we have a uniform grid of points around each data point, samples_retained
     samples_retained = full_samples[included, , drop = FALSE]
-    
-    
     
     ### STEP TWO: estimate function
     # predict function value at each point

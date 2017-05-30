@@ -22,7 +22,7 @@ hypervolume_set <- function(hv1, hv2, num.points.max=NULL, verbose=TRUE, check.m
   
   if (is.null(num.points.max))
   {
-    num.points.max = floor(100*10^sqrt(hv1@Dimensionality))
+    num.points.max = ceiling(10^(2+sqrt(hv1@Dimensionality)))
     if (verbose==TRUE)
     {
       cat(sprintf('Choosing num.points.max=%.0f (use a larger value for more accuracy.)\n',num.points.max))  

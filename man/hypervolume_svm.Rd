@@ -9,7 +9,7 @@ Constructs a hypervolume by building a one-class support vector machine that cla
 }
 \usage{
 hypervolume_svm(data, name = NULL, 
-                  samples.per.point = ceiling((10^(1 + ncol(data)))/nrow(data)), 
+                  samples.per.point = ceiling((10^(2 + sqrt(ncol(data))))/nrow(data)), 
                   svm.nu = 0.01, svm.gamma = 0.5, 
                   chunk.size = 1000, verbose = TRUE)
 }

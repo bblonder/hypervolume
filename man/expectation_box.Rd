@@ -19,7 +19,7 @@ A m x n matrix or data frame, where m is the number of observations and n is the
 The point density of the output expectation. If \code{NULL}, defaults to \code{v / num.points} where \code{d} is the dimensionality of the input and v is the volume of the hypersphere.
 }
   \item{num.points}{
-The number of points in the output expectation. If \code{NULL}, defaults to \code{10^(1+ncol(d))} where \code{d} is the dimensionality of the input. \code{num.points} has priority over \code{point.density}; both cannot be specified.
+The number of points in the output expectation. If \code{NULL}, defaults to \code{10^(2+sqrt(ncol(d)))} where \code{d} is the dimensionality of the input. \code{num.points} has priority over \code{point.density}; both cannot be specified.
 }
   \item{use.random}{
 If \code{TRUE} and the \code{input} is of class \code{Hypervolume}, sets boundaries based on the \code{@RandomUniformPointsThresholded} slot; otherwise uses \code{@Data}.

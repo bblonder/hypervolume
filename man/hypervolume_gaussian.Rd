@@ -15,7 +15,7 @@ Most use cases should not require modification of any parameters except \code{kd
 }
 \usage{
 hypervolume_gaussian(data, name = NULL, 
-                      samples.per.point = ceiling((10^(1 + ncol(data)))/nrow(data)),
+                      samples.per.point = ceiling((10^(2 + sqrt(ncol(data))))/nrow(data)),
                       kde.bandwidth = estimate_bandwidth(data), 
                       sd.count = 3, 
                       quantile.requested = 0.95, 

@@ -1,5 +1,5 @@
 ## should reference padded_range in the 
-hypervolume_general_model <- function(model, name=NULL, verbose=TRUE, data=NULL, range.box=NULL, num.samples=10^(1+ncol(range.box)), chunk.size=1e4, min.value=0, ...)
+hypervolume_general_model <- function(model, name=NULL, verbose=TRUE, data=NULL, range.box=NULL, num.samples=ceiling(10^(2+sqrt(ncol(range.box)))), chunk.size=1e4, min.value=0, ...)
 {
   if (!is.null(data) & is.null(range.box))
   {
