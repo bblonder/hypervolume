@@ -1,7 +1,7 @@
 Package: hypervolume
 Type: Package
 Title: High Dimensional Geometry and Set Operations Using Kernel Density Estimation, Support Vector Machines, and Convex Polytopes
-Version: 2.0.6
+Version: 2.0.6.1
 Date: 2017-05-30
 Author: Benjamin Blonder, with contributions from David J. Harris
 Maintainer: Benjamin Blonder <bblonder@gmail.com>

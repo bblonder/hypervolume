@@ -10,7 +10,7 @@ Constructs a hypervolume from a set of observations via thresholding a kernel de
 \usage{
 hypervolume_box(data, name = NULL, verbose = TRUE, samples.per.point =
                  ceiling((10^(2 + sqrt(ncol(data))))/nrow(data)),
-                 kde.bandwidth = estimate_bandwidth(data),
+                 kde.bandwidth = 2*estimate_bandwidth(data),
                  tree.chunksize = 10000)
 }
 %- maybe also 'usage' for other objects documented here.
