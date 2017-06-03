@@ -127,8 +127,8 @@ hypervolume <- function(data, repsperpoint, bandwidth, quantile=0.0, name=NULL, 
   result@RepsPerPoint = repsperpoint#
   result@QuantileThresholdDesired = quantile#
   result@QuantileThresholdObtained = vc$quantile_obtained#
-  result@RandomUniformPointsThresholded = as.matrix(points_uniform_final);  #
-  result@ProbabilityDensityAtRandomUniformPoints = density_uniform_final#
+  result@RandomPoints = as.matrix(points_uniform_final);  #
+  result@ValueAtRandomPoints = density_uniform_final#
   if (verbose==TRUE)#
   {#
     cat(sprintf('Quantile requested: %.2f   obtained: %.2f\n', result@QuantileThresholdDesired, result@QuantileThresholdObtained))#

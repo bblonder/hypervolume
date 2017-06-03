@@ -11,7 +11,7 @@ hypervolume_segment <- function(hv,distance.factor=1, num.points.max=NULL, verbo
     hv <- hypervolume_thin(hv, num.points=num.points.max)
   }
   
-  hvrp <- hv@RandomUniformPointsThresholded
+  hvrp <- hv@RandomPoints
   
   if (check.memory==TRUE)
   {
@@ -54,9 +54,9 @@ hypervolume_segment <- function(hv,distance.factor=1, num.points.max=NULL, verbo
   {
     hv_temp <- hv
     hv_temp@Data <- matrix(NaN,nrow=1,ncol=hv@Dimensionality)
-    hv_temp@RandomUniformPointsThresholded <- hvrp[membership==i,,drop=FALSE]
-    hv_temp@ProbabilityDensityAtRandomUniformPoints <- hv@ProbabilityDensityAtRandomUniformPoints[membership==i]
-    hv_temp@Volume <- hv@Volume * nrow(hv_temp@RandomUniformPointsThresholded) / nrow(hv@RandomUniformPointsThresholded)
+    hv_temp@RandomPoints <- hvrp[membership==i,,drop=FALSE]
+    hv_temp@ValueAtRandomPoints <- hv@ValueAtRandomPoints[membership==i]
+    hv_temp@Volume <- hv@Volume * nrow(hv_temp@RandomPoints) / nrow(hv@RandomPoints)
     hv_temp@Method <- "Segmentation hypervolume"
     hv_temp@Name <- sprintf("%s (cluster %d/%d)", hv@Name, i, ngroups)
     hv_temp@Parameters = hv@Parameters

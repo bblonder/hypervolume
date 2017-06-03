@@ -1,16 +1,16 @@
 hypervolume_set <- function(hv1, hv2, num.points.max=NULL, verbose=TRUE, check.memory=TRUE, distance.factor=1.0)
 {
   # determine dataset sizes and dimensionality
-  np1 = nrow(hv1@RandomUniformPointsThresholded)
-  np2 = nrow(hv2@RandomUniformPointsThresholded)
+  np1 = nrow(hv1@RandomPoints)
+  np2 = nrow(hv2@RandomPoints)
   
   hv1_point_density = np1 / hv1@Volume
   if(is.nan(hv1_point_density)) { hv1_point_density <- NA }
   hv2_point_density = np2 / hv2@Volume
   if(is.nan(hv2_point_density)) { hv2_point_density <- NA }
   
-  dimhv1 = ncol(hv1@RandomUniformPointsThresholded)
-  dimhv2 = ncol(hv2@RandomUniformPointsThresholded)
+  dimhv1 = ncol(hv1@RandomPoints)
+  dimhv2 = ncol(hv2@RandomPoints)
   
   if (dimhv1 != dimhv2)
   {
@@ -46,8 +46,8 @@ hypervolume_set <- function(hv1, hv2, num.points.max=NULL, verbose=TRUE, check.m
   hv_empty@Volume = 0
   hv_empty@PointDensity = mindensity
   hv_empty@Parameters = list()
-  hv_empty@RandomUniformPointsThresholded = matrix(NA,nrow=0,ncol=dim,dimnames=dimnames(hv1@RandomUniformPointsThresholded))  
-  hv_empty@ProbabilityDensityAtRandomUniformPoints = 0
+  hv_empty@RandomPoints = matrix(NA,nrow=0,ncol=dim,dimnames=dimnames(hv1@RandomPoints))  
+  hv_empty@ValueAtRandomPoints = 0
   
   
   # handle the cases when one of the hypervolumes is empty
@@ -152,8 +152,8 @@ hypervolume_set <- function(hv1, hv2, num.points.max=NULL, verbose=TRUE, check.m
     }
   }
 
-  hv1_points_ss = hv1@RandomUniformPointsThresholded[sample(1:np1,size=numpointstokeep_hv1),,drop=FALSE]
-  hv2_points_ss = hv2@RandomUniformPointsThresholded[sample(1:np2,size=numpointstokeep_hv2),,drop=FALSE]
+  hv1_points_ss = hv1@RandomPoints[sample(1:np1,size=numpointstokeep_hv1),,drop=FALSE]
+  hv2_points_ss = hv2@RandomPoints[sample(1:np2,size=numpointstokeep_hv2),,drop=FALSE]
   
   point_density = nrow(hv1_points_ss) / hv1@Volume
   
@@ -219,7 +219,7 @@ hypervolume_set <- function(hv1, hv2, num.points.max=NULL, verbose=TRUE, check.m
   final_density_unique_2 = nrow(final_points_in_unique_2) / final_volume_unique_hv2
   
   # get column names
-  cn <- dimnames(hv1@RandomUniformPointsThresholded)[[2]]
+  cn <- dimnames(hv1@RandomPoints)[[2]]
   dn <- list(NULL, cn)
   
   # prepare final hypervolumes
@@ -231,9 +231,9 @@ hypervolume_set <- function(hv1, hv2, num.points.max=NULL, verbose=TRUE, check.m
   result_intersection@Volume = final_volume_intersection
   result_intersection@PointDensity = final_density_intersection
   result_intersection@Parameters = list()
-  result_intersection@RandomUniformPointsThresholded = matrix(as.matrix(as.data.frame(final_points_intersection)),ncol=dim)  
-  dimnames(result_intersection@RandomUniformPointsThresholded) = dn
-  result_intersection@ProbabilityDensityAtRandomUniformPoints = rep(1,nrow(result_intersection@RandomUniformPointsThresholded))
+  result_intersection@RandomPoints = matrix(as.matrix(as.data.frame(final_points_intersection)),ncol=dim)  
+  dimnames(result_intersection@RandomPoints) = dn
+  result_intersection@ValueAtRandomPoints = rep(1,nrow(result_intersection@RandomPoints))
   
   result_union = new("Hypervolume")
   result_union@Name = sprintf("Union of (%s, %s)", hv1@Name, hv2@Name)
@@ -243,9 +243,9 @@ hypervolume_set <- function(hv1, hv2, num.points.max=NULL, verbose=TRUE, check.m
   result_union@Volume = final_volume_union
   result_union@PointDensity = final_density_union
   result_union@Parameters = list()
-  result_union@RandomUniformPointsThresholded = matrix(as.matrix(as.data.frame(final_points_union)),ncol=dim)
-  dimnames(result_union@RandomUniformPointsThresholded) = dn
-  result_union@ProbabilityDensityAtRandomUniformPoints = rep(1,nrow(result_union@RandomUniformPointsThresholded))
+  result_union@RandomPoints = matrix(as.matrix(as.data.frame(final_points_union)),ncol=dim)
+  dimnames(result_union@RandomPoints) = dn
+  result_union@ValueAtRandomPoints = rep(1,nrow(result_union@RandomPoints))
   
   result_unique_hv1 = new("Hypervolume")
   result_unique_hv1@Name = sprintf("Unique component of (%s) relative to (%s)", hv1@Name, hv2@Name)
@@ -255,9 +255,9 @@ hypervolume_set <- function(hv1, hv2, num.points.max=NULL, verbose=TRUE, check.m
   result_unique_hv1@Volume = final_volume_unique_hv1
   result_unique_hv1@PointDensity = final_density_unique_1
   result_unique_hv1@Parameters = list()
-  result_unique_hv1@RandomUniformPointsThresholded = matrix(as.matrix(as.data.frame(final_points_in_unique_1)),ncol=dim)
-  dimnames(result_unique_hv1@RandomUniformPointsThresholded) = dn
-  result_unique_hv1@ProbabilityDensityAtRandomUniformPoints = rep(1,nrow(result_unique_hv1@RandomUniformPointsThresholded))
+  result_unique_hv1@RandomPoints = matrix(as.matrix(as.data.frame(final_points_in_unique_1)),ncol=dim)
+  dimnames(result_unique_hv1@RandomPoints) = dn
+  result_unique_hv1@ValueAtRandomPoints = rep(1,nrow(result_unique_hv1@RandomPoints))
   
   result_unique_hv2 = new("Hypervolume")
   result_unique_hv2@Name = sprintf("Unique component of (%s) relative to (%s)", hv2@Name, hv1@Name)
@@ -267,9 +267,9 @@ hypervolume_set <- function(hv1, hv2, num.points.max=NULL, verbose=TRUE, check.m
   result_unique_hv2@Volume = final_volume_unique_hv2
   result_unique_hv2@PointDensity = final_density_unique_2
   result_unique_hv2@Parameters = list()
-  result_unique_hv2@RandomUniformPointsThresholded = matrix(as.matrix(as.data.frame(final_points_in_unique_2)),ncol=dim)
-  dimnames(result_unique_hv2@RandomUniformPointsThresholded) = dn
-  result_unique_hv2@ProbabilityDensityAtRandomUniformPoints = rep(1,nrow(result_unique_hv2@RandomUniformPointsThresholded))
+  result_unique_hv2@RandomPoints = matrix(as.matrix(as.data.frame(final_points_in_unique_2)),ncol=dim)
+  dimnames(result_unique_hv2@RandomPoints) = dn
+  result_unique_hv2@ValueAtRandomPoints = rep(1,nrow(result_unique_hv2@RandomPoints))
   
   # assemble final results into a list
   result = new("HypervolumeList")

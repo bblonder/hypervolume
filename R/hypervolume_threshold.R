@@ -2,7 +2,7 @@ hypervolume_threshold <- function(hv, thresholds=NULL, num.thresholds=100, quant
 {
   if (is.null(thresholds))
   {
-    thresholds <- seq(min(hv@ProbabilityDensityAtRandomUniformPoints), max(hv@ProbabilityDensityAtRandomUniformPoints), length.out=num.thresholds)
+    thresholds <- seq(min(hv@ValueAtRandomPoints), max(hv@ValueAtRandomPoints), length.out=num.thresholds)
   }
   quantiles <- rep(NA, length(thresholds))
   
@@ -23,20 +23,20 @@ hypervolume_threshold <- function(hv, thresholds=NULL, num.thresholds=100, quant
     }
     
     hv_new <- hv
-    hv_new@RandomUniformPointsThresholded <- hv@RandomUniformPointsThresholded[hv@ProbabilityDensityAtRandomUniformPoints > thresholds[i],,drop=F]
-    hv_new@Volume <- length(which(hv@ProbabilityDensityAtRandomUniformPoints > thresholds[i])) / hv@PointDensity
+    hv_new@RandomPoints <- hv@RandomPoints[hv@ValueAtRandomPoints > thresholds[i],,drop=F]
+    hv_new@Volume <- length(which(hv@ValueAtRandomPoints > thresholds[i])) / hv@PointDensity
     if (uniform.density==TRUE)
     {
-      hv_new@ProbabilityDensityAtRandomUniformPoints <- rep(1, length(hv_new@ProbabilityDensityAtRandomUniformPoints))
+      hv_new@ValueAtRandomPoints <- rep(1, length(hv_new@ValueAtRandomPoints))
     }
     else
     {
-      hv_new@ProbabilityDensityAtRandomUniformPoints <- hv@ProbabilityDensityAtRandomUniformPoints[hv@ProbabilityDensityAtRandomUniformPoints > thresholds[i]]
+      hv_new@ValueAtRandomPoints <- hv@ValueAtRandomPoints[hv@ValueAtRandomPoints > thresholds[i]]
     }
     result[[i]] <- hv_new
     
     # also calculate probability density enclosed
-    probability_sums[i] <- sum(hv@ProbabilityDensityAtRandomUniformPoints[hv@ProbabilityDensityAtRandomUniformPoints > thresholds[i] ])
+    probability_sums[i] <- sum(hv@ValueAtRandomPoints[hv@ValueAtRandomPoints > thresholds[i] ])
   }
   if (verbose==TRUE)
   {

@@ -11,6 +11,7 @@ Constructs a hypervolume by building a one-class support vector machine that cla
 hypervolume_svm(data, name = NULL, 
                   samples.per.point = ceiling((10^(2 + sqrt(ncol(data))))/nrow(data)), 
                   svm.nu = 0.01, svm.gamma = 0.5, 
+                  scale.factor = 1,
                   chunk.size = 1000, verbose = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -30,6 +31,9 @@ A SVM parameter determining an upper bound on the fraction of training errors an
 }
   \item{svm.gamma}{
 A SVM parameter defining the inverse radius of influence of a single point. Low values yield large influences (smooth less complex wraps around the data) and high values yield small influences (tighter but potentially noiser wraps around the data) (see http://scikit-learn.org/stable/auto_examples/svm/plot_rbf_parameters.html).
+}
+  \item{scale.factor}{
+A multiplicative factor used to determine the boundaries of the hyperelliptical sampling region. Larger values yield larger boundaries and can prevent clipping. Should not need to be changed in almost any situation.
 }
   \item{chunk.size}{
 Number of random points to process per internal step. Larger values may have better performance on machines with large amounts of free memory. Changing this parameter does not change the output of the function; only how this output is internally assembled.

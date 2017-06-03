@@ -1,4 +1,4 @@
-hypervolume_svm <- function(data, name=NULL, samples.per.point=ceiling((10^(2+sqrt(ncol(data))))/nrow(data)), svm.nu=0.01, svm.gamma=0.5, chunk.size=1e3, verbose=TRUE)
+hypervolume_svm <- function(data, name=NULL, samples.per.point=ceiling((10^(2+sqrt(ncol(data))))/nrow(data)), svm.nu=0.01, svm.gamma=0.5, scale.factor=1, chunk.size=1e3, verbose=TRUE)
 {
   data <- as.matrix(data)
   d <- ncol(data)
@@ -42,7 +42,7 @@ hypervolume_svm <- function(data, name=NULL, samples.per.point=ceiling((10^(2+sq
   #    * "r" is the minimum kernel density of the hypervolume (rho)
   #    * "d_2" is squared distance  
   squared_scaled_dist = log(sum(svm_this$coefs) / svm_this$rho) / svm.gamma
-  scales = apply(data, 2, sd) * sqrt(squared_scaled_dist)  
+  scales = scale.factor * apply(data, 2, sd) * sqrt(squared_scaled_dist)  
   
   predict_function_svm <- function(x)
   {
@@ -67,11 +67,11 @@ hypervolume_svm <- function(data, name=NULL, samples.per.point=ceiling((10^(2+sq
   hv_svm <- new("Hypervolume",
                 Data=data,
                 Method = 'One-class support vector machine',
-                RandomUniformPointsThresholded= random_points,
+                RandomPoints= random_points,
                 PointDensity= point_density,
                 Volume= volume,
                 Dimensionality=d,
-                ProbabilityDensityAtRandomUniformPoints=values_accepted,
+                ValueAtRandomPoints=values_accepted,
                 Name=ifelse(is.null(name), "untitled", toString(name)),
                 Parameters = list(svm.nu=svm.nu, svm.gamma=svm.gamma, samples.per.point=samples.per.point))
   

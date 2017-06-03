@@ -1,7 +1,7 @@
 hypervolume_estimate_probability <- function(hv, points, reduction.factor=1, weight.exponent=-1, set.edges.zero=TRUE, edges.zero.distance.factor=1, verbose=TRUE)
 {  
-  np = nrow(hv@RandomUniformPointsThresholded)
-  dimhv = ncol(hv@RandomUniformPointsThresholded)
+  np = nrow(hv@RandomPoints)
+  dimhv = ncol(hv@RandomPoints)
   dimp = ncol(points)
   
   if (dimp != dimhv)
@@ -19,8 +19,8 @@ hypervolume_estimate_probability <- function(hv, points, reduction.factor=1, wei
   numpointstokeep_hv = floor(np * reduction.factor)
   index_ss = sample(1:np,size=numpointstokeep_hv,replace=FALSE)
   
-  hv_points_ss = hv@RandomUniformPointsThresholded[index_ss,,drop=FALSE]
-  prob_ss = hv@ProbabilityDensityAtRandomUniformPoints[index_ss]
+  hv_points_ss = hv@RandomPoints[index_ss,,drop=FALSE]
+  prob_ss = hv@ValueAtRandomPoints[index_ss]
   
   # determine the reduced hypervolume's point density
   point_density = nrow(hv_points_ss) / hv@Volume
@@ -31,7 +31,7 @@ hypervolume_estimate_probability <- function(hv, points, reduction.factor=1, wei
   
   if (verbose==TRUE)
   {
-    cat(sprintf('Retaining %d/%d hypervolume random points for comparison with %d test points.\n', nrow(hv_points_ss), nrow(hv@RandomUniformPointsThresholded), nrow(points)))
+    cat(sprintf('Retaining %d/%d hypervolume random points for comparison with %d test points.\n', nrow(hv_points_ss), nrow(hv@RandomPoints), nrow(points)))
   }
   
   pb <- progress_bar$new(total=nrow(points))

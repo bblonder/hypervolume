@@ -5,7 +5,7 @@
 Reduces the number of random points in a hypervolume
 }
 \description{
-Many hypervolume algorithms have computational complexities that scale with the number of random points used to characterize a hypervolume (\code{@RandomUniformPointsThresholded}). This value can be reduced to improve runtimes at the cost of lower resolution.
+Many hypervolume algorithms have computational complexities that scale with the number of random points used to characterize a hypervolume (\code{@RandomPoints}). This value can be reduced to improve runtimes at the cost of lower resolution.
 }
 \usage{
 hypervolume_thin(hv, factor = NULL, num.points = NULL)

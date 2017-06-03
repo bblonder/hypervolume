@@ -35,11 +35,11 @@ hypervolume_general_model <- function(model, name=NULL, verbose=TRUE, data=NULL,
   hv <- new("Hypervolume",
                 Data=matrix(NA,ncol=d,nrow=1),
                 Method = 'Rejection sampling',
-                RandomUniformPointsThresholded= samples_accepted,
+                RandomPoints= samples_accepted,
                 PointDensity= point_density,
                 Volume= volume,
                 Dimensionality=d,
-                ProbabilityDensityAtRandomUniformPoints=values_accepted,
+                ValueAtRandomPoints=values_accepted,
                 Name=ifelse(is.null(name), "untitled", toString(name))) # no parameters
   hv@Parameters = list(num.samples=num.samples, min.value=min.value)
   

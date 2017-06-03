@@ -25,13 +25,13 @@ expectation_maximal <- function(input, ...)
   }
 }
 
-expectation_box <- function(input, point.density=NULL, num.points=NULL, use.random=FALSE)
+expectation_box <- function(input, point.density=NULL, num.samples=NULL, use.random=FALSE)
 {
   if (class(input)=="Hypervolume")
   {
     if (use.random==TRUE)
     {
-      data <- input@RandomUniformPointsThresholded
+      data <- input@RandomPoints
     }
     else 
     {
@@ -48,24 +48,24 @@ expectation_box <- function(input, point.density=NULL, num.points=NULL, use.rand
   
   volume = prod(maxv - minv)
   
-  if        (is.null(point.density) & !is.null(num.points)) # numpoints specified, use it
+  if        (is.null(point.density) & !is.null(num.samples)) # numpoints specified, use it
   {
-    npoints = num.points
+    npoints = num.samples
     point.density = npoints / volume
   }
-  else if   (is.null(point.density) & is.null(num.points)) # no input, use default # of points
+  else if   (is.null(point.density) & is.null(num.samples)) # no input, use default # of points
   {
     npoints = ceiling(10^(2+sqrt(ncol(data))))
     point.density = npoints / volume
   }
-  else if   (!is.null(point.density) & is.null(num.points)) # point density specified, use it
+  else if   (!is.null(point.density) & is.null(num.samples)) # point density specified, use it
   {
     npoints = ceiling(volume * point.density)
     point.density = point.density
   }
-  else if   (!is.null(point.density) & !is.null(num.points)) # error
+  else if   (!is.null(point.density) & !is.null(num.samples)) # error
   {
-    stop('Cannot specify both point.density and num.points')
+    stop('Cannot specify both point.density and num.samples')
   }
   
   result <- matrix(NA, nrow=npoints, ncol=length(minv), dimnames=list(NULL, dimnames(data)[[2]]))
@@ -79,25 +79,25 @@ expectation_box <- function(input, point.density=NULL, num.points=NULL, use.rand
                 Name=sprintf("Box expectation for %s", ifelse(class(input)=="Hypervolume", input@Name, deparse(substitute(data))[1])),
                 Method="Box expectation",
                 Data = as.matrix(data),
-                RandomUniformPointsThresholded=result, 
+                RandomPoints=result, 
                 Dimensionality=ncol(data), 
                 Volume=volume,
                 PointDensity=point.density, 
                 Parameters= list(),
-                ProbabilityDensityAtRandomUniformPoints = rep(1, npoints)
+                ValueAtRandomPoints = rep(1, npoints)
   )  
   
   return(hv_box)
 }
 
 
-expectation_ball <- function(input, point.density=NULL, num.points=NULL, use.random=FALSE)
+expectation_ball <- function(input, point.density=NULL, num.samples=NULL, use.random=FALSE)
 {
   if (class(input)=="Hypervolume")
   {
     if (use.random==TRUE)
     {
-      data <- input@RandomUniformPointsThresholded
+      data <- input@RandomPoints
     }
     else 
     {
@@ -116,24 +116,24 @@ expectation_ball <- function(input, point.density=NULL, num.points=NULL, use.ran
   
   volume = nball_volume(n=ncol(data),r=maxradius)  
   
-  if        (is.null(point.density) & !is.null(num.points)) # numpoints specified, use it
+  if        (is.null(point.density) & !is.null(num.samples)) # numpoints specified, use it
   {
-    npoints = num.points
+    npoints = num.samples
     point.density = npoints / volume
   }
-  else if   (is.null(point.density) & is.null(num.points)) # no input, use default # of points
+  else if   (is.null(point.density) & is.null(num.samples)) # no input, use default # of points
   {
     npoints = ceiling(10^(2+sqrt(ncol(data))))
     point.density = npoints / volume
   }
-  else if   (!is.null(point.density) & is.null(num.points)) # point density specified, use it
+  else if   (!is.null(point.density) & is.null(num.samples)) # point density specified, use it
   {
     npoints = ceiling(volume * point.density)
     point.density = point.density
   }
-  else if   (!is.null(point.density) & !is.null(num.points)) # error
+  else if   (!is.null(point.density) & !is.null(num.samples)) # error
   {
-    stop('Cannot specify both point.density and num.points')
+    stop('Cannot specify both point.density and num.samples')
   }
   
   result <- randsphere(m=npoints, n=ncol(data), r=maxradius)
@@ -144,12 +144,12 @@ expectation_ball <- function(input, point.density=NULL, num.points=NULL, use.ran
                  Name=sprintf("Ball expectation for %s", ifelse(class(input)=="Hypervolume", input@Name, deparse(substitute(data))[1])),
                  Method="Ball expectation",
                  Data = as.matrix(data),
-                 RandomUniformPointsThresholded=result, 
+                 RandomPoints=result, 
                  Dimensionality=ncol(data), 
                  Volume=volume,
                  PointDensity=point.density, 
                  Parameters= list(), 
-                 ProbabilityDensityAtRandomUniformPoints = rep(1, npoints)
+                 ValueAtRandomPoints = rep(1, npoints)
   )  
   
   return(hv_ball)
@@ -287,13 +287,13 @@ hullToConstr <- function(calpts, hull) {
 
 
 
-expectation_convex <- function(input, point.density=NULL, num.points=NULL, num.points.on.hull=NULL, check.memory=TRUE, verbose=TRUE, use.random=FALSE, method="rejection", chunksize=1e3)
+expectation_convex <- function(input, point.density=NULL, num.samples=NULL, num.points.on.hull=NULL, check.memory=TRUE, verbose=TRUE, use.random=FALSE, method="hitandrun", chunksize=1e3)
 {
   if (class(input)=="Hypervolume")
   {
     if (use.random==TRUE)
     {
-      data <- input@RandomUniformPointsThresholded
+      data <- input@RandomPoints
     }
     else 
     {
@@ -323,24 +323,24 @@ expectation_convex <- function(input, point.density=NULL, num.points=NULL, num.p
   hull_volume <- convexhull$vol # extract volume
   
  
-  if        (is.null(point.density) & !is.null(num.points)) # numpoints specified, use it
+  if        (is.null(point.density) & !is.null(num.samples)) # numpoints specified, use it
   {
-    np = num.points
+    np = num.samples
     point.density = np / hull_volume
   }
-  else if   (is.null(point.density) & is.null(num.points)) # no input, use default # of points
+  else if   (is.null(point.density) & is.null(num.samples)) # no input, use default # of points
   {
     np = ceiling(10^(2+sqrt(ncol(data))))
     point.density = np / hull_volume
   }
-  else if   (!is.null(point.density) & is.null(num.points)) # point density specified, use it
+  else if   (!is.null(point.density) & is.null(num.samples)) # point density specified, use it
   {
     np = ceiling(hull_volume * point.density)
     point.density = point.density
   }
-  else if   (!is.null(point.density) & !is.null(num.points)) # error
+  else if   (!is.null(point.density) & !is.null(num.samples)) # error
   {
-    stop('Cannot specify both point.density and num.points')
+    stop('Cannot specify both point.density and num.samples')
   }
   
   
@@ -416,11 +416,11 @@ expectation_convex <- function(input, point.density=NULL, num.points=NULL, num.p
     
     hv_hull <- new("Hypervolume",
                    Data=data,
-                   RandomUniformPointsThresholded= samples,
+                   RandomPoints= samples,
                    PointDensity=point.density,
                    Volume= volume_convexhull,
                    Dimensionality=ncol(samples),
-                   ProbabilityDensityAtRandomUniformPoints=rep(1, nrow(samples)),
+                   ValueAtRandomPoints=rep(1, nrow(samples)),
                    Name=sprintf("Convex expectation for %s", ifelse(class(input)=="Hypervolume", input@Name, deparse(substitute(data))[1])),
                    Method="Adaptive hit and run convex expectation")	
     
@@ -467,9 +467,9 @@ expectation_convex <- function(input, point.density=NULL, num.points=NULL, num.p
       # try a set of test points
       testpoints <- expectation_box(data_reduced)
       
-      chullin <- (inhull_compiled(testpts= testpoints@RandomUniformPointsThresholded, calpts=data_reduced, hull=hull_matrix)==1)
+      chullin <- (inhull_compiled(testpts= testpoints@RandomPoints, calpts=data_reduced, hull=hull_matrix)==1)
       # figure out which are 'in'
-      inpoints_temp <- testpoints@RandomUniformPointsThresholded[chullin,]
+      inpoints_temp <- testpoints@RandomPoints[chullin,]
       
       niter <- niter + 1
       inpoints <- rbind(inpoints, inpoints_temp)
@@ -491,12 +491,12 @@ expectation_convex <- function(input, point.density=NULL, num.points=NULL, num.p
                     Name=sprintf("Convex expectation for %s", ifelse(class(input)=="Hypervolume", input@Name, deparse(substitute(data))[1])),
                     Method="Rejection sampling convex expectation",
                     Data=as.matrix(data),
-                    RandomUniformPointsThresholded=inpoints, 
+                    RandomPoints=inpoints, 
                     Dimensionality=ncol(inpoints), 
                     Volume=hull_volume,
                     PointDensity = point.density,
                     Parameters= list(),
-                    ProbabilityDensityAtRandomUniformPoints = rep(1, nrow(inpoints))
+                    ValueAtRandomPoints = rep(1, nrow(inpoints))
     )
     
     return(hv_chull)    

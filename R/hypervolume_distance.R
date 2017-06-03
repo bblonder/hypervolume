@@ -1,7 +1,7 @@
 hypervolume_distance <- function(hv1, hv2, type="centroid", num.points.max=1000, check.memory=TRUE)
 {
-  hv1p <- hv1@RandomUniformPointsThresholded
-  hv2p <- hv2@RandomUniformPointsThresholded
+  hv1p <- hv1@RandomPoints
+  hv2p <- hv2@RandomPoints
   
   if (type=="centroid")
   {

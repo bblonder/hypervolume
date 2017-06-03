@@ -37,7 +37,7 @@ hypervolume_prune <- function(hvlist, num.points.min=NULL, volume.min=NULL, retu
   dodrop <- rep(FALSE, length(hvlist@HVList))
   for (i in 1:length(hvlist@HVList))
   {
-    np <- nrow(hvlist@HVList[[i]]@RandomUniformPointsThresholded)
+    np <- nrow(hvlist@HVList[[i]]@RandomPoints)
     vol <- hvlist@HVList[[i]]@Volume
     
     if (!is.null(num.points.min))

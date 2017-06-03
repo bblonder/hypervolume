@@ -1,7 +1,7 @@
-hypervolume_inclusion_test <- function(hv, points, reduction.factor=1, fast.or.accurate='fast', fast.method.distance.factor=1.0, accurate.method.threshold=quantile(hv@ProbabilityDensityAtRandomUniformPoints,0.5), verbose=TRUE, ...)
+hypervolume_inclusion_test <- function(hv, points, reduction.factor=1, fast.or.accurate='fast', fast.method.distance.factor=1.0, accurate.method.threshold=quantile(hv@ValueAtRandomPoints,0.5), verbose=TRUE, ...)
 {  
-  np = nrow(hv@RandomUniformPointsThresholded)
-  dimhv = ncol(hv@RandomUniformPointsThresholded)
+  np = nrow(hv@RandomPoints)
+  dimhv = ncol(hv@RandomPoints)
   dimp = ncol(points)
   
   if (dimp != dimhv)
@@ -19,11 +19,11 @@ hypervolume_inclusion_test <- function(hv, points, reduction.factor=1, fast.or.a
   numpointstokeep_hv = floor(np * reduction.factor)        
   if (reduction.factor < 1)
   {
-    hv_points_ss = hv@RandomUniformPointsThresholded[sample(1:np,size=numpointstokeep_hv),]
+    hv_points_ss = hv@RandomPoints[sample(1:np,size=numpointstokeep_hv),]
   }
   else
   {
-    hv_points_ss = hv@RandomUniformPointsThresholded
+    hv_points_ss = hv@RandomPoints
   }
   
   if (fast.or.accurate=="fast")
@@ -31,7 +31,7 @@ hypervolume_inclusion_test <- function(hv, points, reduction.factor=1, fast.or.a
     warning('Results may have a high error rate. Consider setting fast.or.accurate=\'accurate\'.')
     if (verbose==TRUE)
     {
-      cat(sprintf('Retaining %d/%d hypervolume random points for comparison with %d test points.\n', nrow(hv_points_ss), nrow(hv@RandomUniformPointsThresholded), nrow(points)))
+      cat(sprintf('Retaining %d/%d hypervolume random points for comparison with %d test points.\n', nrow(hv_points_ss), nrow(hv@RandomPoints), nrow(points)))
     }
     
     # determine the reduced hypervolume's point density

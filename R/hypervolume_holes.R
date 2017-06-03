@@ -24,7 +24,7 @@ hypervolume_holes <- function(hv.obs, hv.exp, set.num.points.max=NULL, set.check
   cat("Finished set operations.\n")
   
   # find the distance between all points in the difference
-  randompoints <- hvs_overlap@HVList$Unique_2@RandomUniformPointsThresholded
+  randompoints <- hvs_overlap@HVList$Unique_2@RandomPoints
   if (is.null(randompoints) || nrow(randompoints) == 0)
   {		
     cat('No holes found.\n');
@@ -45,7 +45,7 @@ hypervolume_holes <- function(hv.obs, hv.exp, set.num.points.max=NULL, set.check
     randompoints_trimmed <- randompoints[isin,]
     
     thishv <- hvs_overlap@HVList$Unique_2 # copy base information
-    thishv@RandomUniformPointsThresholded <- randompoints_trimmed
+    thishv@RandomPoints <- randompoints_trimmed
     thishv@Volume <- hvs_overlap@HVList$Unique_2@Volume * nrow(randompoints_trimmed) / nrow(randompoints)
     thishv@Name <- sprintf("Hole in %s relative to %s", hv.obs@Name, hv.exp@Name)
     

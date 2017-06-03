@@ -7,7 +7,7 @@ Thresholds hypervolume and calculates volume quantile statistics (empirical cumu
 \description{
 Thresholds a hypervolume at a given value that can correspond to a quantile of the hypervolume. All random points below the threshold value are removed and the volume is adjusted accordingly. Provides threshold-quantile plots if multiple thresholds are specified (as by default). 
 
-Quantiles can be specified to be either of the total volume enclosed by the hypervolume p(proportional to \code{nrow(hv@RandomUniformPointsThresholded)}), or of the total probability density (proportional to \code{sum(hv@ProbabilityDensityAtRandomUniformPoints)}).
+Quantiles can be specified to be either of the total volume enclosed by the hypervolume p(proportional to \code{nrow(hv@RandomPoints)}), or of the total probability density (proportional to \code{sum(hv@ValueAtRandomPoints)}).
 }
 \usage{
 hypervolume_threshold(hv, 
@@ -37,7 +37,7 @@ If not \code{NULL}, selects a single hypervolume correspondong to the threshold 
 Determines the quantile type: either \code{"volume"} or \code{"probability"}. 
 }
   \item{uniform.density}{
-Logical value. If \code{TRUE}, sets all \code{@ProbabilityDensityAtRandomUniformPoints} values to 1 in order to represent thresholded hypervolume as a solid geometrical shape. 
+Logical value. If \code{TRUE}, sets all \code{@ValueAtRandomPoints} values to 1 in order to represent thresholded hypervolume as a solid geometrical shape. 
 }
   \item{plot}{
 Plots a threshold-quantile plot if \code{TRUE}. Quantiles are shown for both volume and probability density. This plot is similar to an empirical cumulative distribution function.

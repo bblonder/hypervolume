@@ -17,7 +17,7 @@ Objects can be created by calls of the form \code{new("Hypervolume", ...)}.
     \item{\code{Volume}:}{Object of class \code{"numeric"} ~~ Volume of the hypervolume}
     \item{\code{PointDensity}:}{Object of class \code{"numeric"} ~~ Number of random points per unit volume}
     \item{\code{Parameters}:}{Object of class \code{"list"} ~~ List of parameters that will depend on the method used to construct the hypervolume}
-    \item{\code{RandomUniformPointsThresholded}:}{Object of class \code{"matrix"} ~~ A matrix of uniformly random points distributed within the hypervolume}
-    \item{\code{ProbabilityDensityAtRandomUniformPoints}:}{Object of class \code{"numeric"} ~~ A vector of positive numbers representing the probabilty density at each random point in \code{@RandomUniformPointsThresholded}}
+    \item{\code{RandomPoints}:}{Object of class \code{"matrix"} ~~ A matrix of uniformly random points distributed within the hypervolume}
+    \item{\code{ValueAtRandomPoints}:}{Object of class \code{"numeric"} ~~ A vector of positive numbers representing the probabilty density at each random point in \code{@RandomPoints}}
   }
 }

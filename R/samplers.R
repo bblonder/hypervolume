@@ -102,7 +102,7 @@ ellipsoid_inverse_weight = function(samples, centers, scales, verbose) {
   return(query)
 }
 
-sample_model_ellipsoid <- function(predict_function=NULL, data, scales, min.value, samples.per.point, chunk.size=1e3, verbose=TRUE)
+sample_model_ellipsoid <- function(predict_function=NULL, data, scales, min.value, samples.per.point, chunk.size=1e3, verbose=TRUE, return.full=FALSE)
 {
   # Use only complete cases
   data = na.omit(as.matrix(data))
@@ -199,8 +199,14 @@ sample_model_ellipsoid <- function(predict_function=NULL, data, scales, min.valu
     pb$tick()
   }
   
-  
-  return(list(samples = samples, volume=volume))
+  if (return.full==TRUE)
+  {
+    return(list(samples = samples, full_samples=full_samples, volume=volume))
+  }
+  else
+  {
+    return(list(samples = samples, volume=volume))
+  }
 }
 
 

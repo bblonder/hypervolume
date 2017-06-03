@@ -49,7 +49,7 @@ hv_annulus <- hypervolume_gaussian(data_annulus,
                 kde.bandwidth=0.05,name='annulus',samples.per.point=1)
 
 # GET CONVEX EXPECTATION
-hv_convex <- expectation_convex(hypervolume_thin(hv_annulus,num.points=500),
+hv_convex <- expectation_convex(hypervolume_thin(hv_annulus,num.samples=500),
                 check.memory=FALSE,use.random=TRUE)
 
 # DETECT HOLES (low npoints for fast execution)

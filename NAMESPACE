@@ -1,18 +1,15 @@
 useDynLib(hypervolume)
 
 export( 
-  #hypervolume_svm_old,
-  
-  #sample_model_metropolis,
+  ### (internal functions)
   #sample_model_rejection,
   #sample_model_ellipsoid,
-  
+  #calculate_density,
   #kdtree_build,
   #evalfrectangular,
   #evalfspherical,
   
   estimate_bandwidth, 
-  #estimate_threshold_gaussian,
   expectation_ball, 
   expectation_box, 
   expectation_convex,
@@ -23,7 +20,6 @@ export(
   hypervolume_box,
   hypervolume_distance, 
   hypervolume_estimate_probability,
-  #hypervolume_gaussian_old,
   hypervolume_gaussian,
   hypervolume_general_model,
   hypervolume_holes, 

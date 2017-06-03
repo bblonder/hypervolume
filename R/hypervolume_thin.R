@@ -1,6 +1,6 @@
 hypervolume_thin <- function(hv, factor=NULL, num.points=NULL)
 {
-  rp <- hv@RandomUniformPointsThresholded
+  rp <- hv@RandomPoints
   nrp <- nrow(rp)  
   
   if (!is.null(factor))
@@ -37,7 +37,7 @@ hypervolume_thin <- function(hv, factor=NULL, num.points=NULL)
   
   hv_out <- hv
   
-  hv_out@RandomUniformPointsThresholded <- rp[sample(1:nrow(rp),nrow(rp)*factor),]
+  hv_out@RandomPoints <- rp[sample(1:nrow(rp),nrow(rp)*factor),]
   
   hv_out@PointDensity <- hv@PointDensity * factor
   

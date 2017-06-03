@@ -94,11 +94,11 @@ hypervolume_gaussian <- function(data, name=NULL, samples.per.point=ceiling((10^
   hv_gaussian <- new("Hypervolume",
                 Data=data,
                 Method = 'Gaussian kernel density estimate',
-                RandomUniformPointsThresholded= random_points,
+                RandomPoints= random_points,
                 PointDensity= point_density,
                 Volume= volume,
                 Dimensionality=d,
-                ProbabilityDensityAtRandomUniformPoints=values_accepted,
+                ValueAtRandomPoints=values_accepted,
                 Name=ifelse(is.null(name), "untitled", toString(name)),
                 Parameters = list(kde.bandwidth=kde.bandwidth, samples.per.point=samples.per.point, sd.count=sd.count, quantile.requested=quantile.requested, quantile.requested.type=quantile.requested.type))
   

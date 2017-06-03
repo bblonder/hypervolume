@@ -38,7 +38,7 @@ plot.HypervolumeList <- function(x,
   {
     if (verbose==TRUE)
     {
-      cat(sprintf("Showing %d random points of %d for %s\n",min(nrow(z@RandomUniformPointsThresholded), num.points.max.random), nrow(z@RandomUniformPointsThresholded), z@Name))
+      cat(sprintf("Showing %d random points of %d for %s\n",min(nrow(z@RandomPoints), num.points.max.random), nrow(z@RandomPoints), z@Name))
     }
     if (show.data && length(z@Data) > 0)
     {
@@ -59,9 +59,9 @@ plot.HypervolumeList <- function(x,
   alldata <- NULL
   for (i in 1:length(x@HVList))
   {
-    ivals = sample(nrow(x@HVList[[i]]@RandomUniformPointsThresholded), min(c(num.points.max.random, nrow(x@HVList[[i]]@RandomUniformPointsThresholded))))
-    subsampledpoints = data.frame(x@HVList[[i]]@RandomUniformPointsThresholded[ivals,,drop=FALSE])
-    densityvals = x@HVList[[i]]@ProbabilityDensityAtRandomUniformPoints[ivals]
+    ivals = sample(nrow(x@HVList[[i]]@RandomPoints), min(c(num.points.max.random, nrow(x@HVList[[i]]@RandomPoints))))
+    subsampledpoints = data.frame(x@HVList[[i]]@RandomPoints[ivals,,drop=FALSE])
+    densityvals = x@HVList[[i]]@ValueAtRandomPoints[ivals]
     
     if (nrow(subsampledpoints) > 0)
     {  
@@ -83,13 +83,13 @@ plot.HypervolumeList <- function(x,
   if (is.null(all))
   {
     warning('No random points to plot.')
-    if (is.null(dimnames(x@HVList[[1]]@RandomUniformPointsThresholded)[[2]]))
+    if (is.null(dimnames(x@HVList[[1]]@RandomPoints)[[2]]))
     {
       all <- matrix(0,ncol=2+alldims,nrow=1,dimnames=list(NULL,c(paste("X",1:alldims,sep=""),"ID","Density")))
     }
     else
     {
-      all <- matrix(0,ncol=2+alldims,nrow=1,dimnames=list(NULL,c(dimnames(x@HVList[[1]]@RandomUniformPointsThresholded)[[2]],"ID","Density")))
+      all <- matrix(0,ncol=2+alldims,nrow=1,dimnames=list(NULL,c(dimnames(x@HVList[[1]]@RandomPoints)[[2]],"ID","Density")))
     }
     all <- as.data.frame(all)
   }

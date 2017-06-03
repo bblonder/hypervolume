@@ -13,7 +13,7 @@ The function can also operate using an 'accurate' algorithm which estimates the 
 hypervolume_inclusion_test(hv, points, reduction.factor = 1, fast.or.accurate =
                  "fast", fast.method.distance.factor = 1,
                  accurate.method.threshold =
-                 quantile(hv@ProbabilityDensityAtRandomUniformPoints,
+                 quantile(hv@ValueAtRandomPoints,
                  0.5), verbose = TRUE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
