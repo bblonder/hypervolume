@@ -9,6 +9,7 @@ export(
   #evalfrectangular,
   #evalfspherical,
   
+  ### (external functions)
   estimate_bandwidth, 
   expectation_ball, 
   expectation_box, 
@@ -25,7 +26,6 @@ export(
   hypervolume_holes, 
   hypervolume_inclusion_test, 
   hypervolume_join, 
-  #hypervolume_old,
   hypervolume_overlap_statistics,
   hypervolume_project,
   hypervolume_prune, 
@@ -83,9 +83,9 @@ import(mvtnorm)
 import(data.table)
 import(progress)
 import(pdist)
+
 importFrom("hexbin","hexbin")
 importFrom("raster","raster", "getValues","values")
-
 importFrom("grDevices", "col2rgb", "rainbow", "rgb", "hsv", "rgb2hsv")
 importFrom("graphics", ".filled.contour", "axis", "box", "contour","par", "plot", "points", "text","lines")
 importFrom("stats", "cor", "cutree", "dist", "na.omit", "pgamma","rnorm", "runif", "sd", "median", "quantile","rbinom")

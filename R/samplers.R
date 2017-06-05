@@ -32,7 +32,7 @@ sample_model_rejection <- function(model, range, N.samples, chunk.size=1e3, verb
     }
     
     # predict values at these points
-    samples_this = predict(model, newdata=random_points, ...)
+    samples_this = as.numeric(predict(model, newdata=random_points, ...))
     
     # store the new values
     samples = c(samples, list(cbind(random_points, samples_this)))
@@ -169,7 +169,10 @@ sample_model_ellipsoid <- function(predict_function=NULL, data, scales, min.valu
     # predict function value at each point
     predicted_values <- predict_function(samples_retained)
     
-    included_thresholded = ( predicted_values > min.value )
+    print(str(predicted_values))
+    print(str(as.numeric(predicted_values)))
+    
+    included_thresholded = ( as.numeric(predicted_values) > min.value )
     
     samples_retained_thresholded = samples_retained[included_thresholded, , drop=FALSE]
     predicted_values_thresholded = predicted_values[included_thresholded]

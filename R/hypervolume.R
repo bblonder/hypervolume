@@ -74,9 +74,10 @@ hypervolume <- function(data, method="gaussian", ...)
     stop(sprintf("Method %s not recognized.",method))
   }
   
-  if (nrow(hv@RandomPoints) < 10^hv@Dimensionality)
+  npmin = ceiling(10^sqrt(hv@Dimensionality))
+  if (nrow(hv@RandomPoints) < npmin)
   {
-    warning(sprintf("Hypervolume is represented by a low number of random points (%d) - suggested minimum %d.\nConsider increasing point density to improve accuracy.",nrow(hv@RandomPoints),10^hv@Dimensionality))
+    warning(sprintf("Hypervolume is represented by a low number of random points (%d) - suggested minimum %d.\nConsider increasing samples.per.point to improve accuracy.",nrow(hv@RandomPoints),npmin))
   }
   
   return(hv)
