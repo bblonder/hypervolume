@@ -62,7 +62,7 @@ hypervolume_svm <- function(data, name=NULL, samples.per.point=ceiling((10^(2+sq
   random_points = samples_all$samples[,1:d]
   values_accepted <- samples_all$samples[,d+1]
   volume <- samples_all$volume
-  point_density = volume / nrow(random_points)
+  point_density = nrow(random_points) / volume
   
   hv_svm <- new("Hypervolume",
                 Data=data,

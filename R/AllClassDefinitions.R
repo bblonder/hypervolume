@@ -33,7 +33,9 @@ summary.Hypervolume <- function(object, ...)
   cat(sprintf("Parameters:\n"))
   lapply(1:length(object@Parameters), function(x) {
     cat(sprintf("\t%s: %s\n",names(object@Parameters)[x], paste(format(object@Parameters[[x]]),collapse=" ")))
-  })    
+  })
+  
+  invisible()
 }
 
 summary.HypervolumeList <- function(object, ...)
