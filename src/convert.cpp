@@ -9,13 +9,13 @@ using namespace std;
 
 vector<vector< double > > convertMatrixToVector(double array[], int nrow, int ncol)
 {
-    vector<vector< double > > v(nrow, vector< double >(ncol));
-    
-    for(int i = 0; i < nrow*ncol; ++i) {
-        v[i / ncol][i % ncol] = array[i];
-    }
-    
-    return v;
+  vector<vector< double > > v(nrow, vector< double >(ncol));
+  
+  for(int i = 0; i < nrow*ncol; ++i) {
+    v[i / ncol][i % ncol] = array[i];
+  }
+  
+  return v;
 }
 
 using namespace Rcpp;
@@ -34,10 +34,10 @@ SEXP kdtree_build_intl(SEXP d, SEXP nr, SEXP nc, SEXP verb) // d is the numeric 
   }
   
   vector<vector< double > > dataMatrix
-        = convertMatrixToVector(data.begin(), nrow, ncol);
-
+    = convertMatrixToVector(data.begin(), nrow, ncol);
+  
   KDTree *t = new KDTree(dataMatrix, verbose);
-
+  
   XPtr<KDTree> p(t, TRUE);
   
   return(p);
@@ -55,9 +55,9 @@ SEXP kdtree_ball_query_multiple(SEXP tr, SEXP ptlist, SEXP nr, SEXP nc, SEXP r, 
   
   vector<vector< double > > dataMatrix
     = convertMatrixToVector(data.begin(), nrow, ncol);
-    
+  
   vector<int> finalCounts;
-    
+  
   if (ncol != tree->ndims())
   {
     throw(length_error("Points not same dimensionality as data in kdtree"));  
@@ -86,7 +86,7 @@ SEXP kdtree_ball_query_multiple(SEXP tr, SEXP ptlist, SEXP nr, SEXP nc, SEXP r, 
     {
       pb.update(1.0*(i+1)/nrow);
     }
-     
+    
   }
   
   if (verbose==1)
@@ -172,7 +172,7 @@ SEXP kdtree_range_query_multiple(SEXP tr, SEXP pminlist, SEXP pmaxlist, SEXP nr,
   NumericVector datamin(pminlist);
   NumericVector datamax(pmaxlist);
   bool verbose = as<int>(verb);
-
+  
   if (ncol != tree->ndims())
   {
     throw(length_error("pmin or pmax not same dimensionality as data in kdtree"));  
@@ -182,9 +182,9 @@ SEXP kdtree_range_query_multiple(SEXP tr, SEXP pminlist, SEXP pmaxlist, SEXP nr,
     = convertMatrixToVector(datamin.begin(), nrow, ncol);
   vector<vector< double > > datamaxMatrix
     = convertMatrixToVector(datamax.begin(), nrow, ncol);
-    
+  
   vector<int> finalCounts;
-    
+  
   if (ncol != tree->ndims())
   {
     throw(length_error("Points not same dimensionality as data in kdtree"));  
@@ -203,7 +203,7 @@ SEXP kdtree_range_query_multiple(SEXP tr, SEXP pminlist, SEXP pmaxlist, SEXP nr,
     
     vector<double> thisPointMin = dataminMatrix[i];
     vector<double> thisPointMax = datamaxMatrix[i];
-
+    
     tree->range_query(thisPointMin, thisPointMax, thisIndices);
     // store the number of points within the ball for each point
     finalCounts.push_back(thisIndices.size());
@@ -212,8 +212,8 @@ SEXP kdtree_range_query_multiple(SEXP tr, SEXP pminlist, SEXP pmaxlist, SEXP nr,
     {
       pb.update(1.0*(i+1)/nrow);
     }
-     
-     
+    
+    
   }
   
   pb.update(1);

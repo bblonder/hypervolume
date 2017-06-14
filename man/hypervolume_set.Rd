@@ -20,7 +20,7 @@ A n-dimensional hypervolume
 A n-dimensional hypervolume
 }
   \item{num.points.max}{
-Maximum number of random points to use for set operations. If \code{NULL} defaults to 10^(2+sqrt(n)) where n is the dimensionality of the input hypervolumes. Note that this default parameter value has been increased by a factor of 10 since the 1.2 release of this package.
+Maximum number of random points to use for set operations. If \code{NULL} defaults to 10^(3+sqrt(n)) where n is the dimensionality of the input hypervolumes. Note that this default parameter value has been increased by a factor of 10 since the 1.2 release of this package.
 }
   \item{verbose}{
 Logical value; print diagnostic output if true.
@@ -62,6 +62,7 @@ If one of the input hypervolumes has no random points, returns \code{NA} with a 
 }
 
 \examples{
+\dontrun{
 data(iris)
 
 hv1 = hypervolume_gaussian(subset(iris, Species=="setosa")[,1:3],
@@ -81,4 +82,5 @@ hypervolume_overlap_statistics(hv_set12)
 hypervolume_overlap_statistics(hv_set23)
 # examine volumes of each set component
 get_volume(hv_set23)
+}
 }

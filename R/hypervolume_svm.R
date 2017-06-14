@@ -1,4 +1,4 @@
-hypervolume_svm <- function(data, name=NULL, samples.per.point=ceiling((10^(2+sqrt(ncol(data))))/nrow(data)), svm.nu=0.01, svm.gamma=0.5, scale.factor=1, chunk.size=1e3, verbose=TRUE)
+hypervolume_svm <- function(data, name=NULL, samples.per.point=ceiling((10^(3+sqrt(ncol(data))))/nrow(data)), svm.nu=0.01, svm.gamma=0.5, scale.factor=1, chunk.size=1e3, verbose=TRUE)
 {
   data <- as.matrix(data)
   d <- ncol(data)

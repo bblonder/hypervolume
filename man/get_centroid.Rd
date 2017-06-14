@@ -20,7 +20,9 @@ A \code{Hypervolume} or \code{HypervolumeList} object.
 Either a vector or a matrix of column of centroid values along each axis. 
 }
 \examples{
+\dontrun{
 data(iris)
-hv = hypervolume_gaussian(iris[,1:3])
+hv = hypervolume_gaussian(iris[,1:2])
 get_centroid(hv)
+}
 }

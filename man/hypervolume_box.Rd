@@ -9,7 +9,7 @@ Constructs a hypervolume from a set of observations via thresholding a kernel de
 }
 \usage{
 hypervolume_box(data, name = NULL, verbose = TRUE, samples.per.point =
-                 ceiling((10^(2 + sqrt(ncol(data))))/nrow(data)),
+                 ceiling((10^(3 + sqrt(ncol(data))))/nrow(data)),
                  kde.bandwidth = 2*estimate_bandwidth(data),
                  tree.chunksize = 10000)
 }
@@ -49,6 +49,6 @@ A \code{\link{Hypervolume-class}} object corresponding to the inferred hypervolu
 }
 \examples{
 data(iris)
-hv = hypervolume_box(data=subset(iris, Species=="setosa")[,1:3],name='setosa')
+hv = hypervolume_box(data=subset(iris, Species=="setosa")[,1:2],name='setosa')
 summary(hv)
 }

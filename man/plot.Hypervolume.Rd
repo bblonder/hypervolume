@@ -14,8 +14,7 @@ Plots a single hypervolume or multiple hypervolumes as either a pairs plot (all 
    show.axes=TRUE, show.frame=TRUE,
    show.random=TRUE, show.density=TRUE,show.data=TRUE,
    names=NULL, show.legend=TRUE, limits=NULL, 
-   show.contour=TRUE, contour.lwd=1, 
-    contour.filled=FALSE,contour.filled.alpha=0.5,contour.factor=0.5,
+   show.contour=TRUE, contour.lwd=1.5, contour.hull.alpha=0.25,
    show.centroid=TRUE, cex.centroid=3,
    colors=rainbow(floor(length(x@HVList)*1.5),alpha=0.8), 
    point.alpha.min=0.2, point.dark.factor=0.5,
@@ -65,14 +64,8 @@ If \code{TRUE}, draws a boundary line saround each two-dimensional projection. I
 \item{contour.lwd}{
 Line width used for contour lines. Ignored if \code{show.contour=FALSE}.
 }
-\item{contour.filled}{
-If \code{TRUE}, draws contours with interior shading. Ignored if \code{show.contour=FALSE}.
-}
-\item{contour.filled.alpha}{
-An alpha value used to determine the transparency of shaded contours. Ignored if \code{contour.filled=FALSE}.
-}
-\item{contour.factor}{
-A numeric value that controls the threshold level at which the contour is drawn. Scaled so that 0 includes all data and 1 includes no data. Ignored if \code{showcontour=FALSE}.
+\item{contour.hull.alpha}{
+Value of the alpha parameter for an alpha-hull. See \code{\link{ashape}}.
 }
 \item{show.centroid}{
 If \code{TRUE}, draws a colored point indicating the centroid for each hypervolume.

@@ -9,7 +9,7 @@ Constructs a hypervolume by building a one-class support vector machine that cla
 }
 \usage{
 hypervolume_svm(data, name = NULL, 
-                  samples.per.point = ceiling((10^(2 + sqrt(ncol(data))))/nrow(data)), 
+                  samples.per.point = ceiling((10^(3 + sqrt(ncol(data))))/nrow(data)), 
                   svm.nu = 0.01, svm.gamma = 0.5, 
                   scale.factor = 1,
                   chunk.size = 1000, verbose = TRUE)
@@ -52,6 +52,6 @@ A \code{\link{Hypervolume-class}} object corresponding to the inferred hypervolu
 }
 \examples{
 data(iris)
-hv = hypervolume_svm(data=subset(iris, Species=="setosa")[,1:3],name='setosa')
+hv = hypervolume_svm(data=subset(iris, Species=="setosa")[,1:2],name='setosa')
 summary(hv)
 }

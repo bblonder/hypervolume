@@ -12,7 +12,7 @@ Quantiles can be specified to be either of the total volume enclosed by the hype
 \usage{
 hypervolume_threshold(hv, 
                         thresholds = NULL, 
-                        num.thresholds = 100, 
+                        num.thresholds = 20, 
                         quantile.requested = NULL,
                         quantile.requested.type = "volume", 
                         uniform.density = TRUE,
@@ -60,8 +60,8 @@ hv = hypervolume_gaussian(data=subset(iris, Species=="setosa")[,1:3],name='setos
 # get hypervolumes at multiple thresholds
 hvlist = hypervolume_threshold(hv, plot=TRUE)
 head(hvlist$Statistics)
-plot(hvlist$HypervolumesThresholded[[c(1,10,20,30,40,50,60,70,80,90,100)]],
-  show.random=FALSE, show.data=FALSE)
+plot(hvlist$HypervolumesThresholded[[c(1,5,10,15,20)]],
+  show.random=FALSE, show.data=FALSE,show.centroid=FALSE)
 
 # get hypervolume for a single low quantile value
 plot(hypervolume_threshold(hv, plot=FALSE, verbose=FALSE,

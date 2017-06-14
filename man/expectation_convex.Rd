@@ -22,7 +22,7 @@ A m x n matrix or data frame, where m is the number of observations and n is the
 The point density of the output expectation. If \code{NULL}, defaults to \code{v / num.points} where \code{d} is the dimensionality of the input and v is the volume of the hypersphere.
 }
   \item{num.samples}{
-The number of points in the output expectation. If \code{NULL}, defaults to \code{10^(2+sqrt(ncol(d)))} where \code{d} is the dimensionality of the input. \code{num.points} has priority over \code{point.density}; both cannot be specified.
+The number of points in the output expectation. If \code{NULL}, defaults to \code{10^(3+sqrt(ncol(d)))} where \code{d} is the dimensionality of the input. \code{num.points} has priority over \code{point.density}; both cannot be specified.
 }
 
   \item{num.points.on.hull}{
@@ -56,6 +56,8 @@ A \code{\link{Hypervolume-class}} object corresponding to the expectation hyperv
 }
 
 \examples{
+\dontrun{
 data(iris)
 e_convex <- expectation_convex(iris[,1:3], check.memory=FALSE)
+}
 }

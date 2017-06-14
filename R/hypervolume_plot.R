@@ -1,3 +1,9 @@
+do_outline <- function(rp, alpha)
+{
+  ah = alphahull::ashape(rp,alpha=alpha)
+  return(ah)
+}
+
 
 plot.Hypervolume <- function(x, ...)
 {
@@ -24,8 +30,7 @@ plot.HypervolumeList <- function(x,
                                  show.axes=TRUE, show.frame=TRUE,
                                  show.random=TRUE, show.density=TRUE,show.data=TRUE,
                                  names=NULL, show.legend=TRUE, limits=NULL, 
-                                 show.contour=TRUE, contour.lwd=1, 
-                                  contour.filled=FALSE,contour.filled.alpha=0.5,contour.factor=0.5,
+                                 show.contour=TRUE, contour.lwd=1.5, contour.hull.alpha=0.25,
                                  show.centroid=TRUE, cex.centroid=3,
                                  colors=rainbow(floor(length(x@HVList)*1.5),alpha=0.8), 
                                  point.alpha.min=0.2, point.dark.factor=0.5,
@@ -196,57 +201,19 @@ plot.HypervolumeList <- function(x,
           # calculate contours
           if (show.contour==TRUE)
           {
-            if (contour.filled==TRUE)
-            {
-              # draw shaded centers
-              for (whichid in 1:length(unique(all$ID)))
-              {
-                allss <- subset(all, all$ID==whichid) # remove oversampling of some points
-                
-                if (nrow(allss) > 0)
-                {     
-                  contourx <- allss[,j]
-                  contoury <- allss[,i]
-                  
-                  hb = hexbin::hexbin(x=contourx, y=contoury,xbnds=extendrange(all[,j]), ybnds=extendrange(all[,i]))
-                  
-                  if (length(hb@xcm) > 2)
-                  {
-                    kde2dresults <- kde2d(hb@xcm, hb@ycm, n=100,lims=c(extendrange(all[,j]),extendrange(all[,i])))
-                  
-                    .filled.contour(kde2dresults$x,kde2dresults$y, kde2dresults$z,
-                                  col=c(NA,rgb_2_rgba(colors[whichid],contour.filled.alpha),NA),
-                                  levels=c(0,min(kde2dresults$z)+diff(range(kde2dresults$z))*contour.factor,max(kde2dresults$z)))
-                  }
-                }
-              }
-            }
-            
-            # draw edges
+            # draw shaded centers
             for (whichid in 1:length(unique(all$ID)))
             {
-              allss <- subset(all, all$ID==whichid)
+              allss <- subset(all, all$ID==whichid) # remove oversampling of some points
               
               if (nrow(allss) > 0)
-              {         
+              {     
                 contourx <- allss[,j]
                 contoury <- allss[,i]
+
+                poly_outline <- do_outline(cbind(contourx,contoury), alpha=contour.hull.alpha)
                 
-                if (length(contourx) > 1 & length(contoury) > 1)
-                {
-                  hb = hexbin::hexbin(x=contourx, y=contoury,xbnds=extendrange(all[,j]), ybnds=extendrange(all[,i]))
-                  
-                  if (length(hb@xcm) > 2)
-                  {
-                    kde2dresults <- kde2d(hb@xcm, hb@ycm, n=100,lims=c(extendrange(all[,j]),extendrange(all[,i])))
-                    
-                    contour(kde2dresults,
-                            col=colors[whichid],
-                            levels=min(kde2dresults$z)+diff(range(kde2dresults$z))*contour.factor,
-                            lwd=contour.lwd,
-                            drawlabels=FALSE,add=TRUE)
-                  }
-                }
+                plot(poly_outline,add=TRUE,wpoints=FALSE,wlines='none',lwd=contour.lwd,col=colors[whichid])
               }
             }
           }

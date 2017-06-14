@@ -25,10 +25,12 @@ A set of multiple metrics
 }
 
 \examples{
+\dontrun{
 data(iris)
 hv1 = hypervolume_gaussian(subset(iris, Species=="virginica")[,1:3])
 hv2 = hypervolume_gaussian(subset(iris, Species=="versicolor")[,1:3])
 hv_set <- hypervolume_set(hv1, hv2, check.memory=FALSE)
 
 hypervolume_overlap_statistics(hv_set)
+}
 }

@@ -5,7 +5,7 @@ hypervolume_holes <- function(hv.obs, hv.exp, set.num.points.max=NULL, set.check
   
   if (is.null(set.num.points.max))
   {
-  set.num.points.max = ceiling(10^(2+sqrt(hv.obs@Dimensionality)))
+  set.num.points.max = ceiling(10^(3+sqrt(hv.obs@Dimensionality)))
     cat(sprintf('Choosing set.num.points.max=%.0f (choose a larger value for more accuracy.)\n',set.num.points.max))    
   }
   

@@ -55,7 +55,7 @@ expectation_box <- function(input, point.density=NULL, num.samples=NULL, use.ran
   }
   else if   (is.null(point.density) & is.null(num.samples)) # no input, use default # of points
   {
-    npoints = ceiling(10^(2+sqrt(ncol(data))))
+    npoints = ceiling(10^(3+sqrt(ncol(data))))
     point.density = npoints / volume
   }
   else if   (!is.null(point.density) & is.null(num.samples)) # point density specified, use it
@@ -123,7 +123,7 @@ expectation_ball <- function(input, point.density=NULL, num.samples=NULL, use.ra
   }
   else if   (is.null(point.density) & is.null(num.samples)) # no input, use default # of points
   {
-    npoints = ceiling(10^(2+sqrt(ncol(data))))
+    npoints = ceiling(10^(3+sqrt(ncol(data))))
     point.density = npoints / volume
   }
   else if   (!is.null(point.density) & is.null(num.samples)) # point density specified, use it
@@ -330,7 +330,7 @@ expectation_convex <- function(input, point.density=NULL, num.samples=NULL, num.
   }
   else if   (is.null(point.density) & is.null(num.samples)) # no input, use default # of points
   {
-    np = ceiling(10^(2+sqrt(ncol(data))))
+    np = ceiling(10^(3+sqrt(ncol(data))))
     point.density = np / hull_volume
   }
   else if   (!is.null(point.density) & is.null(num.samples)) # point density specified, use it
