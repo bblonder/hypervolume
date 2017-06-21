@@ -1,9 +1,31 @@
-do_outline <- function(rp, alpha)
+do_outline_alpha <- function(rp, alpha)
 {
   ah = alphahull::ashape(rp,alpha=alpha)
   return(ah)
 }
 
+do_outline_ball <- function(rp, radius)
+{
+  gb = rgeos::gBuffer(sp::SpatialPoints(rp), quadsegs=2, width=radius)
+  return(gb)
+}
+
+do_outline_raster <- function(pts,res)
+{
+  pts <- as.matrix(pts)
+  
+  pr <- padded_range(pts,multiply.interval.amount=0.25)
+  
+  e <- extent(t(pr))
+  
+  r <- raster::raster(e, ncol=res, nrow=res)
+  
+  x <- raster::rasterize(pts, r, rep(1, nrow(pts)), fun=mean,background=NA)
+  
+  w <- raster::rasterToPolygons(x,dissolve=TRUE)
+  
+  return(w)	
+}
 
 plot.Hypervolume <- function(x, ...)
 {
@@ -30,8 +52,12 @@ plot.HypervolumeList <- function(x,
                                  show.axes=TRUE, show.frame=TRUE,
                                  show.random=TRUE, show.density=TRUE,show.data=TRUE,
                                  names=NULL, show.legend=TRUE, limits=NULL, 
-                                 show.contour=TRUE, contour.lwd=1.5, contour.hull.alpha=0.25,
-                                 show.centroid=TRUE, cex.centroid=3,
+                                 show.contour=TRUE, contour.lwd=1.5, 
+                                  contour.type='alphahull', 
+                                  contour.ball.radius.factor=1, 
+                                  contour.alphahull.alpha=0.25,
+                                 contour.raster.resolution=100,
+                                 show.centroid=TRUE, cex.centroid=2,
                                  colors=rainbow(floor(length(x@HVList)*1.5),alpha=0.8), 
                                  point.alpha.min=0.2, point.dark.factor=0.5,
                                  cex.random=0.5,cex.data=0.75,cex.axis=0.75,cex.names=1.0,cex.legend=0.75,
@@ -210,10 +236,35 @@ plot.HypervolumeList <- function(x,
               {     
                 contourx <- allss[,j]
                 contoury <- allss[,i]
-
-                poly_outline <- do_outline(cbind(contourx,contoury), alpha=contour.hull.alpha)
                 
-                plot(poly_outline,add=TRUE,wpoints=FALSE,wlines='none',lwd=contour.lwd,col=colors[whichid])
+                rp = cbind(contourx, contoury)
+                vol_this = x@HVList[[whichid]]@Volume
+                density_this = nrow(rp) / vol_this
+                dim_this = x@HVList[[whichid]]@Dimensionality
+                radius_critical <- density_this^(-1/dim_this) * contour.ball.radius.factor
+                
+                if (contour.type=='alphahull')
+                {
+                  poly_outline <- do_outline_alpha(rp, alpha=contour.hull.alpha)
+                
+                  plot(poly_outline,add=TRUE,wpoints=FALSE,wlines='none',lwd=contour.lwd,col=colors[whichid])
+                }
+                else if (contour.type=='ball')
+                {
+                  poly_outline <- do_outline_ball(rp=rp, radius=radius_critical)
+                  
+                  plot(poly_outline, add=TRUE,lwd=contour.lwd,col=colors[whichid])
+                }
+                else if (contour.type=='kde')
+                {
+                  m_kde = kde2d(rp[,1], rp[,2], n=50, h=radius_critical)
+                  contour(m_kde, add=TRUE, levels=c(0.1),drawlabels=FALSE,lwd=contour.lwd,col=colors[whichid])
+                }
+                else if (contour.type=='raster')
+                {
+                  poly_raster <- do_outline_raster(as.matrix(rp),res=contour.raster.resolution)
+                  plot(poly_raster, add=TRUE, lwd=contour.lwd,col=colors[whichid])
+                }
               }
             }
           }
