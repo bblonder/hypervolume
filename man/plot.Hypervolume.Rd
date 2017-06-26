@@ -14,12 +14,17 @@ Plots a single hypervolume or multiple hypervolumes as either a pairs plot (all 
    show.axes=TRUE, show.frame=TRUE,
    show.random=TRUE, show.density=TRUE,show.data=TRUE,
    names=NULL, show.legend=TRUE, limits=NULL, 
-   show.contour=TRUE, contour.lwd=1.5, contour.hull.alpha=0.25,
+   show.contour=TRUE,
+    contour.type='alphahull', 
+    contour.ball.radius.factor=1, 
+    contour.alphahull.alpha=0.25,
+    contour.raster.resolution=100,
    show.centroid=TRUE, cex.centroid=3,
    colors=rainbow(floor(length(x@HVList)*1.5),alpha=0.8), 
    point.alpha.min=0.2, point.dark.factor=0.5,
    cex.random=0.5,cex.data=0.75,cex.axis=0.75,cex.names=1.0,cex.legend=0.75,
    num.points.max.data = 1000, num.points.max.random = 2000, reshuffle=TRUE, 
+   plot.function.additional=NULL,
    verbose=FALSE,
    ...)
 }
@@ -106,6 +111,10 @@ An integer indicating the maximum number of random points to be sampled from eac
 }
   \item{reshuffle}{
 A logical value relevant when pair=TRUE. If false, each hypervolume is drawn on top of the previous hypervolume; if true, all points of all hypervolumes are randomly shuffled so no hypervolume is given visual preference during plotting.
+}
+\item{plot.function.additional}{
+Any \code{function(i,j)} that will add additional plotting commands for column \code{i} and row \code{j} of the pairs plot. Should not create new plots or change \code{par()} settings. Has no effect if \code{show.3d=TRUE}.
+
 }
 \item{verbose}{
 If \code{TRUE}, prints diagnostic information about the number of points being plotted
