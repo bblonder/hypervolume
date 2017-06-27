@@ -138,8 +138,10 @@ Note that contour lines are drawn only for convenience and visual presentation. 
 }
 \examples{
 data(iris)
-hv = hypervolume_gaussian(subset(iris, Species=="setosa")[,1:3])
+hv = hypervolume_gaussian(iris[,1:3])
 
 plot(hv, show.3d=TRUE)
 plot(hv, show.3d=FALSE)
+
+plot(hv,plot.function.additional=function(i,j){ points(x=iris[iris$Species=="setosa",i],y=iris[iris$Species=="setosa",j],col='purple') })
 }
