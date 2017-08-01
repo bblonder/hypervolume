@@ -53,10 +53,11 @@ plot.HypervolumeList <- function(x,
                                  show.random=TRUE, show.density=TRUE,show.data=TRUE,
                                  names=NULL, show.legend=TRUE, limits=NULL, 
                                  show.contour=TRUE, contour.lwd=1.5, 
-                                  contour.type='alphahull', 
-                                  contour.ball.radius.factor=1, 
-                                  contour.alphahull.alpha=0.25,
-                                 contour.raster.resolution=100,
+                                   contour.type='alphahull', 
+                                   contour.alphahull.alpha=0.25,
+                                   contour.ball.radius.factor=1, 
+                                   contour.kde.level=0.1,
+                                   contour.raster.resolution=100,
                                  show.centroid=TRUE, cex.centroid=2,
                                  colors=rainbow(floor(length(x@HVList)*1.5),alpha=0.8), 
                                  point.alpha.min=0.2, point.dark.factor=0.5,
@@ -259,7 +260,7 @@ plot.HypervolumeList <- function(x,
                 else if (contour.type=='kde')
                 {
                   m_kde = kde2d(rp[,1], rp[,2], n=50, h=radius_critical)
-                  contour(m_kde, add=TRUE, levels=c(0.1),drawlabels=FALSE,lwd=contour.lwd,col=colors[whichid])
+                  contour(m_kde, add=TRUE, levels=contour.kde.level,drawlabels=FALSE,lwd=contour.lwd,col=colors[whichid])
                 }
                 else if (contour.type=='raster')
                 {

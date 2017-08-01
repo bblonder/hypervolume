@@ -2,14 +2,14 @@ useDynLib(hypervolume)
 
 export( 
   ### (internal functions)
-  sample_model_rejection,
-  sample_model_ellipsoid,
-  calculate_density,
-  kdtree_build,
-  kdtree_ball_query_multiple,
-  nball_volume,
-  evalfrectangular,
-  evalfspherical,
+  #sample_model_rejection,
+  #sample_model_ellipsoid,
+  #calculate_density,
+  #kdtree_build,
+  #kdtree_ball_query_multiple,
+  #nball_volume,
+  #evalfrectangular,
+  #evalfspherical,
   
   ### (external functions)
   estimate_bandwidth, 

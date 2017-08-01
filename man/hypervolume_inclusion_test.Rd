@@ -49,10 +49,12 @@ A m x 1 logical vector indicating whether each candidate point is in the hypervo
 }
 
 \examples{
+\dontrun{
 # construct a hypervolume of points in the unit square [0,1] x [0,1]
 data = data.frame(x=runif(100,min=0,max=1), y=runif(100,min=0,max=1))
 hv = hypervolume_gaussian(data)
 
 # test if (0.5,0.5) and (-1,1) are in - should return TRUE FALSE
 hypervolume_inclusion_test(hv, points=data.frame(x=c(0.5,-1),y=c(0.5,-1)))
+}
 }

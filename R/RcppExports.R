@@ -2,22 +2,22 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 kdtree_build_intl <- function(d, nr, nc, verb) {
-    .Call('hypervolume_kdtree_build_intl', PACKAGE = 'hypervolume', d, nr, nc, verb)
+    .Call('_hypervolume_kdtree_build_intl', PACKAGE = 'hypervolume', d, nr, nc, verb)
 }
 
 kdtree_ball_query_multiple <- function(tr, ptlist, nr, nc, r, verb) {
-    .Call('hypervolume_kdtree_ball_query_multiple', PACKAGE = 'hypervolume', tr, ptlist, nr, nc, r, verb)
+    .Call('_hypervolume_kdtree_ball_query_multiple', PACKAGE = 'hypervolume', tr, ptlist, nr, nc, r, verb)
 }
 
 kdtree_ball_query_id_multiple <- function(tr, ptlist, nr, nc, r, verb) {
-    .Call('hypervolume_kdtree_ball_query_id_multiple', PACKAGE = 'hypervolume', tr, ptlist, nr, nc, r, verb)
+    .Call('_hypervolume_kdtree_ball_query_id_multiple', PACKAGE = 'hypervolume', tr, ptlist, nr, nc, r, verb)
 }
 
 kdtree_range_query_multiple <- function(tr, pminlist, pmaxlist, nr, nc, verb) {
-    .Call('hypervolume_kdtree_range_query_multiple', PACKAGE = 'hypervolume', tr, pminlist, pmaxlist, nr, nc, verb)
+    .Call('_hypervolume_kdtree_range_query_multiple', PACKAGE = 'hypervolume', tr, pminlist, pmaxlist, nr, nc, verb)
 }
 
 fastPdist2 <- function(Ar, Br) {
-    .Call('hypervolume_fastPdist2', PACKAGE = 'hypervolume', Ar, Br)
+    .Call('_hypervolume_fastPdist2', PACKAGE = 'hypervolume', Ar, Br)
 }
 

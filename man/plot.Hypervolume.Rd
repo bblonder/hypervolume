@@ -14,16 +14,17 @@ Plots a single hypervolume or multiple hypervolumes as either a pairs plot (all 
    show.axes=TRUE, show.frame=TRUE,
    show.random=TRUE, show.density=TRUE,show.data=TRUE,
    names=NULL, show.legend=TRUE, limits=NULL, 
-   show.contour=TRUE,
+   show.contour=TRUE, contour.lwd=1.5, 
     contour.type='alphahull', 
-    contour.ball.radius.factor=1, 
     contour.alphahull.alpha=0.25,
+    contour.ball.radius.factor=1, 
+    contour.kde.level=0.1,
     contour.raster.resolution=100,
-   show.centroid=TRUE, cex.centroid=3,
+   show.centroid=TRUE, cex.centroid=2,
    colors=rainbow(floor(length(x@HVList)*1.5),alpha=0.8), 
    point.alpha.min=0.2, point.dark.factor=0.5,
    cex.random=0.5,cex.data=0.75,cex.axis=0.75,cex.names=1.0,cex.legend=0.75,
-   num.points.max.data = 1000, num.points.max.random = 2000, reshuffle=TRUE, 
+   num.points.max.data = 1000, num.points.max.random = 2000, reshuffle=TRUE,
    plot.function.additional=NULL,
    verbose=FALSE,
    ...)
@@ -65,13 +66,26 @@ A list of two-element vectors corresponding to the axes limits for each dimensio
 }
 \item{show.contour}{
 If \code{TRUE}, draws a boundary line saround each two-dimensional projection. Ignored if \code{show.3d=TRUE}.}
-
 \item{contour.lwd}{
 Line width used for contour lines. Ignored if \code{show.contour=FALSE}.
 }
-\item{contour.hull.alpha}{
-Value of the alpha parameter for an alpha-hull. See \code{\link{ashape}}.
+\item{contour.type}{
+Type of contour boundary: any of \code{"alphahull"} (alpha hull), \code{"ball"} (experimental ball covering), \code{"kde"} (2D KDE smoothing), or \code{"raster"} (grid-based rasterization).
 }
+
+\item{contour.alphahull.alpha}{
+Value of the alpha parameter for a  \code{"alphahull"} contour. See \code{\link{ashape}}. Can be increased to provide smoother contours.
+}
+\item{contour.ball.radius.factor}{
+Factor used to multiply radius of ball surrounding each random point for a \code{"ball"} contour.
+}
+\item{contour.kde.level}{
+Probability level used to delineate edges for a \code{"kde"} contour.
+}
+\item{contour.raster.resolution}{
+Grid resolution for a \code{"raster"} contour.
+}
+
 \item{show.centroid}{
 If \code{TRUE}, draws a colored point indicating the centroid for each hypervolume.
 }
@@ -137,11 +151,16 @@ Note that contour lines are drawn only for convenience and visual presentation. 
 \code{\link{hypervolume_save_animated_gif}}
 }
 \examples{
+\dontrun{
 data(iris)
 hv = hypervolume_gaussian(iris[,1:3])
 
 plot(hv, show.3d=TRUE)
-plot(hv, show.3d=FALSE)
+plot(hv, show.3d=FALSE, show.contour=FALSE)
 
-plot(hv,plot.function.additional=function(i,j){ points(x=iris[iris$Species=="setosa",i],y=iris[iris$Species=="setosa",j],col='purple') })
+plot(hv,plot.function.additional=function(i,j){
+  points( x=iris[iris$Species=="setosa",i],
+          y=iris[iris$Species=="setosa",j],col='purple') 
+  })
+}
 }

@@ -8,7 +8,7 @@ using namespace Rcpp;
 
 // kdtree_build_intl
 SEXP kdtree_build_intl(SEXP d, SEXP nr, SEXP nc, SEXP verb);
-RcppExport SEXP hypervolume_kdtree_build_intl(SEXP dSEXP, SEXP nrSEXP, SEXP ncSEXP, SEXP verbSEXP) {
+RcppExport SEXP _hypervolume_kdtree_build_intl(SEXP dSEXP, SEXP nrSEXP, SEXP ncSEXP, SEXP verbSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -22,7 +22,7 @@ END_RCPP
 }
 // kdtree_ball_query_multiple
 SEXP kdtree_ball_query_multiple(SEXP tr, SEXP ptlist, SEXP nr, SEXP nc, SEXP r, SEXP verb);
-RcppExport SEXP hypervolume_kdtree_ball_query_multiple(SEXP trSEXP, SEXP ptlistSEXP, SEXP nrSEXP, SEXP ncSEXP, SEXP rSEXP, SEXP verbSEXP) {
+RcppExport SEXP _hypervolume_kdtree_ball_query_multiple(SEXP trSEXP, SEXP ptlistSEXP, SEXP nrSEXP, SEXP ncSEXP, SEXP rSEXP, SEXP verbSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -38,7 +38,7 @@ END_RCPP
 }
 // kdtree_ball_query_id_multiple
 SEXP kdtree_ball_query_id_multiple(SEXP tr, SEXP ptlist, SEXP nr, SEXP nc, SEXP r, SEXP verb);
-RcppExport SEXP hypervolume_kdtree_ball_query_id_multiple(SEXP trSEXP, SEXP ptlistSEXP, SEXP nrSEXP, SEXP ncSEXP, SEXP rSEXP, SEXP verbSEXP) {
+RcppExport SEXP _hypervolume_kdtree_ball_query_id_multiple(SEXP trSEXP, SEXP ptlistSEXP, SEXP nrSEXP, SEXP ncSEXP, SEXP rSEXP, SEXP verbSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -54,7 +54,7 @@ END_RCPP
 }
 // kdtree_range_query_multiple
 SEXP kdtree_range_query_multiple(SEXP tr, SEXP pminlist, SEXP pmaxlist, SEXP nr, SEXP nc, SEXP verb);
-RcppExport SEXP hypervolume_kdtree_range_query_multiple(SEXP trSEXP, SEXP pminlistSEXP, SEXP pmaxlistSEXP, SEXP nrSEXP, SEXP ncSEXP, SEXP verbSEXP) {
+RcppExport SEXP _hypervolume_kdtree_range_query_multiple(SEXP trSEXP, SEXP pminlistSEXP, SEXP pmaxlistSEXP, SEXP nrSEXP, SEXP ncSEXP, SEXP verbSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -70,7 +70,7 @@ END_RCPP
 }
 // fastPdist2
 NumericMatrix fastPdist2(NumericMatrix Ar, NumericMatrix Br);
-RcppExport SEXP hypervolume_fastPdist2(SEXP ArSEXP, SEXP BrSEXP) {
+RcppExport SEXP _hypervolume_fastPdist2(SEXP ArSEXP, SEXP BrSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -79,4 +79,18 @@ BEGIN_RCPP
     rcpp_result_gen = Rcpp::wrap(fastPdist2(Ar, Br));
     return rcpp_result_gen;
 END_RCPP
+}
+
+static const R_CallMethodDef CallEntries[] = {
+    {"_hypervolume_kdtree_build_intl", (DL_FUNC) &_hypervolume_kdtree_build_intl, 4},
+    {"_hypervolume_kdtree_ball_query_multiple", (DL_FUNC) &_hypervolume_kdtree_ball_query_multiple, 6},
+    {"_hypervolume_kdtree_ball_query_id_multiple", (DL_FUNC) &_hypervolume_kdtree_ball_query_id_multiple, 6},
+    {"_hypervolume_kdtree_range_query_multiple", (DL_FUNC) &_hypervolume_kdtree_range_query_multiple, 6},
+    {"_hypervolume_fastPdist2", (DL_FUNC) &_hypervolume_fastPdist2, 2},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_hypervolume(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
 }
