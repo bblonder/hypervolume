@@ -54,6 +54,7 @@ Hypervolumes constructed using the \code{hypervolume_box} method may not always 
 A list containing two elements: a \code{HypervolumeList} or \code{Hypervolume} object corresponding to the hypervolumes at each threshold value, and a dataframe \code{Statistics} corresponding to the relevant quantiles and thresholds.
 }
 \examples{
+\dontrun{
 data(iris)
 hv = hypervolume_gaussian(data=subset(iris, Species=="setosa")[,1:3],name='setosa')
 
@@ -66,4 +67,5 @@ plot(hvlist$HypervolumesThresholded[[c(1,5,10,15,20)]],
 # get hypervolume for a single low quantile value
 plot(hypervolume_threshold(hv, plot=FALSE, verbose=FALSE,
   quantile.requested=0.2,quantile.requested.type="volume")[[1]])
+}
 }

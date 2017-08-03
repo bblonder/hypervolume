@@ -1,13 +1,13 @@
 Package: hypervolume
 Type: Package
-Title: High Dimensional Geometry and Set Operations Using Kernel Density Estimation, Support Vector Machines, and Convex Polytopes
-Version: 2.0.6.7
-Date: 2017-08-01
+Title: High Dimensional Geometry and Set Operations Using Kernel Density Estimation, Support Vector Machines, and Convex Hulls
+Version: 2.0.7
+Date: 2017-08-03
 Author: Benjamin Blonder, with contributions from David J. Harris
 Maintainer: Benjamin Blonder <bblonder@gmail.com>
-Description: Estimates the shape and volume of high-dimensional datasets and performs set operations: intersection / overlap, union, unique components, inclusion test, and hole detection. Uses stochastic geometry approach to high-dimensional kernel density estimation, support vector machine delineation, and convex polytope generation. Applications include modeling trait and niche hypervolumes and species distribution modeling.
-License: GPL-3
+Description: Estimates the shape and volume of high-dimensional datasets and performs set operations: intersection / overlap, union, unique components, inclusion test, and hole detection. Uses stochastic geometry approach to high-dimensional kernel density estimation, support vector machine delineation, and convex hull generation. Applications include modeling trait and niche hypervolumes and species distribution modeling.
+License: ACM
 Depends: Rcpp, rgl, methods, R (>= 3.0.0)
 LinkingTo: Rcpp, RcppArmadillo, progress
-Imports: raster, maps, MASS, geometry, ks, pdist, fastcluster, compiler, e1071, hitandrun, progress, mvtnorm, data.table, alphahull, rgeos, sp
+Imports: raster, maps, MASS, geometry, ks, pdist, fastcluster, compiler, e1071, hitandrun, progress, mvtnorm, data.table, rgeos, sp, alphahull
 Suggests: magick

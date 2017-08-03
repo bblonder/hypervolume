@@ -4,6 +4,12 @@ do_outline_alpha <- function(rp, alpha)
   return(ah)
 }
 
+#do_outline_concave <- function(rp, concavity)
+#{
+#  cm = concaveman::concaveman(rp,concavity=concavity, length_threshold=0)
+#  return(cm)
+#}
+
 do_outline_ball <- function(rp, radius)
 {
   gb = rgeos::gBuffer(sp::SpatialPoints(rp), quadsegs=2, width=radius)
@@ -247,9 +253,9 @@ plot.HypervolumeList <- function(x,
                 
                 if (contour.type=='alphahull')
                 {
-                  poly_outline <- do_outline_alpha(rp, alpha=contour.alphahull.alpha)
-                
+                  poly_outline = do_outline_alpha(rp=rp, alpha=contour.alphahull.alpha)
                   plot(poly_outline,add=TRUE,wpoints=FALSE,wlines='none',lwd=contour.lwd,col=colors[whichid])
+                  #plot(poly_outline,add=TRUE,lwd=contour.lwd,col=colors[whichid])
                 }
                 else if (contour.type=='ball')
                 {

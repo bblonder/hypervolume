@@ -86,6 +86,7 @@ import(data.table)
 import(progress)
 import(pdist)
 import(alphahull)
+#import(concaveman)
 
 importFrom("raster","raster", "getValues","values","extent","rasterToPolygons","rasterize")
 importFrom("grDevices", "col2rgb", "rainbow", "rgb", "hsv", "rgb2hsv")
