@@ -18,7 +18,7 @@ Plots a single hypervolume or multiple hypervolumes as either a pairs plot (all 
     contour.type='alphahull', 
     contour.alphahull.alpha=0.25,
     contour.ball.radius.factor=1, 
-    contour.kde.level=0.1,
+    contour.kde.level=0.01,
     contour.raster.resolution=100,
    show.centroid=TRUE, cex.centroid=2,
    colors=rainbow(floor(length(x@HVList)*1.5),alpha=0.8), 
@@ -74,7 +74,7 @@ Type of contour boundary: any of \code{"alphahull"} (alpha hull), \code{"ball"} 
 }
 
 \item{contour.alphahull.alpha}{
-Value of the alpha parameter for a  \code{"alphahull"} contour. See \code{\link{ashape}}. Can be increased to provide smoother contours.
+Value of the alpha parameter for a  \code{"alphahull"} contour. Can be increased to provide smoother contours.
 }
 \item{contour.ball.radius.factor}{
 Factor used to multiply radius of ball surrounding each random point for a \code{"ball"} contour.
@@ -145,7 +145,7 @@ Additional arguments to be passed to \code{rgl::plot3d}.
 None; used for the side-effect of producing a plot.
 }
 \note{
-Note that contour lines are drawn only for convenience and visual presentation. They are calculated using \code{MASS::kde2d} using a hexagonal binning of projected data with a five percent quantile threshold. The true hypervolume boundary (on which volumes and set operations are calculated) is reflected by the less smooth uniformly random set of points drawn by \code{showrandom=TRUE}. 
+Contour line plotting with \code{alphahull} requires the non-FOSS \code{alphahull} package to be installed. Please do so in order to use this functionality!
 }
 \seealso{
 \code{\link{hypervolume_save_animated_gif}}
@@ -156,7 +156,7 @@ data(iris)
 hv = hypervolume_gaussian(iris[,1:3])
 
 plot(hv, show.3d=TRUE)
-plot(hv, show.3d=FALSE, show.contour=FALSE)
+plot(hv, show.3d=FALSE)
 
 plot(hv,plot.function.additional=function(i,j){
   points( x=iris[iris$Species=="setosa",i],

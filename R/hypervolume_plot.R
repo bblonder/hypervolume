@@ -62,7 +62,7 @@ plot.HypervolumeList <- function(x,
                                    contour.type='alphahull', 
                                    contour.alphahull.alpha=0.25,
                                    contour.ball.radius.factor=1, 
-                                   contour.kde.level=0.1,
+                                   contour.kde.level=0.01,
                                    contour.raster.resolution=100,
                                  show.centroid=TRUE, cex.centroid=2,
                                  colors=rainbow(floor(length(x@HVList)*1.5),alpha=0.8), 
@@ -89,6 +89,11 @@ plot.HypervolumeList <- function(x,
     }    
     
   })
+  
+  if (!requireNamespace("alphahull", quietly = TRUE)) {
+    warning("The package 'alphahull' is needed for contour plotting with contour.type='alphahull'. Please install it to continue.\n\n *** Temporarily setting contour.type='kde'.", call. = FALSE)
+    contour.type <- 'kde'
+  }
   
   alldims = sapply(x@HVList, function(z) { z@Dimensionality })
   allnames = sapply(x@HVList, function(z) { z@Name })
@@ -255,7 +260,6 @@ plot.HypervolumeList <- function(x,
                 {
                   poly_outline = do_outline_alpha(rp=rp, alpha=contour.alphahull.alpha)
                   plot(poly_outline,add=TRUE,wpoints=FALSE,wlines='none',lwd=contour.lwd,col=colors[whichid])
-                  #plot(poly_outline,add=TRUE,lwd=contour.lwd,col=colors[whichid])
                 }
                 else if (contour.type=='ball')
                 {

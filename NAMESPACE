@@ -85,7 +85,7 @@ import(mvtnorm)
 import(data.table)
 import(progress)
 import(pdist)
-import(alphahull)
+#import(alphahull)
 #import(concaveman)
 
 importFrom("raster","raster", "getValues","values","extent","rasterToPolygons","rasterize")
