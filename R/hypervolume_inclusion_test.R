@@ -61,7 +61,7 @@ hypervolume_inclusion_test <- function(hv, points, reduction.factor=1, fast.or.a
   {
     probabilities <- hypervolume_estimate_probability(hv, points, reduction.factor=reduction.factor, verbose=verbose, ...)
     
-    inclusion_result <- probabilities > accurate.method.threshold
+    inclusion_result <- probabilities >= accurate.method.threshold
     
     return(inclusion_result)
   }

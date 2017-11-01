@@ -36,7 +36,7 @@ SEXP kdtree_build_intl(SEXP d, SEXP nr, SEXP nc, SEXP verb) // d is the numeric 
   vector<vector< double > > dataMatrix
     = convertMatrixToVector(data.begin(), nrow, ncol);
   
-  KDTree *t = new KDTree(dataMatrix, verbose);
+  KDTree *t = new KDTree(dataMatrix);
   
   XPtr<KDTree> p(t, TRUE);
   

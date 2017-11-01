@@ -118,7 +118,7 @@ class KDTree {
                         * 				   the number of points and the dimensionality is inferred 
                         *                 by the data
                         */
-                        public: KDTree(const vector<vector<double> >& points, bool verbose){
+                        public: KDTree(const vector<vector<double> >& points){
                           
                           
                           // initialize data
