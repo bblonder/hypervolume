@@ -4,6 +4,7 @@ do_outline_alpha <- function(rp, alpha)
   return(ah)
 }
 
+
 #do_outline_concave <- function(rp, concavity)
 #{
 #  cm = concaveman::concaveman(rp,concavity=concavity, length_threshold=0)
