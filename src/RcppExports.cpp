@@ -7,16 +7,15 @@
 using namespace Rcpp;
 
 // kdtree_build_intl
-SEXP kdtree_build_intl(SEXP d, SEXP nr, SEXP nc, SEXP verb);
-RcppExport SEXP _hypervolume_kdtree_build_intl(SEXP dSEXP, SEXP nrSEXP, SEXP ncSEXP, SEXP verbSEXP) {
+SEXP kdtree_build_intl(SEXP d, SEXP nr, SEXP nc);
+RcppExport SEXP _hypervolume_kdtree_build_intl(SEXP dSEXP, SEXP nrSEXP, SEXP ncSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type d(dSEXP);
     Rcpp::traits::input_parameter< SEXP >::type nr(nrSEXP);
     Rcpp::traits::input_parameter< SEXP >::type nc(ncSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type verb(verbSEXP);
-    rcpp_result_gen = Rcpp::wrap(kdtree_build_intl(d, nr, nc, verb));
+    rcpp_result_gen = Rcpp::wrap(kdtree_build_intl(d, nr, nc));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -82,7 +81,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_hypervolume_kdtree_build_intl", (DL_FUNC) &_hypervolume_kdtree_build_intl, 4},
+    {"_hypervolume_kdtree_build_intl", (DL_FUNC) &_hypervolume_kdtree_build_intl, 3},
     {"_hypervolume_kdtree_ball_query_multiple", (DL_FUNC) &_hypervolume_kdtree_ball_query_multiple, 6},
     {"_hypervolume_kdtree_ball_query_id_multiple", (DL_FUNC) &_hypervolume_kdtree_ball_query_id_multiple, 6},
     {"_hypervolume_kdtree_range_query_multiple", (DL_FUNC) &_hypervolume_kdtree_range_query_multiple, 6},

@@ -12,7 +12,7 @@ kdtree_build <- function(data, verbose=TRUE)
       cat("\nBuilding tree... \n")
     }
     
-    kdt <- kdtree_build_intl(t(data),nrow(data),ncol(data),verbose)
+    kdt <- kdtree_build_intl(t(data),nrow(data),ncol(data))
     
     if (verbose==TRUE)
     {
