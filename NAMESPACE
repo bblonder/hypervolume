@@ -58,7 +58,8 @@ exportClasses(
      "HypervolumeList" 
 )
 
-
+S3method(show, Hypervolume)
+S3method(show, HypervolumeList)
  	
 S3method(print, Hypervolume)
 S3method(print, HypervolumeList)
@@ -97,8 +98,6 @@ importFrom("maps", "map")
 importFrom("graphics", "abline", "legend", "mtext")
 importFrom("stats", "predict", "var")
 importFrom("utils", "str")
-
-
 importFrom("rgeos","gBuffer")
 
 # problematic sections when using rastertopolygons with dissolve=TRUE

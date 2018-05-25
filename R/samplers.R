@@ -43,7 +43,6 @@ sample_model_rejection <- function(model, range, N.samples, chunk.size=1e3, verb
   if (verbose==TRUE)
   {
     pb$update(1)
-    pb$tick()
   }
   
   samples <- as.matrix(rbindlist(samples))
@@ -141,7 +140,7 @@ sample_model_ellipsoid <- function(predict_function=NULL, data, scales, min.valu
   if (verbose==TRUE)
   {
     pb <- progress_bar$new(total = N.samples)
-    pb$tick()
+    pb$tick(0)
   }
   
   samples = list()
@@ -217,7 +216,6 @@ sample_model_ellipsoid <- function(predict_function=NULL, data, scales, min.valu
   if (verbose==TRUE)
   {
     pb$update(1)
-    pb$tick()
   }
   
   if (return.full==TRUE)
@@ -251,7 +249,7 @@ sample_model_ellipsoid_dave_broken <- function(predict_function=NULL, data, scal
   if (verbose==TRUE)
   {
     pb <- progress_bar$new(total = N.samples)
-    pb$tick()
+    pb$tick(0)
   }
   
   samples = list()
@@ -326,7 +324,6 @@ sample_model_ellipsoid_dave_broken <- function(predict_function=NULL, data, scal
   if (verbose==TRUE)
   {
     pb$update(1)
-    pb$tick()
   }
   
   if (return.full==TRUE)

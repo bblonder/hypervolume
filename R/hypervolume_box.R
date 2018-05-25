@@ -45,7 +45,7 @@ hypervolume_box <- function(data, name=NULL, verbose=TRUE, samples.per.point=cei
   if (verbose==TRUE)
   {
     pb <- progress_bar$new(total = num.chunks)
-    pb$tick()
+    pb$tick(0)
   }
   
   for (i in 1:num.chunks)

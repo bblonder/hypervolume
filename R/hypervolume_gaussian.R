@@ -14,7 +14,7 @@ calculate_density <- function(s, means, kernel_sd, chunksize=10, verbose=TRUE) {
   if (verbose==TRUE)
   {
     pb <- progress_bar$new(total = num_chunks)
-    pb$tick()
+    pb$tick(0)
   }
   
   for (chunk_this in 1:num_chunks)

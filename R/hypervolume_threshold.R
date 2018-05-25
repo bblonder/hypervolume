@@ -13,7 +13,7 @@ hypervolume_threshold <- function(hv, thresholds=NULL, num.thresholds=20, quanti
   if (verbose==TRUE)
   {
     pb <- progress_bar$new(total = length(thresholds))
-    pb$tick()
+    pb$tick(0)
   }
   for (i in 1:length(thresholds))
   {

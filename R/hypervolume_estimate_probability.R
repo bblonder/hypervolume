@@ -37,7 +37,7 @@ hypervolume_estimate_probability <- function(hv, points, reduction.factor=1, wei
   pb <- progress_bar$new(total=nrow(points))
   if (verbose==TRUE)
   {
-    pb$tick()
+    pb$tick(0)
   }
   
   points <- as.matrix(points)

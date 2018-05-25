@@ -266,7 +266,7 @@ plot.HypervolumeList <- function(x,
                 {
                   poly_outline <- do_outline_ball(rp=rp, radius=radius_critical)
                   
-                  plot(poly_outline, add=TRUE,lwd=contour.lwd,col=colors[whichid])
+                  sp::plot(poly_outline, add=TRUE,lwd=contour.lwd,col=colors[whichid])
                 }
                 else if (contour.type=='kde')
                 {
@@ -276,7 +276,7 @@ plot.HypervolumeList <- function(x,
                 else if (contour.type=='raster')
                 {
                   poly_raster <- do_outline_raster(as.matrix(rp),res=contour.raster.resolution)
-                  plot(poly_raster, add=TRUE, lwd=contour.lwd,col=colors[whichid])
+                  sp::plot(poly_raster, add=TRUE, lwd=contour.lwd,col=colors[whichid])
                 }
               }
             }
