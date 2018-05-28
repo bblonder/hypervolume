@@ -1,7 +1,7 @@
 # s is a test point
 # means is the centers of each data point
 # kernel_sd is the kernel bandwidth (in natural units, not squared, diagonal only)
-calculate_density <- function(s, means, kernel_sd, chunksize=10, verbose=TRUE) {
+calculate_density <- function(s, means, kernel_sd, weight=NULL, chunksize=10, verbose=TRUE) {
   
   d = ncol(means)
   n_points = nrow(means)
@@ -23,7 +23,7 @@ calculate_density <- function(s, means, kernel_sd, chunksize=10, verbose=TRUE) {
     
     for (i in index_vals) 
     { 
-      density = density + dmvnorm(s, mean = means[i, ], sigma = kernel_sd^2 * diag(d))
+      density = density + weight[i] * dmvnorm(s, mean = means[i, ], sigma = kernel_sd^2 * diag(d))
     }
     
     if (verbose==TRUE) 
@@ -37,11 +37,16 @@ calculate_density <- function(s, means, kernel_sd, chunksize=10, verbose=TRUE) {
 }
 
 
-hypervolume_gaussian <- function(data, name=NULL, samples.per.point=ceiling((10^(3+sqrt(ncol(data))))/nrow(data)), kde.bandwidth=estimate_bandwidth(data), sd.count=3, quantile.requested=0.95, quantile.requested.type="probability", chunk.size=1e3, verbose=TRUE, ...)
+hypervolume_gaussian <- function(data, name=NULL, weight=NULL, samples.per.point=ceiling((10^(3+sqrt(ncol(data))))/nrow(data)), kde.bandwidth=estimate_bandwidth(data), sd.count=3, quantile.requested=0.95, quantile.requested.type="probability", chunk.size=1e3, verbose=TRUE, ...)
 {
   data = as.matrix(data)
   d = ncol(data)
   np = nrow(data)
+  
+  if (is.null(weight))
+  {
+    weight <- rep(1/nrow(data),nrow(data))
+  }
   
   if (is.null(dimnames(data)[[2]]))
   {
@@ -70,9 +75,19 @@ hypervolume_gaussian <- function(data, name=NULL, samples.per.point=ceiling((10^
   
   names(kde.bandwidth) <- dimnames(data)[[2]]
   
+  if (length(weight)!=nrow(data))
+  {
+    stop("The length of the weights must be equal to the number of observations.")
+  }
+  if (abs(sum(weight)-1)>10^-10)
+  {
+    warning("The sum of the weights must be equal to 1. Normalizing the weights.")
+    weight <- weight / sum(weight)
+  }
+  
   predict_function_gaussian <- function(x)
   {
-    return(calculate_density(s=x,means=data,kernel_sd=kde.bandwidth))
+    return(calculate_density(s=x,means=data,kernel_sd=kde.bandwidth,weight=weight))
   }
   
   # do elliptical sampling

@@ -5,7 +5,11 @@
 Abundance weighting and prior  of data for hypervolume input
 }
 \description{
-Resamples input data for hypervolume construction, so that some data points can be weighted more strongly than others in kernel density estimation. Also allows a multidimensional normal prior distribution to be placed on each data point to enable simulation of uncertainty or variation within each observed data point.
+Resamples input data for hypervolume construction, so that some data points can be weighted more strongly than others in kernel density estimation. Also allows a multidimensional normal prior distribution to be placed on each data point to enable simulation of uncertainty or variation within each observed data point. 
+
+Note that this algorithm will change the number of data points and may thus lead to changes in the inferred hypervolume if the selected algorithm (e.g. for bandwidth selection) depends on sample size.
+
+A direct weighting approach (which does not artificially change the sample size, and thus the kernel bandwidth estimate) is available for Gaussian hypervolumes within \code{\link{hypervolume_gaussian}}.
 }
 \usage{
 weight_data(data, weights, jitter.sd = matrix(0, nrow = nrow(data), ncol = ncol(data)))
@@ -36,3 +40,4 @@ pairs(weighted_data)
 weighted_noisy_data <- weight_data(iris[,1:3],weights=1+rpois(n=nrow(iris),lambda=3),jitter.sd=0.5)
 pairs(weighted_noisy_data)
 }
+\seealso{\code{\link{hypervolume_gaussian}}}
