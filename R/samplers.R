@@ -19,7 +19,10 @@ sample_model_rejection <- function(model, range, N.samples, chunk.size=1e3, verb
   {
     if (verbose==TRUE)
     {
-      pb$update(total_accepted/N.samples)
+      if (!pb$finished==TRUE)
+      {
+        pb$update(total_accepted/N.samples)
+      }
     }
     
     # generate random points
@@ -42,7 +45,7 @@ sample_model_rejection <- function(model, range, N.samples, chunk.size=1e3, verb
   }
   if (verbose==TRUE)
   {
-    pb$update(1)
+    pb$terminate()
   }
   
   samples <- as.matrix(rbindlist(samples))
@@ -152,7 +155,10 @@ sample_model_ellipsoid <- function(predict_function=NULL, data, scales, min.valu
   {
     if (verbose==TRUE)
     {
-      pb$update(total_accepted/N.samples)
+      if (!pb$finished==TRUE)
+      {
+        pb$update(total_accepted/N.samples)
+      }
     }
     
     ## STEP ONE: Collect samples from ellipsoids around each data point
@@ -215,7 +221,7 @@ sample_model_ellipsoid <- function(predict_function=NULL, data, scales, min.valu
   
   if (verbose==TRUE)
   {
-    pb$update(1)
+    pb$terminate()
   }
   
   if (return.full==TRUE)
@@ -261,7 +267,10 @@ sample_model_ellipsoid_dave_broken <- function(predict_function=NULL, data, scal
   {
     if (verbose==TRUE)
     {
-      pb$update(total_accepted/N.samples)
+      if (!pb$finished==TRUE)
+      {
+        pb$update(total_accepted/N.samples)
+      }
     }
     
     ## STEP ONE: Collect samples from ellipsoids around each data point
@@ -323,7 +332,7 @@ sample_model_ellipsoid_dave_broken <- function(predict_function=NULL, data, scal
 
   if (verbose==TRUE)
   {
-    pb$update(1)
+    pb$terminate()
   }
   
   if (return.full==TRUE)

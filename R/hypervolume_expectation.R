@@ -399,7 +399,10 @@ expectation_convex <- function(input, point.density=NULL, num.samples=NULL, num.
     {
       if (verbose==TRUE)
       {
-        pb$update(num.samples.completed/np)
+        if (!pb$finished==TRUE)
+        {
+          pb$update(num.samples.completed/np)
+        }
       }
       num.samples.to.take <- min(chunksize, np - num.samples.completed)
       samples_this <- hitandrun::hitandrun(constraints,n.samples=num.samples.to.take)
@@ -410,7 +413,7 @@ expectation_convex <- function(input, point.density=NULL, num.samples=NULL, num.
     dimnames(samples) <- list(NULL,dimnames(data)[[2]])
     if (verbose==TRUE)
     {
-      pb$update(1)
+      pb$terminate()
       cat('\ndone.\n')
     }
     
@@ -455,13 +458,16 @@ expectation_convex <- function(input, point.density=NULL, num.samples=NULL, num.
     {
       if (verbose==TRUE)
       {
-        if (is.null(inpoints))
+        if (!pb$finished==TRUE)
         {
-          pb$update(0)
-        }
-        else
-        {
-          pb$update(nrow(inpoints)/np)
+          if (is.null(inpoints))
+          {
+            pb$update(0)
+          }
+          else
+          {
+            pb$update(nrow(inpoints)/np)
+          }
         }
       }
       # try a set of test points
@@ -478,7 +484,7 @@ expectation_convex <- function(input, point.density=NULL, num.samples=NULL, num.
     }
     if (verbose==TRUE)
     {
-      pb$update(1)
+      pb$terminate()
       cat(sprintf('\nTrimming points down to %.0f values.\n',np))
     }    
     inpoints <- inpoints[1:np,]

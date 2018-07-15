@@ -50,7 +50,10 @@ hypervolume_estimate_probability <- function(hv, points, reduction.factor=1, wei
   probabilities <- sapply(1:nrow(points), function(i) {
     if (verbose==TRUE & (i%%10==0))
     {
-      pb$update(i/nrow(points))
+      if (!pb$finished==TRUE)
+      {
+        pb$update(i/nrow(points))
+      }
     }
     
     distances <- pdist(points[i,,drop=FALSE], hv_points_ss)@dist

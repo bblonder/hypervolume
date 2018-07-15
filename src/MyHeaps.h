@@ -84,9 +84,7 @@ public:
 	/// pushes a new value in the heap
 	void push( Tkey key, int index ){
 		//cout << "pushing " << index << endl;
-		if( useBackIdx && index >= (int) backIdx.size() )
-			throw InvalidIndexException("the index in the push must be smaller than the maximal allowed index (specified in constructor)");
-				
+
 		// If key is not in backindexes or there is no backindexes AT ALL.... complete push (no update)
 		if( !useBackIdx ){
 			// add to the back of the vector
@@ -114,18 +112,13 @@ public:
 	}
 	
 	/// return a constant reference to the MINIMAL KEY element stored in the head of the heap
-	const pair<Tkey,int>& top() throw(HeapEmptyException){
-		if( heap.empty() )
-			throw new HeapEmptyException("Impossible to get top element, empty heap");
-		else
+	const pair<Tkey,int>& top() {
 			return heap[0];
 	}
 	
 	/// removes the top element of the queue (minimal)
-	void pop() throw(HeapEmptyException){
-		if( heap.size() < 1 ) //a.k.a. heap.empty()
-			throw new HeapEmptyException("heap underflow");
-		
+	void pop() {
+
 		// overwrite top with tail element
 		heap[0] = heap.back();
 				
@@ -205,9 +198,6 @@ private:
 	/// propagates the correctness (in heap sense) down from a vertex currIdx
 	void heapIncreaseKey( int currIdx, Tkey key ){
 		// check if given key update is actually an increase
-		if( key < heap[currIdx].first )
-			throw InvalidKeyIncreaseException("In MaxHeaps only increase key updates are legal");
-
 		// update value with current key
 		heap[currIdx].first = key;
 				
@@ -295,9 +285,7 @@ public:
 	/// pushes a new value in the heap
 	void push( Tkey key, int index ){
 		//cout << "pushing " << index << endl;
-		if( useBackIdx && index >= (int) backIdx.size() )
-			throw InvalidIndexException("the index in the push must be smaller than the maximal allowed index (specified in constructor)");
-				
+
 		// If key is not in backindexes or there is no backindexes AT ALL.... complete push (no update)
 		if( !useBackIdx ){
 			// add to the back of the vector
@@ -324,18 +312,14 @@ public:
 	}
 	
 	/// return a constant reference to the MINIMAL KEY element stored in the head of the heap
-	const pair<Tkey,int>& top() throw(HeapEmptyException){
-		if( heap.empty() )
-			throw new HeapEmptyException("Impossible to get top element, empty heap");
-		else
+	const pair<Tkey,int>& top() {
+
 			return heap[0];
 	}
 	
 	/// removes the top element of the queue (minimal)
-	void pop() throw(HeapEmptyException){
-		if( heap.size() < 1 ) //a.k.a. heap.empty()
-			throw new HeapEmptyException("heap underflow");
-		
+	void pop() {
+
 		// overwrite top with tail element
 		heap[0] = heap.back();
 				
@@ -427,9 +411,6 @@ private:
 	
 	/// propagates the correctness (in heap sense) down from a vertex currIdx
 	void heapDecreaseKey( int currIdx, Tkey key ){
-		// check if given key update is actually an increase
-		if( key > heap[currIdx].first )
-			throw InvalidKeyIncreaseException("In MinHeaps only decrease in key updates are legal");
 
 		// update value with current key
 		heap[currIdx].first = key;

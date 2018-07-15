@@ -25,15 +25,28 @@ summary.Hypervolume <- function(object, ...)
   cat(sprintf("Volume: %f\n",object@Volume))
   cat(sprintf("Random point density: %f\n",object@PointDensity))
   cat(sprintf("Number of random points: %d\n",nrow(object@RandomPoints)))
+  
+  varp <- object@ValueAtRandomPoints
+  if (length(varp)==0)
+  {
+    varp <- NA
+  }
   cat(sprintf("Random point values:\n\tmin: %.3f\n\tmean: %.3f\n\tmedian: %.3f\n\tmax:%.3f\n",
-                min(object@ValueAtRandomPoints),
-                mean(object@ValueAtRandomPoints),
-                median(object@ValueAtRandomPoints),
-                max(object@ValueAtRandomPoints)))
+                min(varp),
+                mean(varp),
+                median(varp),
+                max(varp)))
   cat(sprintf("Parameters:\n"))
-  lapply(1:length(object@Parameters), function(x) {
-    cat(sprintf("\t%s: %s\n",names(object@Parameters)[x], paste(format(object@Parameters[[x]]),collapse=" ")))
-  })
+  if (length(object@Parameters) > 0)
+  {
+    lapply(1:length(object@Parameters), function(x) {
+      cat(sprintf("\t%s: %s\n",names(object@Parameters)[x], paste(format(object@Parameters[[x]]),collapse=" ")))
+    })
+  }
+  else
+  {
+    cat('\t(none)\n')
+  }
   
   invisible()
 }

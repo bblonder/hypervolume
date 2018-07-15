@@ -40,7 +40,7 @@ hypervolume_threshold <- function(hv, thresholds=NULL, num.thresholds=20, quanti
   }
   if (verbose==TRUE)
   {
-    pb$update(1)
+    pb$terminate()
   }
   names(result) <- thresholds
   
