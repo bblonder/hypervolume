@@ -1,11 +1,11 @@
 kdtree_build <- function(data, verbose=TRUE)
 {
-  if (class(data) == "data.frame")
+  if (class(data) %in% "data.frame")
   {
     data <- as.matrix(data)
   }
   
-  if (class(data) == "matrix")
+  if (class(data) %in% "matrix")
   {
     if (verbose==TRUE)
     {
