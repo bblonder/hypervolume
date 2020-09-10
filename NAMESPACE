@@ -10,8 +10,13 @@ export(
   #nball_volume,
   #evalfrectangular,
   #evalfspherical,
+  #bootstrap,
+  #bootstrap_seq,
+  #k_split,
+  #sampling_bias_bootstrap,
   
   ### (external functions)
+  copy_param_hypervolume,
   estimate_bandwidth, 
   expectation_ball, 
   expectation_box, 
@@ -41,14 +46,17 @@ export(
   hypervolume_variable_importance, 
   hypervolume, 
   padded_range,
+  permute,
   plot.Hypervolume,
   plot.HypervolumeList,
   print.Hypervolume,
   print.HypervolumeList,
+  resample,
   show.Hypervolume,
   show.HypervolumeList,
   summary.Hypervolume,
   summary.HypervolumeList,
+  to_hv_list,
   weight_data
 
        ) 
@@ -86,6 +94,8 @@ import(mvtnorm)
 import(data.table)
 import(progress)
 import(pdist)
+import(foreach)
+import(doParallel)
 #import(alphahull)
 #import(concaveman)
 
