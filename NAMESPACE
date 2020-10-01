@@ -38,6 +38,7 @@ export(
   hypervolume_prune, 
   hypervolume_threshold,
   hypervolume_redundancy,
+  hypervolume_resample,
   hypervolume_save_animated_gif,
   hypervolume_segment, 
   hypervolume_set, 
@@ -45,13 +46,13 @@ export(
   hypervolume_thin, 
   hypervolume_variable_importance, 
   hypervolume, 
+  overlap.test,
   padded_range,
   permute,
   plot.Hypervolume,
   plot.HypervolumeList,
   print.Hypervolume,
   print.HypervolumeList,
-  resample,
   show.Hypervolume,
   show.HypervolumeList,
   summary.Hypervolume,
@@ -96,6 +97,7 @@ import(progress)
 import(pdist)
 import(foreach)
 import(doParallel)
+import(parallel)
 #import(alphahull)
 #import(concaveman)
 

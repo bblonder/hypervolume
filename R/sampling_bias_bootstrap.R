@@ -6,9 +6,7 @@ sampling_bias_bootstrap <- function(name, hv, n = 10, points_per_resample = 'sam
     cl = makeCluster(cores)
     clusterEvalQ(cl, {
       library(hypervolume)
-      library(foreach)
       library(mvtnorm)
-      source('Utils.R')
     })
     registerDoParallel(cl)
     exists_cluster = FALSE

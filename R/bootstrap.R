@@ -6,8 +6,6 @@ bootstrap <- function(name, hv, n = 10, points_per_resample = 'sample_size', cor
     cl = makeCluster(cores)
     clusterEvalQ(cl, {
       library(hypervolume)
-      library(foreach)
-      source('Utils.R')
     })
     registerDoParallel(cl)
     exists_cluster = FALSE

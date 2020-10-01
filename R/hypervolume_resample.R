@@ -1,5 +1,5 @@
-resample <- function(name, hv, method, n = 10, points_per_resample = 'sample_size', seq = 3:nrow(hv@Data), k = 5, cores = 1, verbose = TRUE, mu = NULL, sigma = NULL, cols_to_bias = 1:ncol(hv@Data)) {
-  # Check for valid inptus
+hypervolume_resample <- function(name, hv, method, n = 10, points_per_resample = 'sample_size', seq = 3:nrow(hv@Data), k = 5, cores = 1, verbose = TRUE, mu = NULL, sigma = NULL, cols_to_bias = 1:ncol(hv@Data), weight_func = NULL) {
+  # Check for valid inputs
   if (n <= 0) {
     stop("Invalid value for n")
   } else if (points_per_resample != "sample size" & points_per_resample <= 0) {

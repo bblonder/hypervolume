@@ -6,8 +6,6 @@ k_split <- function(name, hv, k = 5, cores = 1, verbose = TRUE) {
     cl = makeCluster(cores)
     clusterEvalQ(cl, {
       library(hypervolume)
-      library(foreach)
-      source('Utils.R')
     })
     registerDoParallel(cl)
     exists_cluster = FALSE
