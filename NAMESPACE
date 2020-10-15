@@ -28,12 +28,14 @@ export(
   hypervolume_box,
   hypervolume_distance, 
   hypervolume_estimate_probability,
+  hypervolume_funnel,
   hypervolume_gaussian,
   hypervolume_general_model,
   hypervolume_holes, 
   hypervolume_inclusion_test, 
   hypervolume_join, 
   hypervolume_overlap_statistics,
+  hypervolume_permute,
   hypervolume_project,
   hypervolume_prune, 
   hypervolume_threshold,
@@ -48,7 +50,6 @@ export(
   hypervolume, 
   overlap.test,
   padded_range,
-  permute,
   plot.Hypervolume,
   plot.HypervolumeList,
   print.Hypervolume,
@@ -98,6 +99,7 @@ import(pdist)
 import(foreach)
 import(doParallel)
 import(parallel)
+import(ggplot2)
 #import(alphahull)
 #import(concaveman)
 

@@ -5,11 +5,15 @@
 Hypervolume resampling methods
 }
 \description{
-hypervolume_resample generates new hyperolumes based on the method input.
-  - "bootstrap":        Generates n hypervolumes using data bootstrapped from original data
-  - "bootstrap seq":    Generates n hypervolumes for each sample size in sequence specified by user
-  - "biased bootstrap": Bootstraps input hypervolume with biases applied through multivariate normal weights or user specified weights
-  - "k_split":          Generates k hypervolumes while leaving out disjoint sets of 1/k points each time
+\code{hypervolume_resample} generates new hyperolumes based on the method input. Outputs written to file.
+
+  - \code{"bootstrap"}:        Generates n hypervolumes using data bootstrapped from original data
+  
+  - \code{"bootstrap seq"}:    Generates n hypervolumes for each sample size in sequence specified by user
+  
+  - \code{"biased bootstrap"}: Bootstraps input hypervolume with biases applied through multivariate normal weights or user specified weights
+  
+  - \code{"k_split"}:          Generates k hypervolumes while leaving out disjoint sets with size 1/k of total points each time
 }
 \usage{
 hypervolume_resample(name, hv, method, n = 10, points_per_resample = "sample_size", seq = 3:nrow(hv@Data), k = 5, cores = 1, verbose = TRUE, mu = NULL, sigma = NULL, cols_to_bias = 1:ncol(hv@Data))
@@ -20,10 +24,10 @@ hypervolume_resample(name, hv, method, n = 10, points_per_resample = "sample_siz
 File name; The function writes hypervolumes to file in ./Objects/<name>
 }
   \item{hv}{
-A n-dimensional hypervolume
+A hypervolume object
 }
   \item{method}{
-String input; options are bootstrap, bootstrap seq, biased bootstrap, and k_split
+String input; options are \code{"bootstrap"}, \code{"bootstrap seq"}, \code{"biased bootstrap"}, and \code{"k_split"}
 }
   \item{n}{
 number of bootstraps to take
@@ -32,13 +36,13 @@ number of bootstraps to take
 Number of points to resample per bootstrap
 }
   \item{seq}{
-Sequence of sample sizes. If method = "bootstrap seq" then the function generates n bootstrapped hypervolumes for each sample size in seq 
+Sequence of sample sizes. If \code{method = "bootstrap seq"} then the function generates n bootstrapped hypervolumes for each sample size in seq 
 }
   \item{k}{
 Number of splits when method = "k_split"
 }
   \item{cores}{
-Number of logical cores to use while generating permuted hypervolumes. If parallel backend already registered to doParallel, function will use that backend and ignore the argument in cores.
+Number of logical cores to use while generating bootstraped hypervolumes. If parallel backend already registered to \code{doParallel}, function will use that backend and ignore the argument in cores.
 }
   \item{verbose}{
 Logical value; If function is being run sequentially, outputs progress bar in console.
@@ -62,19 +66,19 @@ custom weight function that takes in a matrix of values and returns desired weig
 Use \code{to_hv_list} to extract every hypervolume object in a directory into a HypervolumeList object.
 It is also possible to access the hypervolumes by using readRDS to read the hypervolume objects in one by one.
 
-The resampled hypervolumes are generated using the same parameters used to generate the input hypervolume. The only exception is if the method for generating the input hypervolume is "gaussian" (the default), then bandwidth isn't preserved for different sampe sizes.
+The resampled hypervolumes are generated using the same parameters used to generate the input hypervolume. The only exception is if the method for generating the input hypervolume is \code{"gaussian"} (the default), then bandwidth isn't preserved for different sampe sizes.
 }
 \value{
 returns a string containing an absolute path equivalent to ./Objects/<name>
 }
 
 \seealso{
-\code{\link{to_hv_list}}, \code{\link{overlap.test}}, \code{\link{funnel}}, \code{\link{overlap.confidence}}
+\code{\link{to_hv_list}}, \code{\link{overlap.test}}, \code{\link{hypervolume_funnel}}, \code{\link{overlap.confidence}}
 }
 \examples{
 \dontrun{
 data(iris)
-hv = hypervolume(iris[c(1,2)])
+hv = hypervolume(iris[,c(1,2)])
 
 # Example 1
 # Use detectCores to see how many cores are availible in current environment

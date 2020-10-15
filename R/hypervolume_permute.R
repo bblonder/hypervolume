@@ -1,27 +1,4 @@
-#' Permutations of hypervolumes from two input hypervolumes
-#' 
-#' @param name Name of directory inside ./Objects for storing hypervolume objects
-#' @param hv1 A hypervolume
-#' @param hv2 A hypervolume
-#' @param n Number of permutations to take
-#' @param cores size of cluster to register to doParallel backend
-#' @param verbose A boolean, prints a progress bar if run sequentially
-#' @return absolute path to a directory of permuted hypervolumes
-#' @example 
-#' data("quercus")
-#' qsample1 = quercus[sample(1:nrow(quercus), 150),]
-#' qsample2 = quercus[sample(1:nrow(quercus), 150),]
-#' hv1 = hypervolume(qsample1[,2:3])
-#' hv2 = hypervolume(qsample2[,2:3])
-#' perm_path = permute("Quercus_perm_150", hv1, hv2, n = 200, cores = 20)
-#' 
-#' perm_null = foreach(i = list.files(perm_path), .combine = rbind) %dopar% {
-#' h1 = readRDS(file.path(perm_path, i, "hv1.rds"))
-#' h2 = readRDS(file.path(perm_path, i, "hv2.rds"))
-#' hypervolume_overlap_statistics(hypervolume_set(h1, h2, check.memory = FALSE))
-#' }
-
-permute <- function(name, hv1, hv2, n = 50, cores = 1, verbose = TRUE) {
+hypervolume_permute <- function(name, hv1, hv2, n = 50, cores = 1, verbose = TRUE) {
   # Check if cluster registered to doparallel backend exists
   exists_cluster = TRUE
   if(cores > 1 & getDoParWorkers() == 1) {
