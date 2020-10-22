@@ -48,6 +48,7 @@ export(
   hypervolume_thin, 
   hypervolume_variable_importance, 
   hypervolume, 
+  overlap.confidence,
   overlap.test,
   padded_range,
   plot.Hypervolume,

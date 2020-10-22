@@ -30,16 +30,20 @@ A hypervolume object
 String input; options are \code{"bootstrap"}, \code{"bootstrap seq"}, \code{"biased bootstrap"}, and \code{"k_split"}
 }
   \item{n}{
-number of bootstraps to take
+Number of resamples to take.
+Used for every method.
 }
   \item{points_per_resample}{
-Number of points to resample per bootstrap
+Number of points to resample per resample.
+Used for \code{method = "bootstrap"} and \code{method = "biased bootstrap"}.
 }
   \item{seq}{
-Sequence of sample sizes. If \code{method = "bootstrap seq"} then the function generates n bootstrapped hypervolumes for each sample size in seq 
+Sequence of sample sizes. If \code{method = "bootstrap seq"} then the function generates n bootstrapped hypervolumes for each sample size in seq.
+Used for \code{method = "bootstrap seq"}.
 }
   \item{k}{
-Number of splits when method = "k_split"
+Number of splits.
+Used for \code{method = "k_split"}
 }
   \item{cores}{
 Number of logical cores to use while generating bootstraped hypervolumes. If parallel backend already registered to \code{doParallel}, function will use that backend and ignore the argument in cores.
@@ -48,16 +52,20 @@ Number of logical cores to use while generating bootstraped hypervolumes. If par
 Logical value; If function is being run sequentially, outputs progress bar in console.
 }
   \item{mu}{
-array of values specifying the mean of multivariate normal weights
+Array of values specifying the mean of multivariate normal weights.
+Used for \code{method = "biased bootstrap"}.
 }
   \item{sigma}{
-array of values specifying the variance in each dimension. (Lower variance corresponds to stronger bias)
+Array of values specifying the variance in each dimension. (Lower variance corresponds to stronger bias)
+Used for \code{method = "biased bootstrap"}.
 }
   \item{cols_to_bias}{
-array of column indices; must be same length as mu and sigma
+Array of column indices; must be same length as mu and sigma
+Used for \code{method = "biased bootstrap"}.
 }
   \item{weight_func}{
-custom weight function that takes in a matrix of values and returns desired weights for each row
+Custom weight function that takes in a matrix of values and returns desired weights for each row
+Used for \code{method = "biased bootstrap"}.
 }
 }
 \details{

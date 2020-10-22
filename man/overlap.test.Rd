@@ -55,7 +55,7 @@ a list of p_values indexed by the name of the relevant statistic
 a list of ggplot objects indexed by the name of the relevant statistic. The observed value of each statistic is represented as a dot on the x axis.
 }
   \item{distribution}{
-a matrix of random points sampled from the null distribution
+a matrix of overlap statistics used to generate the null distribution
 }
 }
 

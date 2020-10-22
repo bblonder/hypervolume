@@ -6,7 +6,6 @@ hypervolume_permute <- function(name, hv1, hv2, n = 50, cores = 1, verbose = TRU
     cl = makeCluster(cores)
     clusterEvalQ(cl, {
       library(hypervolume)
-      source('Utils.R')
     })
     registerDoParallel(cl)
     exists_cluster = FALSE

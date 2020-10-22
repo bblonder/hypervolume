@@ -5,7 +5,7 @@
 Read hypervolumes from directory
 }
 \description{
-Takes a directory path containing only rds files and reads them into a HypervolumeList object.
+Takes a path to a directory containing only rds files and reads them into a HypervolumeList object.
 }
 \usage{
 to_hv_list(path)

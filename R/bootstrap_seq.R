@@ -1,4 +1,4 @@
-bootstrap_seq <- function(name, hv, n = 10, points_per_resample = 'sample_size', seq = 3:nrow(hv@Data), cores = 1, verbose = TRUE) {
+bootstrap_seq <- function(name, hv, n = 10, seq = 3:nrow(hv@Data), cores = 1, verbose = TRUE) {
   # Check if cluster registered to doparallel backend exists
   exists_cluster = TRUE
   if(cores > 1 & getDoParWorkers() == 1) {
@@ -19,8 +19,7 @@ bootstrap_seq <- function(name, hv, n = 10, points_per_resample = 'sample_size',
   foreach(i = seq) %dopar% {
     subdir = paste('sample size', as.character(i))
     dir.create(file.path('./Objects', name, subdir))
-    h = copy_param_hypervolume(hv, hv@Data[sample(1:nrow(hv@Data), i, replace = TRUE),], name = paste("resample", as.character(i)))
-    bootstrap(file.path(name, subdir), h, n, points_per_resample, verbose = verbose)
+    bootstrap(file.path(name, subdir), hv, n, i, verbose = verbose)
   }
   
   # If a cluster was created for this specific function call, close cluster and register sequential backend
