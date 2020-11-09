@@ -10,7 +10,7 @@ Observed value of overlap statistic is calculated from inputed hypervolumes.
 calculates p value for observed value of each statistic with respect to the generated null distributions.
 }
 \usage{
-hypervolume_overlap_test(hv1, hv2, path, alternative = "one-sided", bins = 100)
+hypervolume_overlap_test(hv1, hv2, path, alternative = "one-sided", bins = 100, cores = 1)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -28,6 +28,9 @@ a path to a directory containing permuted hypervolumes, bootstrapped hypervolume
 }
   \item{bins}{
 plotting parameter for histogram of overlap statistics
+}
+  \item{cores}{
+Number of logical cores to use while generating overlap statistics. If parallel backend already registered to \code{doParallel}, function will use that backend and ignore the argument in cores.
 }
 }
 \details{

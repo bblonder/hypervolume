@@ -21,6 +21,9 @@ A path to a directory of bootstrapped hypervolumes
 \item{CI}{
 Desired confidence interval proportion
 }
+  \item{cores}{
+Number of logical cores to use while generating overlap statistics. If parallel backend already registered to \code{doParallel}, function will use that backend and ignore the argument in cores.
+}
 }
 \details{
 The four overlap statistics are Sorensen, Jaccard, frac_unique_1, frac_unique_2. See \code{\link{hypervolume_overlap_statistics}}
