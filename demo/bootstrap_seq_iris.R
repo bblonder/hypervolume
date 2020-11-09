@@ -1,6 +1,6 @@
 if (exists('doBootstrapSeqIris')==TRUE){
 
-  requires("ggplot2")
+  require("ggplot2")
   if (!exists('doBootstrapDemoCores')) {
     doBootstrapDemoCores = 1
   }
