@@ -17,7 +17,7 @@ hypervolume_resample <- function(name, hv, method, n = 10, points_per_resample =
   if (method == 'bootstrap') {
     return(bootstrap(name, hv, n, points_per_resample, cores, verbose))
   } else if (method == 'bootstrap seq') {
-    return(bootstrap_seq(name, hv, n, points_per_resample, seq, cores, verbose))
+    return(bootstrap_seq(name, hv, n, seq, cores, verbose))
   } else if (method == 'biased bootstrap') {
     return(sampling_bias_bootstrap(name, hv, n, points_per_resample, cores, verbose, mu, sigma, cols_to_bias))
   } else if (method == "k_split") {

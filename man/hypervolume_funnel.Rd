@@ -46,7 +46,8 @@ quercus_bootstrap_seq <- resample('quercus_bootstrap_seq', hv_quercus, method = 
 
 # Compatible with ggplot syntax when used with as_table = FALSE
 funnel(quercus_bootstrap_seq, title = 'Resampled volumes of Quercus', func = get_volume) + 
-  geom_line(aes(y = get_volume(hv_quercus)))
+  geom_line(aes(y = get_volume(hv_quercus))) +
+  ylab("Volume")
 }
 }
 

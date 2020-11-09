@@ -81,7 +81,7 @@ returns a string containing an absolute path equivalent to ./Objects/<name>
 }
 
 \seealso{
-\code{\link{to_hv_list}}, \code{\link{overlap.test}}, \code{\link{hypervolume_funnel}}, \code{\link{overlap.confidence}}
+\code{\link{to_hv_list}}, \code{\link{hypervolume_overlap_test}}, \code{\link{hypervolume_funnel}}, \code{\link{hypervolume_overlap_confidence}}
 }
 \examples{
 \dontrun{

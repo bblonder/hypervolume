@@ -1,4 +1,4 @@
-overlap.test <- function(hv1, hv2, path, alternative = "one-sided", bins = 100) {
+hypervolume_overlap_test <- function(hv1, hv2, path, alternative = "one-sided", bins = 100) {
   if(alternative != "one-sided" & alternative != "two-sided") {
     stop("invalid alternative hypothesis")
   }

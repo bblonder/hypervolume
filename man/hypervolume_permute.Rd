@@ -31,7 +31,7 @@ Logical value; If function is being run sequentially, outputs progress bar in co
 }
 }
 \details{
-\code{hypervolume_permute} creates a directory called Objects in the current working directory if a directory of that name doesn't already exist. Returns an absolute path to directory with permuted hypervolumes. rds files are stored in separate subdirectories for each permutation. Use \code{hypervolume_permute} when generating null distribution of overlap statistics. \code{\link{overlap.test}} takes in a \code{hypervolume_permute} filepath output.
+\code{hypervolume_permute} creates a directory called Objects in the current working directory if a directory of that name doesn't already exist. Returns an absolute path to directory with permuted hypervolumes. rds files are stored in separate subdirectories for each permutation. Use \code{hypervolume_permute} when generating null distribution of overlap statistics. \code{\link{hypervolume_overlap_test}} takes in a \code{hypervolume_permute} filepath output.
 
 It is also possible to access the hypervolumes by using readRDS to read the hypervolume objects in one by one.
 }
@@ -40,7 +40,7 @@ It is also possible to access the hypervolumes by using readRDS to read the hype
 returns a string containing an absolute path equivalent to ./Objects/<name>
 }
 \seealso{
-\code{overlap.test}
+\code{hypervolume_overlap_test}
 }
 \examples{
 \dontrun{
@@ -56,8 +56,8 @@ hv2 = hypervolume(qsample2[,2:3])
 # Take 200 permutations of the 300 data points. Using more cores is faster.
 perm_path = hypervolume_permute("Quercus_perm_150", hv1, hv2, n = 200, cores = 20)
 
-# overlap.test takes perm_path as an input. Results show p value for the overlap statistics of hv1 and hv2 given null distribution generated from perm_path.
+# hypervolume_overlap_test takes perm_path as an input. Results show p value for the overlap statistics of hv1 and hv2 given null distribution generated from perm_path.
 # The null distribution assumes data for hv1 and hv2 are drawn from the same distribution and permuting data will not change the overlap statitsics.
-results = overlap.test(hv1, hv2, perm_path)
+results = hypervolume_overlap_test(hv1, hv2, perm_path)
 }
 }
