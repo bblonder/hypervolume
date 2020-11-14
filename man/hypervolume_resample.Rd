@@ -60,7 +60,7 @@ Array of values specifying the variance in each dimension. (Lower variance corre
 Used for \code{method = "biased bootstrap"}.
 }
   \item{cols_to_bias}{
-Array of column indices; must be same length as mu and sigma
+Array of column indices; must be same length as mu and sigma.  
 Used for \code{method = "biased bootstrap"}.
 }
   \item{weight_func}{

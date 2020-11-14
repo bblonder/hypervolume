@@ -1,0 +1,103 @@
+---
+title: "Hypervolume-Resampling"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Hypervolume-Resampling}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(hypervolume)
+library(ggplot2)
+```
+
+```{r}
+data(iris)
+data(quercus)
+```
+
+# Using hypervolume_resample: bootstrap_seq
+The following code demonstrates the effect of sample size on the construction of hypervolume using gaussian kernels.  
+Fifty hypervolumes are constructed per sample size. The volume decreases with sample size due to Silverman bandwidth decreasing with sample size. In fact, Silverman bandwidth isn't appropriate for multimodel data such as \code{iris}. The plot demonstrates this fact and shows that at small sample size, the hypervolume over estimates the true volume. On the other hand, the centroid of the data is preserved by hypervolume construction using gaussian kernels.  
+
+The confidence intervals are generated non-parametrically by taking quantiles at each sample size. In the example, each confidence interval is a quantile of a sample size of 50. Improving the accuracy requires larger sample sizes which proportionally increases run time. It is recommended to use more cores to allow hypervolumes to be generated in parallel; however, by default, \code{cores = 1} and the function runs sequentially.
+
+To plot a parameter of a hypervolume, a function must be passed to the \code{func} field of \code{hypervolume_funnel}. A user inputted function must take a hypervolume as an input and output a number. By default this function is \code{get_volume}. When using hypervolume_funnel to plot the output of hypervolume_resample, a ggplot object is returned. It is then possible to add more plot elements to the result.  
+
+```{r}
+# By default hypervolume is constructed using method = gaussian
+hv = hypervolume(iris[,1:4], verbose = FALSE)
+# Make sure to set working directory before running. "Objects" directory gets created in current working directory.
+# Check the number of cores availible in the current system when increaseing the cores argument
+# Run time with cores = 12 ~30 minutes
+resample_seq_path = hypervolume_resample("iris_hvs", hv, method = "bootstrap seq", n = 50, seq = c(25, 50, 75, 100, 125, 150), cores = 12)
+
+# Compute non parametric confidence interval for volume of the hypervolume. By default, hypervolume_funnel plots volume.
+hypervolume_funnel(resample_seq_path, title = "Volume of Hypervolumes at Different Resample Sizes") + ylab("Volume")
+
+# Compute non parametric confidence interval for mean of the data used to generate the hypervolume.
+hypervolume_funnel(resample_seq_path, title = "Mean of Sepal Length at Different Resample Sizes",
+                   func = function(x) {get_centroid(x)["Sepal.Length"]}) + 
+  ylab("Sepal Length")
+
+hypervolume_funnel(resample_seq_path, title = "Mean of Sepal Width at Different Resample Sizes",
+                   func = function(x) {get_centroid(x)["Sepal.Width"]}) + 
+  ylab("Sepal Width")
+
+hypervolume_funnel(resample_seq_path, title = "Mean of Petal Length at Different Resample Sizes",
+                   func = function(x) {get_centroid(x)["Petal.Length"]}) + 
+  ylab("Petal Length")
+
+hypervolume_funnel(resample_seq_path, title = "Mean of Sepal Width at Different Resample Sizes",
+                   func = function(x) {get_centroid(x)["Petal.Width"]}) + 
+  ylab("Petal Width")
+```
+
+# Using hypervolume_resample: biased bootstrap  
+The following code demonstrates the effect of applying a bias to resampling data. In the example, we use \code{iris} data to construct a hypervolume, then resample it while biasing towards large petal sizes. In this example, this is done by weighing the points closer to the maximum observed values higher when resampling.
+
+The result shows that the a bias is induced, but as a result, variance for all dimensions is decreases as there are less unique points sampled.
+
+Weights can be applied when resampling points by either passing a user defined function to the \code{weight_func} field of \code{hypervolume_resample}, or by specifying the \{mu} and \code{sigma} fields. \code{mu} is the mean of multivariate normal distribution while \code{sigma} is the covariance matrix of a multivariate normal distribution. \code{cols_to_bias} specify which columns to use as the input of the weight function.
+
+```{r}
+# By default hypervolume is constructed using method = gaussian
+hv = hypervolume(iris[,1:4], verbose = FALSE)
+# Weigh points with large values for petal length and petal width higher
+biased_path = hypervolume_resample("Petal bias", hv, method = "biased bootstrap", n = 1, mu = apply(hv@Data, 2, max)[c("Petal.Length", "Petal.Width")], sigma = apply(hv@Data, 2, var)[c("Petal.Length", "Petal.Width")]*2, cols_to_bias = c("Petal.Length", "Petal.Width"))
+
+# Read in hypervolume object from file
+biased_hv = readRDS(file.path(biased_path, "resample 1.rds"))
+
+# Compare the data from the original hypervolume and resampled hypevolume
+dat = data.frame(rbind(hv@Data, biased_hv@Data))
+dat['Type'] = rep(c('original', 'biased'), each = 150)
+```
+
+```{r, fig.width=4}
+ggplot(dat, aes(y = ..density..)) + geom_histogram(aes(x = Petal.Width, fill = Type), bins = 20) + 
+  facet_wrap(~Type) + 
+  ggtitle("Distribution of Petal Width", "Biased resample vs Original sample")
+ggplot(dat, aes(y = ..density..)) + geom_histogram(aes(x = Petal.Length, fill = Type), bins = 20) + 
+  facet_wrap(~Type) + 
+  ggtitle("Distribution of Petal Length", "Biased resample vs Original sample")
+```
+
+```{r, fig.width=4}
+ggplot(dat, aes(y = ..density..)) + geom_histogram(aes(x = Sepal.Width, fill = Type), bins = 20) + 
+  facet_wrap(~Type) + 
+  ggtitle("Distribution of Sepal Width", "Biased resample vs Original sample")
+ggplot(dat, aes(y = ..density..)) + geom_histogram(aes(x = Sepal.Length, fill = Type), bins = 20) + 
+  facet_wrap(~Type) + 
+  ggtitle("Distribution of Sepal Length", "Biased resample vs Original sample")
+```
+
+

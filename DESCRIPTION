@@ -13,6 +13,11 @@ LinkingTo: Rcpp, RcppArmadillo, progress
 Imports: raster, maps, MASS, geometry, ks, pdist, fastcluster,
         compiler, e1071, hitandrun, progress, mvtnorm, data.table,
         rgeos, sp, foreach, doParallel, parallel, ggplot2
-Suggests: magick, alphahull
+Suggests: 
+    magick,
+    alphahull,
+    knitr,
+    rmarkdown
 NeedsCompilation: yes
 RoxygenNote: 7.1.1
+VignetteBuilder: knitr
