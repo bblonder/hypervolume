@@ -17,87 +17,137 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(hypervolume)
 library(ggplot2)
+library(gridExtra)
+set.seed(123)
 ```
 
-```{r}
+```{r, results = "hide"}
 data(iris)
 data(quercus)
 ```
 
-# Using hypervolume_resample: bootstrap_seq
-The following code demonstrates the effect of sample size on the construction of hypervolume using gaussian kernels.  
-Fifty hypervolumes are constructed per sample size. The volume decreases with sample size due to Silverman bandwidth decreasing with sample size. In fact, Silverman bandwidth isn't appropriate for multimodel data such as \code{iris}. The plot demonstrates this fact and shows that at small sample size, the hypervolume over estimates the true volume. On the other hand, the centroid of the data is preserved by hypervolume construction using gaussian kernels.  
+# Introduction to Resampling Hypervolumes
+When working with the package `hypervolume`, it is important to understand the statistical significance of the resulting hypervolume or hypervolumes. Constructing a hypervolume using the default parameters is a non deterministic process. The methods introduced in this update are meant to characterize both variance from sampling and variance due to non deterministic model construction.   
 
-The confidence intervals are generated non-parametrically by taking quantiles at each sample size. In the example, each confidence interval is a quantile of a sample size of 50. Improving the accuracy requires larger sample sizes which proportionally increases run time. It is recommended to use more cores to allow hypervolumes to be generated in parallel; however, by default, \code{cores = 1} and the function runs sequentially.
+This update to the package provides the following functionalities:  
+- interface for generating large resamples of hypervolumes  
+- methods for generating non-parametric confidence intervals for hypervolume parameters and null distributions for overlap statistics  
 
-To plot a parameter of a hypervolume, a function must be passed to the \code{func} field of \code{hypervolume_funnel}. A user inputted function must take a hypervolume as an input and output a number. By default this function is \code{get_volume}. When using hypervolume_funnel to plot the output of hypervolume_resample, a ggplot object is returned. It is then possible to add more plot elements to the result.  
+The purpose of this document is to provide use cases and explain best practice when using the new methods. The examples are chosen to highlight all the considerations that go into interpreting results.  
 
-```{r}
-# By default hypervolume is constructed using method = gaussian
-hv = hypervolume(iris[,1:4], verbose = FALSE)
-# Make sure to set working directory before running. "Objects" directory gets created in current working directory.
-# Check the number of cores availible in the current system when increaseing the cores argument
+## Use case 1: Effect of sample size on volume
+The following code demonstrates the effect of sample size on the construction of hypervolume constructed using gaussian kernels. Fifty hypervolumes are constructed per sample size.  
+
+To plot a parameter of a hypervolume, a function must be passed to the `func` field of `hypervolume_funnel`. A user inputted function must take a hypervolume object as an input and output a number. By default, `func = get_volume`. When using `hypervolume_funnel` to plot the output of `hypervolume_resample`, a ggplot object is returned. It is then possible to add more plot elements to the result.  
+
+```{r, cache=TRUE, results = "hide"}
 # Run time with cores = 12 ~30 minutes
+hv = hypervolume(iris[,1:4], verbose = FALSE)
 resample_seq_path = hypervolume_resample("iris_hvs", hv, method = "bootstrap seq", n = 50, seq = c(25, 50, 75, 100, 125, 150), cores = 12)
 
-# Compute non parametric confidence interval for volume of the hypervolume. By default, hypervolume_funnel plots volume.
 hypervolume_funnel(resample_seq_path, title = "Volume of Hypervolumes at Different Resample Sizes") + ylab("Volume")
 
-# Compute non parametric confidence interval for mean of the data used to generate the hypervolume.
-hypervolume_funnel(resample_seq_path, title = "Mean of Sepal Length at Different Resample Sizes",
-                   func = function(x) {get_centroid(x)["Sepal.Length"]}) + 
+plot1 = hypervolume_funnel(resample_seq_path, title = "Mean of Sepal Length at Different Resample Sizes",
+                   func = function(x) {get_centroid(x)["Sepal.Length"]}) +
   ylab("Sepal Length")
 
-hypervolume_funnel(resample_seq_path, title = "Mean of Sepal Width at Different Resample Sizes",
-                   func = function(x) {get_centroid(x)["Sepal.Width"]}) + 
+plot2 = hypervolume_funnel(resample_seq_path, title = "Mean of Sepal Width at Different Resample Sizes",
+                   func = function(x) {get_centroid(x)["Sepal.Width"]}) +
   ylab("Sepal Width")
 
-hypervolume_funnel(resample_seq_path, title = "Mean of Petal Length at Different Resample Sizes",
-                   func = function(x) {get_centroid(x)["Petal.Length"]}) + 
+plot3 = hypervolume_funnel(resample_seq_path, title = "Mean of Petal Length at Different Resample Sizes",
+                   func = function(x) {get_centroid(x)["Petal.Length"]}) +
   ylab("Petal Length")
 
-hypervolume_funnel(resample_seq_path, title = "Mean of Sepal Width at Different Resample Sizes",
-                   func = function(x) {get_centroid(x)["Petal.Width"]}) + 
+plot4 = hypervolume_funnel(resample_seq_path, title = "Mean of Sepal Width at Different Resample Sizes",
+                   func = function(x) {get_centroid(x)["Petal.Width"]}) +
   ylab("Petal Width")
+
+grid.arrange(plot1, plot2, plot3, plot4, ncol = 2)
 ```
 
-# Using hypervolume_resample: biased bootstrap  
-The following code demonstrates the effect of applying a bias to resampling data. In the example, we use \code{iris} data to construct a hypervolume, then resample it while biasing towards large petal sizes. In this example, this is done by weighing the points closer to the maximum observed values higher when resampling.
+The default contruction of hypervolumes uses `kde.bandwidth = estimate_bandwidth(data, method = "silverman")`. The first plot shows that volume decreases with sample size due to Silverman bandwidth decreasing with sample size. In fact, Silverman bandwidth isn't appropriate for multimodel data such as `iris`. The plot demonstrates this fact and shows that at small sample size, the hypervolume overestimates the true volume. Other methods for estimating bandwidth may be more accurate, but are computationally unfeasible for data with more than 3 dimensions. The estimated volume converges to the true volume of the population as sample size increases; however, at 150 data points, the result from `hypervolume_funnel` suggests that the volume is being overestimated.  
 
-The result shows that the a bias is induced, but as a result, variance for all dimensions is decreases as there are less unique points sampled.
+On the other hand, The plots for the mean of each column of data show that the centroid of the data is preserved by hypervolume construction using gaussian kernels.  
 
-Weights can be applied when resampling points by either passing a user defined function to the \code{weight_func} field of \code{hypervolume_resample}, or by specifying the \{mu} and \code{sigma} fields. \code{mu} is the mean of multivariate normal distribution while \code{sigma} is the covariance matrix of a multivariate normal distribution. \code{cols_to_bias} specify which columns to use as the input of the weight function.
+The confidence intervals in the plots are generated non-parametrically by taking quantiles at each sample size. In the example, each confidence interval is a quantile of a sample size of 50. Improving the accuracy requires larger sample sizes which proportionally increases run time. It is recommended to use more cores to allow hypervolumes to be generated in parallel; however, by default, `cores = 1` and the function runs sequentially.  
 
-```{r}
-# By default hypervolume is constructed using method = gaussian
+## Use case 2: Effect of simulating bias when resampling
+The following code demonstrates the effect of applying a bias to resampling data. In the example, we use `iris` data to construct a hypervolume object, then resample it while biasing towards large petal sizes. In this example, this is done by weighing the points closer to the maximum observed values higher when resampling.  
+
+Weights can be applied when resampling points by either passing a user defined function to the `weight_func` field of `hypervolume_resample`, or by specifying the `mu` and `sigma` fields. When using `mu` and `sigma`, the weight function is a multivariate normal distribution. `mu` is the mean of multivariate normal distribution while `sigma` is the covariance matrix of a multivariate normal distribution. `cols_to_bias` specify which columns to use as the input of the weight function.
+
+```{r, cache=TRUE, results = "hide"}
 hv = hypervolume(iris[,1:4], verbose = FALSE)
-# Weigh points with large values for petal length and petal width higher
-biased_path = hypervolume_resample("Petal bias", hv, method = "biased bootstrap", n = 1, mu = apply(hv@Data, 2, max)[c("Petal.Length", "Petal.Width")], sigma = apply(hv@Data, 2, var)[c("Petal.Length", "Petal.Width")]*2, cols_to_bias = c("Petal.Length", "Petal.Width"))
+cols_to_bias = c("Petal.Length", "Petal.Width")
+mu = apply(hv@Data, 2, max)[cols_to_bias]
+sigma = apply(hv@Data, 2, var)[cols_to_bias]*2
+biased_path = hypervolume_resample("Petal bias", hv, method = "biased bootstrap", n = 1, mu = mu, sigma = sigma, cols_to_bias = cols_to_bias)
 
 # Read in hypervolume object from file
 biased_hv = readRDS(file.path(biased_path, "resample 1.rds"))
 
-# Compare the data from the original hypervolume and resampled hypevolume
-dat = data.frame(rbind(hv@Data, biased_hv@Data))
-dat['Type'] = rep(c('original', 'biased'), each = 150)
+combined_dat = data.frame(rbind(hv@Data, biased_hv@Data))
+combined_dat['Type'] = rep(c('original', 'biased'), each = 150)
 ```
 
 ```{r, fig.width=4}
-ggplot(dat, aes(y = ..density..)) + geom_histogram(aes(x = Petal.Width, fill = Type), bins = 20) + 
-  facet_wrap(~Type) + 
+plot1 = ggplot(combined_dat, aes(y = ..density..)) + geom_histogram(aes(x = Petal.Width, fill = Type), bins = 20) +
+  facet_wrap(~Type) +
   ggtitle("Distribution of Petal Width", "Biased resample vs Original sample")
-ggplot(dat, aes(y = ..density..)) + geom_histogram(aes(x = Petal.Length, fill = Type), bins = 20) + 
-  facet_wrap(~Type) + 
+plot2 = ggplot(combined_dat, aes(y = ..density..)) + geom_histogram(aes(x = Petal.Length, fill = Type), bins = 20) +
+  facet_wrap(~Type) +
   ggtitle("Distribution of Petal Length", "Biased resample vs Original sample")
+grid.arrange(plot1, plot2, ncol = 2)
 ```
 
 ```{r, fig.width=4}
-ggplot(dat, aes(y = ..density..)) + geom_histogram(aes(x = Sepal.Width, fill = Type), bins = 20) + 
-  facet_wrap(~Type) + 
+plot1 = ggplot(combined_dat, aes(y = ..density..)) + geom_histogram(aes(x = Sepal.Width, fill = Type), bins = 20) +
+  facet_wrap(~Type) +
   ggtitle("Distribution of Sepal Width", "Biased resample vs Original sample")
-ggplot(dat, aes(y = ..density..)) + geom_histogram(aes(x = Sepal.Length, fill = Type), bins = 20) + 
-  facet_wrap(~Type) + 
+plot2 = ggplot(combined_dat, aes(y = ..density..)) + geom_histogram(aes(x = Sepal.Length, fill = Type), bins = 20) +
+  facet_wrap(~Type) +
   ggtitle("Distribution of Sepal Length", "Biased resample vs Original sample")
+grid.arrange(plot1, plot2, ncol = 2)
 ```
 
+The result shows that a bias is induced, but as a result, variance for all dimensions is decreases as there are less unique points sampled. The volume will also be significantly reduced if the applied bias is too strong. In this example, sigma is chosen arbitrarily as twice the variance of the original columns. Change sigma to control the strength of the bias. The larger sigma is, the weaker the bias and vice versa.  
 
+## Use case 3: Using overlap statistics to test for similarity of populations
+The following code demonstrates how to test the null hypothesis that two samples come from the same distribution. In this example, we treat the data from `quercus` as the population and draw two samples of 150 independently.  
+
+To test whether the two sample come from the same distribution, there are two approaches. In the first approach, we us the combined sample data as an approximation of the true distribution. To generate the null distribution for overlap statistics, size 150 hypervolumes are resampled from the combined data of the original samples. The overlap of the resampled hypervolumes are used to generate the distribution of the overlap statistics. If the size of the two samples are the same, the function takes half the hypervolumes and overlaps them with each of the other hypervolumes. (See documentation for case when sample sizes aren't the same)  
+
+The second approach is permutation test. For this method, the combined sample data is rearranged and split. A pair of hypervolumes are generated from each split and overlap statistics are generated from each pair.  
+
+The benefit of the first method is the ability to generate multiple overlap statistics per hypervolume. If both methods generate $N$ hypervolumes, the first method will generate $\frac{N^2}{4}$ hypervolumes while the second method will generate $\frac{N}{2}$ hypervolumes. Since hypervolume generation can be a non-deterministic process, method one will account for more of the variance from generating the hypervolume. However, when sample size is small, the combined data may not be a good approximation of the population. In this case, it is better to use the second method, since it doesn't make any assumtions about the population, and generating more hypervolumes is cheaper for smaller sample sizes.
+
+```{r, cache=TRUE, fig.width=8, results = "hide"}
+data("quercus")
+qsample1 = quercus[sample(1:nrow(quercus), 150),]
+qsample2 = quercus[sample(1:nrow(quercus), 150),]
+
+hv1 = hypervolume(qsample1[,2:3])
+hv2 = hypervolume(qsample2[,2:3])
+
+# Method 1
+combined_sample = rbind(qsample1, qsample2)
+population_hat = hypervolume(combined_sample[,2:3])
+
+method1_path = hypervolume_resample("quercus_150_boot", population_hat, "bootstrap", n = 100, points_per_resample = 150, cores = 20)
+
+
+result1 = hypervolume_overlap_test(hv1, hv2, method1_path, cores = 20)
+
+#Method 2
+method2_path = hypervolume_permute("quercus_150_perm", hv1, hv2, n = 100, cores = 20)
+
+result2 = hypervolume_overlap_test(hv1, hv2, method2_path, cores = 20)
+
+# Graphical Results of sorensen statistic
+plot1 = result1$plots$sorensen + ggtitle("Distribution of sorensen index using method 1")
+plot2 = result2$plots$sorensen + ggtitle("Distribution of sorensen index using method 2")
+grid.arrange(plot1, plot2, ncol=2)
+```
+
+For our example, the red point shows the observed value of the sorensen index. Both plots show that the getting the observed value or less is highly likely; therefore, the null hypothesis cannot be rejected.   

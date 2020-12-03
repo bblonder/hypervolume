@@ -34,6 +34,8 @@ Number of logical cores to use while generating overlap statistics. If parallel 
 }
 }
 \details{
+Generating overlap statistics can be parallelized using the \code{cores} argument.  
+
 hypervolume_overlap_test can generate a null distribution from the output of hypervolume_permute, resample with method = "bootstrap", or a vector of two bootstrap outputs. See examples for how to use each case.
 
 path should point to hypervolumes generated from the two input hypervolumes. There are three valid choices:
@@ -84,7 +86,7 @@ hv2 = hypervolume(qsample2[,2:3])
 perm_path = hypervolume_permute("Quercus_perm_150", hv1, hv2, n = 200, cores = 20)
 
 # hypervolume_overlap_test takes perm_path as an input. Results show p value for the overlap statistics of hv1 and hv2 given null distribution generated from perm_path.
-results1 = hypervolume_overlap_test(hv1, hv2, perm_path)
+results1 = hypervolume_overlap_test(hv1, hv2, perm_path, cores = 20)
 
 # Approach 2
 # Under our null hypothesis the samples come from the same population. Approximate the original population by combining the data and 
@@ -108,6 +110,6 @@ b150_path = resample("Quercus_150", hv_combine, method = "bootstrap", n = 25, po
 b300_path = resample("Quercus_300", hv_combine, method = "bootstrap", n = 25, points_per_resample = 300, cores = 20)
 
 # hypervolume_overlap_test generates overlap statistics for each of the 25*25 possible pairs of size 150 and size 300 hypervolumes.
-results3 = hypervolume_overlap_test(hv1, hv2, c(b150_path, b300_path))
+results3 = hypervolume_overlap_test(hv1, hv2, c(b150_path, b300_path), cores = 1)
 }
 }

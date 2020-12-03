@@ -17,7 +17,8 @@ Suggests:
     magick,
     alphahull,
     knitr,
-    rmarkdown
+    rmarkdown,
+    gridExtra
 NeedsCompilation: yes
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr
