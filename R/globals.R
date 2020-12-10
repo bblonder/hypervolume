@@ -1,0 +1,1 @@
+utils::globalVariables(c("i", "j", "jaccard", "sorensen", "jaccard", "frac_unique_1", "frac_unique_2", "..density.."))

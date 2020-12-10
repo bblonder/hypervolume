@@ -8,7 +8,11 @@ Hypervolumes at different sample sizes
 This function takes in hypervolumes bootstrapped at different sample sizes applies a function to each hypervolume. The output of the function can either be a plot of nonparametric confidence intervals or a table of the mean and quantiles.
 }
 \usage{
-hypervolume_funnel(input_path, title = NULL, func = get_volume, CI = .95, as_table = FALSE)
+hypervolume_funnel(input_path, 
+                    title = NULL, 
+                    func = get_volume, 
+                    CI = .95, 
+                    as_table = FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -42,10 +46,17 @@ hv_quercus = hypervolume(quercus[,c(2,3)])
 
 # the seq argument is equivalent to a length 30 vector {10, 139, ... , 3649, 3779}
 # 6hr sequential runtime
-quercus_bootstrap_seq <- resample('quercus_bootstrap_seq', hv_quercus, method = 'bootstrap seq', points_per_resample = "sample_size", seq = floor(seq(10, 3779, length.out = 30)), cores = 20)
+quercus_bootstrap_seq <- resample('quercus_bootstrap_seq', 
+                                    hv_quercus, 
+                                    method = 'bootstrap seq', 
+                                    points_per_resample = "sample_size", 
+                                    seq = floor(seq(10, 3779, length.out = 30)),
+                                    cores = 20)
 
 # Compatible with ggplot syntax when used with as_table = FALSE
-funnel(quercus_bootstrap_seq, title = 'Resampled volumes of Quercus', func = get_volume) + 
+hypervolume_funnel(quercus_bootstrap_seq, 
+                    title = 'Resampled volumes of Quercus', 
+                    func = get_volume) + 
   geom_line(aes(y = get_volume(hv_quercus))) +
   ylab("Volume")
 }

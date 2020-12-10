@@ -40,10 +40,11 @@ The following code demonstrates the effect of sample size on the construction of
 
 To plot a parameter of a hypervolume, a function must be passed to the `func` field of `hypervolume_funnel`. A user inputted function must take a hypervolume object as an input and output a number. By default, `func = get_volume`. When using `hypervolume_funnel` to plot the output of `hypervolume_resample`, a ggplot object is returned. It is then possible to add more plot elements to the result.  
 
-```{r, cache=TRUE, results = "hide"}
-# Run time with cores = 12 ~30 minutes
+```{r, results = "hide", fig.width=8}
+# Run time with cores = 2
+# We only resample up to size 50 for sake of computational ease
 hv = hypervolume(iris[,1:4], verbose = FALSE)
-resample_seq_path = hypervolume_resample("iris_hvs", hv, method = "bootstrap seq", n = 50, seq = c(25, 50, 75, 100, 125, 150), cores = 12)
+resample_seq_path = hypervolume_resample("iris_hvs", hv, method = "bootstrap seq", n = 50, seq = c(10, 20, 30, 40, 50), cores = 2)
 
 hypervolume_funnel(resample_seq_path, title = "Volume of Hypervolumes at Different Resample Sizes") + ylab("Volume")
 
@@ -77,7 +78,7 @@ The following code demonstrates the effect of applying a bias to resampling data
 
 Weights can be applied when resampling points by either passing a user defined function to the `weight_func` field of `hypervolume_resample`, or by specifying the `mu` and `sigma` fields. When using `mu` and `sigma`, the weight function is a multivariate normal distribution. `mu` is the mean of multivariate normal distribution while `sigma` is the covariance matrix of a multivariate normal distribution. `cols_to_bias` specify which columns to use as the input of the weight function.
 
-```{r, cache=TRUE, results = "hide"}
+```{r, results = "hide"}
 hv = hypervolume(iris[,1:4], verbose = FALSE)
 cols_to_bias = c("Petal.Length", "Petal.Width")
 mu = apply(hv@Data, 2, max)[cols_to_bias]
@@ -91,7 +92,7 @@ combined_dat = data.frame(rbind(hv@Data, biased_hv@Data))
 combined_dat['Type'] = rep(c('original', 'biased'), each = 150)
 ```
 
-```{r, fig.width=4}
+```{r, fig.width=8}
 plot1 = ggplot(combined_dat, aes(y = ..density..)) + geom_histogram(aes(x = Petal.Width, fill = Type), bins = 20) +
   facet_wrap(~Type) +
   ggtitle("Distribution of Petal Width", "Biased resample vs Original sample")
@@ -101,7 +102,7 @@ plot2 = ggplot(combined_dat, aes(y = ..density..)) + geom_histogram(aes(x = Peta
 grid.arrange(plot1, plot2, ncol = 2)
 ```
 
-```{r, fig.width=4}
+```{r, fig.width=8}
 plot1 = ggplot(combined_dat, aes(y = ..density..)) + geom_histogram(aes(x = Sepal.Width, fill = Type), bins = 20) +
   facet_wrap(~Type) +
   ggtitle("Distribution of Sepal Width", "Biased resample vs Original sample")
@@ -114,18 +115,18 @@ grid.arrange(plot1, plot2, ncol = 2)
 The result shows that a bias is induced, but as a result, variance for all dimensions is decreases as there are less unique points sampled. The volume will also be significantly reduced if the applied bias is too strong. In this example, sigma is chosen arbitrarily as twice the variance of the original columns. Change sigma to control the strength of the bias. The larger sigma is, the weaker the bias and vice versa.  
 
 ## Use case 3: Using overlap statistics to test for similarity of populations
-The following code demonstrates how to test the null hypothesis that two samples come from the same distribution. In this example, we treat the data from `quercus` as the population and draw two samples of 150 independently.  
+The following code demonstrates how to test the null hypothesis that two samples come from the same distribution. In this example, we treat the data from `quercus` as the population and draw two samples of 50 independently.  
 
-To test whether the two sample come from the same distribution, there are two approaches. In the first approach, we us the combined sample data as an approximation of the true distribution. To generate the null distribution for overlap statistics, size 150 hypervolumes are resampled from the combined data of the original samples. The overlap of the resampled hypervolumes are used to generate the distribution of the overlap statistics. If the size of the two samples are the same, the function takes half the hypervolumes and overlaps them with each of the other hypervolumes. (See documentation for case when sample sizes aren't the same)  
+To test whether the two sample come from the same distribution, there are two approaches. In the first approach, we us the combined sample data as an approximation of the true distribution. To generate the null distribution for overlap statistics, size 50 hypervolumes are resampled from the combined data of the original samples. The overlap of the resampled hypervolumes are used to generate the distribution of the overlap statistics. If the size of the two samples are the same, the function takes half the hypervolumes and overlaps them with each of the other hypervolumes. (See documentation for case when sample sizes aren't the same)  
 
 The second approach is permutation test. For this method, the combined sample data is rearranged and split. A pair of hypervolumes are generated from each split and overlap statistics are generated from each pair.  
 
-The benefit of the first method is the ability to generate multiple overlap statistics per hypervolume. If both methods generate $N$ hypervolumes, the first method will generate $\frac{N^2}{4}$ hypervolumes while the second method will generate $\frac{N}{2}$ hypervolumes. Since hypervolume generation can be a non-deterministic process, method one will account for more of the variance from generating the hypervolume. However, when sample size is small, the combined data may not be a good approximation of the population. In this case, it is better to use the second method, since it doesn't make any assumtions about the population, and generating more hypervolumes is cheaper for smaller sample sizes.
+The benefit of the first method is the ability to generate multiple overlap statistics per hypervolume. If both methods generate $N$ hypervolumes, the first method will generate $\frac{N^2}{4}$ overlap statistics while the second method will generate $\frac{N}{2}$ overlap statistics. Since hypervolume generation can be a non-deterministic process, method one will account for more of the variance from generating the hypervolume. However, when sample size is small, the combined data may not be a good approximation of the population. In this case, it is better to use the second method, since it doesn't make any assumptions about the population, and generating more hypervolumes is cheaper for smaller sample sizes.
 
-```{r, cache=TRUE, fig.width=8, results = "hide"}
+```{r, fig.width=8, results = "hide"}
 data("quercus")
-qsample1 = quercus[sample(1:nrow(quercus), 150),]
-qsample2 = quercus[sample(1:nrow(quercus), 150),]
+qsample1 = quercus[sample(1:nrow(quercus), 50),]
+qsample2 = quercus[sample(1:nrow(quercus), 50),]
 
 hv1 = hypervolume(qsample1[,2:3])
 hv2 = hypervolume(qsample2[,2:3])
@@ -134,20 +135,25 @@ hv2 = hypervolume(qsample2[,2:3])
 combined_sample = rbind(qsample1, qsample2)
 population_hat = hypervolume(combined_sample[,2:3])
 
-method1_path = hypervolume_resample("quercus_150_boot", population_hat, "bootstrap", n = 100, points_per_resample = 150, cores = 20)
+method1_path = hypervolume_resample("quercus_50_boot", population_hat, "bootstrap", n = 50, points_per_resample = 50, cores = 2)
 
 
-result1 = hypervolume_overlap_test(hv1, hv2, method1_path, cores = 20)
+result1 = hypervolume_overlap_test(hv1, hv2, method1_path, cores = 2)
 
 #Method 2
-method2_path = hypervolume_permute("quercus_150_perm", hv1, hv2, n = 100, cores = 20)
+method2_path = hypervolume_permute("quercus_50_perm", hv1, hv2, n = 100, cores = 2)
 
-result2 = hypervolume_overlap_test(hv1, hv2, method2_path, cores = 20)
+result2 = hypervolume_overlap_test(hv1, hv2, method2_path, cores = 2)
 
 # Graphical Results of sorensen statistic
-plot1 = result1$plots$sorensen + ggtitle("Distribution of sorensen index using method 1")
-plot2 = result2$plots$sorensen + ggtitle("Distribution of sorensen index using method 2")
+plot1 = result1$plots$sorensen + ggtitle("Method 1") + xlab("Sorensen Index")
+plot2 = result2$plots$sorensen + ggtitle("Method 2") + xlab("Sorensen Index")
 grid.arrange(plot1, plot2, ncol=2)
 ```
 
-For our example, the red point shows the observed value of the sorensen index. Both plots show that the getting the observed value or less is highly likely; therefore, the null hypothesis cannot be rejected.   
+For our example, the red point shows the observed value of the sorensen index. Both plots show that the getting the observed value or less is highly likely; therefore, the null hypothesis cannot be rejected.  
+
+```{r}
+unlink("./Objects", recursive = TRUE)
+```
+

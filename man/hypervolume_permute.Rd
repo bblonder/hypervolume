@@ -8,7 +8,12 @@ Hypervolumes through permuting data of two hypervolumes
 Takes two data of two hypervolume objects (with the same column labels) and generates pairs of hypervolumes with the original sizes of the input hypervolumes but with permuted data (the rows of the original hypervolumes' data are combined and redistributed to the two new hypervolumes). This function is meant for taking a sample of all permutations and does not guarantee that permutations are not repeated. Newly generated hypervolume objects are written to file.
 }
 \usage{
-hypervolume_permute <- function(name, hv1, hv2, n = 50, cores = 1, verbose = TRUE)
+hypervolume_permute(name, 
+                    hv1, 
+                    hv2, 
+                    n = 50, 
+                    cores = 1, 
+                    verbose = TRUE)
 }
 \arguments{
   \item{name}{
@@ -56,8 +61,11 @@ hv2 = hypervolume(qsample2[,2:3])
 # Take 200 permutations of the 300 data points. Using more cores is faster.
 perm_path = hypervolume_permute("Quercus_perm_150", hv1, hv2, n = 200, cores = 20)
 
-# hypervolume_overlap_test takes perm_path as an input. Results show p value for the overlap statistics of hv1 and hv2 given null distribution generated from perm_path.
-# The null distribution assumes data for hv1 and hv2 are drawn from the same distribution and permuting data will not change the overlap statitsics.
+# hypervolume_overlap_test takes perm_path as an input.
+# Results include p value for the overlap statistics of hv1 and hv2 as well as
+# null distribution generated from perm_path. The null distribution assumes data
+# for hv1 and hv2 are drawn from the same distribution and permuting data will 
+# not change the overlap statitsics.
 results = hypervolume_overlap_test(hv1, hv2, perm_path)
 }
 }

@@ -33,7 +33,11 @@ hypervolume object
 \examples{
 \dontrun{
 data("iris")
-hv = hypervolume(iris[,c(1,2)], method = "gaussian", quantile.requested = .9, quantile.requested.type = "volume")
+hv = hypervolume(iris[,c(1,2)], 
+                  method = "gaussian", 
+                  quantile.requested = .9, 
+                  quantile.requested.type = "volume")
+
 # Generates a new hypervolume using the same hypervolume and data
 hv_copy = copy_param_hypervolume(hv, hv@Data)
 # Check to see that the information of the two hypervolumes is the same

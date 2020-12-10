@@ -52,7 +52,8 @@ a matrix of overlap statistics used to generate the confidence intervals
 }
 \examples{
 \dontrun{
-# Let us overlap two hypervolumes generated from multivariate nomral distributions with different means and same covariance matrices.
+# Let us overlap two hypervolumes generated from multivariate nomral 
+# distributions with different means and same covariance matrices.
 sample1 = rmvnorm(150, mean = c(0, 0))
 sample2 = rmvnorm(150, mean = c(0.5, 0.5))
 

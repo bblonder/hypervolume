@@ -16,7 +16,19 @@ Hypervolume resampling methods
   - \code{"k_split"}:          Generates k hypervolumes while leaving out disjoint sets with size 1/k of total points each time
 }
 \usage{
-hypervolume_resample(name, hv, method, n = 10, points_per_resample = "sample_size", seq = 3:nrow(hv@Data), k = 5, cores = 1, verbose = TRUE, mu = NULL, sigma = NULL, cols_to_bias = 1:ncol(hv@Data))
+hypervolume_resample(name, 
+                      hv, 
+                      method, 
+                      n = 10, 
+                      points_per_resample = "sample_size", 
+                      seq = 3:nrow(hv@Data), 
+                      k = 5, 
+                      cores = 1,
+                      verbose = TRUE, 
+                      mu = NULL, 
+                      sigma = NULL, 
+                      cols_to_bias = 1:ncol(hv@Data), 
+                      weight_func = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -34,7 +46,7 @@ Number of resamples to take.
 Used for every method.
 }
   \item{points_per_resample}{
-Number of points to resample per resample.
+Number of points in each resample. If the input is "sample_size", then the same number of points as the original sample is used.
 Used for \code{method = "bootstrap"} and \code{method = "biased bootstrap"}.
 }
   \item{seq}{
@@ -91,14 +103,25 @@ hv = hypervolume(iris[,c(1,2)])
 # Example 1
 # Use detectCores to see how many cores are availible in current environment
 # Get rid of cores argument or set cores = 1 to run sequentially
-path = hypervolume_resample("example_bootstrap", hv, method = "bootstrap", n = 50, cores = 12)
+path = hypervolume_resample("example_bootstrap", 
+                              hv, 
+                              method = "bootstrap", 
+                              n = 50, 
+                              cores = 12)
 hvs = to_hv_list(path)
 
 # Example 2
 # Get maximum sepal length
 max_sepal = max(iris$Sepal.Length)
 # Make data with larger sepal size slightly more likley to be resampled
-biased_path = hypervolume_resample("biased test", hv, "biased bootstrap", n = 50, cores = 12, mu = max_sepal, sigma = 30, cols_to_bias = "Sepal.Length")
+biased_path = hypervolume_resample("biased test", 
+                                    hv, 
+                                    method = "biased bootstrap", 
+                                    n = 50, 
+                                    cores = 12, 
+                                    mu = max_sepal, 
+                                    sigma = 30, 
+                                    cols_to_bias = "Sepal.Length")
 hvs_based = to_hv_list(biased_path)
 }
 }
