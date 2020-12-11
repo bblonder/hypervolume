@@ -45,6 +45,9 @@ Number of cores to use in parallel operation.
   \item{verbose}{
 If \code{TRUE}, prints diagnostic progress messages.
 }
+  \item{...}{
+Other arguments to be passed to \code{pbsapply} for parallelization.
+}
 }
 \details{
 Identifies the uniformly random points enclosed within a hypersphere centered on the point of interest, then averages the probability density at each of these points.
