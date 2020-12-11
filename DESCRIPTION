@@ -19,7 +19,8 @@ Suggests:
     alphahull,
     knitr,
     rmarkdown,
-    gridExtra
+    gridExtra,
+    pbapply
 NeedsCompilation: yes
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr

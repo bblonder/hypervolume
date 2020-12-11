@@ -10,7 +10,8 @@ Estimates probability density at one or more of points within or outside a hyper
 \usage{
 hypervolume_estimate_probability(hv, points, 
                 reduction.factor = 1, weight.exponent = -1, 
-                set.edges.zero = TRUE, edges.zero.distance.factor = 1, 
+                set.edges.zero = TRUE, edges.zero.distance.factor = 1,
+                parallel = FALSE, n.cores = 1,
                 verbose = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -34,6 +35,13 @@ If \code{TRUE}, any test points more than a critical distance (multiplied by \co
 Positive number used to multiply the critical distance for \code{set.edges.zero}. Larger values lead to more stringent criteria for test points being set to zero.
 }
 
+  \item{parallel}{
+If \code{TRUE}, uses multiple cores.
+}
+  \item{n.cores}{
+Number of cores to use in parallel operation.
+}
+
   \item{verbose}{
 If \code{TRUE}, prints diagnostic progress messages.
 }
@@ -52,6 +60,12 @@ A vector of probability densities of length corresponding to m, the number of in
 data(iris)
 iris_ss = subset(iris, Species=="setosa")[,1:3]
 hv = hypervolume_box(data=iris_ss,name='setosa')
-probs <- hypervolume_estimate_probability(hv, points=iris_ss) 
-# first point should have non-zero density, second, zero
+
+new_points = data.frame(Sepal.Length=c(0,5), Sepal.Width=c(0,3.5), Petal.Length=c(0,1.5))
+
+probs <- hypervolume_estimate_probability(hv, points=new_points)
+# should give a zero value and a non-zero value
+
+# example for parallel operation
+# probs_new <- hypervolume_estimate_probability(hv, points=new_points, parallel=TRUE, n.cores=2)
 }
