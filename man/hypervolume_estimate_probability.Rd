@@ -12,7 +12,7 @@ hypervolume_estimate_probability(hv, points,
                 reduction.factor = 1, weight.exponent = -1, 
                 set.edges.zero = TRUE, edges.zero.distance.factor = 1,
                 parallel = FALSE, n.cores = 1,
-                verbose = TRUE)
+                verbose = TRUE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -44,6 +44,9 @@ Number of cores to use in parallel operation.
 
   \item{verbose}{
 If \code{TRUE}, prints diagnostic progress messages.
+}
+  \item{...}{
+Other arguments to be passed to \code{pbsapply} for parallelization.
 }
 }
 \details{
