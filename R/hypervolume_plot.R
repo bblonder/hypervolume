@@ -348,6 +348,7 @@ plot.HypervolumeList <- function(x,
         colorlist[i] <- rgb_2_set_hsv(colorlist[i], s=(alphavals[i]^2)) # should do this with alpha, but a workaround for non-transparent OpenGL implementations...
       }
     }
+
     rgl::plot3d(all[,plot.3d.axes.id],col=colorlist,expand=1.05, xlab=axesnames[1], ylab=axesnames[2], zlab=axesnames[3], xlim=limits[[1]],ylim=limits[[2]],zlim=limits[[3]],size=cex.random,type='p',box=show.frame,axes=show.axes)
     
     if (show.legend==TRUE)

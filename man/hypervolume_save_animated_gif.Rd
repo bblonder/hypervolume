@@ -5,7 +5,7 @@
 Saves animated GIF of three-dimensional hypervolume plot.
 }
 \description{
-Assumes there is an open RGL plot (e.g. from calling \code{plot(hv, show.3d=TRUE)}). Rotates the plot around an axis at a given speed and saves results as a series of GIFs. If the \code{magick} package is available, combines these GIFs into a single animation.
+Rotates the plot around an axis at a given speed and saves results as a series of GIFs. Requires that the \code{rgl} library is installed. Assumes there is an open RGL plot (e.g. from calling \code{plot(hv, show.3d=TRUE)}). If the \code{magick} package is available, combines these GIFs into a single animation.
 }
 \usage{
 hypervolume_save_animated_gif(image.size = 400, 
@@ -44,10 +44,13 @@ Other arguments to be passed to \code{rgl::movie3d}.
 None; used for the side-effect of producing files.
 }
 \examples{
-# not run for speed - uncomment to try!
-#data(iris)
-# hv = hypervolume_gaussian(iris[,1:3])
-# plot(hv, show.3d=TRUE)
-# hypervolume_save_animated_gif()
-
+\dontrun{
+data(iris)
+hv = hypervolume_gaussian(iris[,1:3])
+if(interactive())
+{
+  plot(hv, show.3d=TRUE)
+  hypervolume_save_animated_gif()
+}
+}
 }

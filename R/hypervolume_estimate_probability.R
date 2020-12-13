@@ -36,7 +36,7 @@ hypervolume_estimate_probability <- function (hv, points, reduction.factor = 1, 
   if (parallel==TRUE) 
   {
     cat("Processing points in parallel...\n")
-    pboptions(style = 3, nout = 20, type = "timer")
+    pbapply::pboptions(style = 3, nout = 20, type = "timer")
     cls <- parallel::makeCluster(n.cores)
     
     probabilities <- pbapply::pbsapply(1:nrow(points), function(i, ...) 

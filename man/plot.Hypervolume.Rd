@@ -35,7 +35,7 @@ Plots a single hypervolume or multiple hypervolumes as either a pairs plot (all 
 A Hypervolume or HypervolumeList object. The objects to be plotted.
 }
 \item{show.3d}{
-If \code{TRUE}, makes a three-dimensional plot of a subset of axes determined by \code{plot.3d.axes.id}; otherwise, a pairs plot of all axes.
+If \code{TRUE}, makes a three-dimensional plot of a subset of axes determined by \code{plot.3d.axes.id}; otherwise, a pairs plot of all axes. Requires that the \code{rgl} library is installed.
 }
 \item{plot.3d.axes.id}{
 Numeric identities of axes to plot in three dimensions. Defaults to 1:3 if set to \code{NULL}.
@@ -155,9 +155,13 @@ Contour line plotting with \code{alphahull} requires the non-FOSS \code{alphahul
 data(iris)
 hv = hypervolume_gaussian(iris[,1:3])
 
-plot(hv, show.3d=TRUE)
+# 2d plot
 plot(hv, show.3d=FALSE)
 
+# 3d plot
+if(interactive()) {plot(hv, show.3d=TRUE)}
+
+# 2d plot with additional overlay
 plot(hv,plot.function.additional=function(i,j){
   points( x=iris[iris$Species=="setosa",i],
           y=iris[iris$Species=="setosa",j],col='purple') 
