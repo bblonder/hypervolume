@@ -32,8 +32,9 @@ A \code{\link{Hypervolume-class}} object corresponding to the inferred hypervolu
 \code{\link{weight_data}}, \code{\link{estimate_bandwidth}}, \code{\link{expectation_convex}}, \code{\link{expectation_ball}}, \code{\link{expectation_box}}, \code{\link{hypervolume_threshold}}
 }
 \examples{
-data(penguins)
+data(penguins,package='palmerpenguins')
 penguins_no_na = as.data.frame(na.omit(penguins))
-penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
+penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",
+                    c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
 hv = hypervolume(penguins_adelie,method='box')
 }

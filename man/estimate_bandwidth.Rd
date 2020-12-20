@@ -7,7 +7,7 @@ Kernel bandwidth estimators for hypervolumes
 Estimates bandwidth vector from data using multiple approaches.
 }
 \usage{
-estimate_bandwidth(data,method="silverman")
+estimate_bandwidth(data,method="silverman",value=NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -15,10 +15,15 @@ estimate_bandwidth(data,method="silverman")
 m x n matrix or data frame, where m is the number of observations and n the number of dimensions.
 }
   \item{method}{
-One of \code{"silverman"}, \code{"plug-in"}, or \code{"cross-validation"} - see 'details' section.
+One of \code{"fixed"}, \code{"silverman"}, \code{"plug-in"}, or \code{"cross-validation"} - see 'details' section.
+}
+  \item{value}{
+If \code{method="fixed"}, a scalar or vector value to be used. Otherwise ignored.
 }
 }
 \details{
+The fixed (\code{"fixed"}) is a constant value (scalar or vector of length equal to the dimensionality of the data). The value can be set via the \code{value} argument. If the input has length 1, the value will be repeated for all dimensions.
+
 The Silverman (\code{"silverman"}) estimator is defined as 1.06 * sd(X) * m^(-1/5) where m is the number of observations and X is the data vector in each dimension. Minimizes mean integrated square error along each axis independently. This is the default option due ONLY to computational simplicity.
 
 The plug-in (\code{"plug-in"}) estimator is defined using a diagonal plug-in estimator with a 2-stage pilot estimation and a pre-scaling transformation (in \code{ks::Hpi.diag}). The resulting diagonal variances are then transformed to standard deviations and multiplied by two to be consistent for the box kernels used here. Available only in n<7 dimensions. Minimizes sum of asymptotic mean squared error.
@@ -30,16 +35,19 @@ Note that all estimators are optimal only for normal kernels, whereas the hyperv
 Computational run-times for the plug-in and cross-validation estimators may become infeasibly large in n>=4 dimensions. 
 }
 \value{
-Vector of length n with each entry corresponding to the estimated bandwidth along each axis.
+Vector of length n with each entry corresponding to the estimated bandwidth along each axis. An attribute \code{method} is also set indicating the algorithm used.
 }
 \references{
 Duong, T. (2007) ks: Kernel Density Estimation and Kernel Discriminant Analysis for Multivariate Data in R. Journal of Statistical Software 21, (7)
 }
 \examples{
 \dontrun{
-data(penguins)
+data(penguins,package='palmerpenguins')
 penguins_no_na = as.data.frame(na.omit(penguins))
-penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
+penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",
+                    c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
+                    
+estimate_bandwidth(penguins_adelie,method="fixed",value=c(2,1,2))
 estimate_bandwidth(penguins_adelie,method="silverman")
 estimate_bandwidth(penguins_adelie,method="plug-in") # may be quite slow to run
 estimate_bandwidth(penguins_adelie,method="cross-validation") # may be quite slow to run

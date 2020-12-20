@@ -18,7 +18,7 @@ Plots a single hypervolume or multiple hypervolumes as either a pairs plot (all 
     contour.type='kde', 
     contour.alphahull.alpha=0.25,
     contour.ball.radius.factor=1, 
-    contour.kde.level=0.01,
+    contour.kde.level=1e-04,
     contour.raster.resolution=100,
    show.centroid=TRUE, cex.centroid=2,
    colors=rainbow(floor(length(x@HVList)*1.5),alpha=0.8), 
@@ -153,9 +153,10 @@ Contour line plotting with \code{alphahull} requires the non-FOSS \code{alphahul
 \examples{
 \dontrun{
 # low parameter values for speed
-data(penguins)
+data(penguins,package='palmerpenguins')
 penguins_no_na = as.data.frame(na.omit(penguins))
-penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
+penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",
+                    c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
 
 hv = hypervolume_gaussian(penguins_adelie,name='Adelie')
 
@@ -166,5 +167,6 @@ plot(hv, show.3d=FALSE)
 if(interactive()) 
 {
   plot(hv, show.3d=TRUE)
+}
 }
 }

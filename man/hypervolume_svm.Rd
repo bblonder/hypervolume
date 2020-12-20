@@ -51,9 +51,10 @@ A \code{\link{Hypervolume-class}} object corresponding to the inferred hypervolu
 \code{\link{hypervolume_threshold}}
 }
 \examples{
-data(penguins)
+data(penguins,package='palmerpenguins')
 penguins_no_na = as.data.frame(na.omit(penguins))
-penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
+penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",
+                    c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
   
 hv = hypervolume_svm(penguins_adelie,name='Adelie')
 summary(hv)

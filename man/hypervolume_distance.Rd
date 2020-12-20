@@ -38,10 +38,12 @@ The distance between the two hypervolumes.
 
 \examples{
 \dontrun{
-data(penguins)
+data(penguins,package='palmerpenguins')
 penguins_no_na = as.data.frame(na.omit(penguins))
-penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
-penguins_chinstrap = penguins_no_na[penguins_no_na$species=="Chinstrap",c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
+penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",
+                    c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
+penguins_chinstrap = penguins_no_na[penguins_no_na$species=="Chinstrap",
+                      c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
 
 hv1 = hypervolume_gaussian(penguins_adelie)
 hv2 = hypervolume_gaussian(penguins_chinstrap)

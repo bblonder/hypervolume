@@ -40,11 +40,14 @@ A \code{HypervolumeList} object.
 
 \examples{
 # low sample sizes to meet CRAN time requirements
-data(penguins)
+data(penguins,package='palmerpenguins')
 penguins_no_na = as.data.frame(na.omit(penguins))
-penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
-  
-hv = hypervolume_gaussian(penguins_adelie,name='Adelie',kde.bandwidth=0.2) # intentionally make a holey shape
+penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",
+                    c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
+
+# intentionally make a holey shape for segmentation example
+hv = hypervolume_gaussian(penguins_adelie,name='Adelie',
+  kde.bandwidth=estimate_bandwidth(penguins_adelie)/3) 
 
 hv_segmented <- hypervolume_segment(hv, 
                           num.points.max=200, distance.factor=1.25,

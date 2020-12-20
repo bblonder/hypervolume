@@ -59,10 +59,6 @@ hypervolume_gaussian <- function(data, name=NULL, weight=NULL, samples.per.point
   }
   
   # do error check on kde.bandwidth vector
-  if (length(kde.bandwidth)==1)
-  {
-    kde.bandwidth = rep(kde.bandwidth, ncol(data))
-  }
   if(ncol(data)!=length(kde.bandwidth))
   {
     stop('data and kde.bandwidth must have same dimensionality')
@@ -83,6 +79,12 @@ hypervolume_gaussian <- function(data, name=NULL, weight=NULL, samples.per.point
   {
     warning("The sum of the weights must be equal to 1. Normalizing the weights.")
     weight <- weight / sum(weight)
+  }
+  
+  kde.method = attr(kde.bandwidth,"method")
+  if (is.null(kde.method))
+  {
+    stop('KDE bandwidth must be set using estimate_bandwidth(), not entered manually.') 
   }
   
   predict_function_gaussian <- function(x)
@@ -115,7 +117,12 @@ hypervolume_gaussian <- function(data, name=NULL, weight=NULL, samples.per.point
                 Dimensionality=d,
                 ValueAtRandomPoints=values_accepted,
                 Name=ifelse(is.null(name), "untitled", toString(name)),
-                Parameters = list(kde.bandwidth=kde.bandwidth, samples.per.point=samples.per.point, sd.count=sd.count, quantile.requested=quantile.requested, quantile.requested.type=quantile.requested.type))
+                Parameters = list(kde.bandwidth=kde.bandwidth,
+                                  kde.method=attr(kde.bandwidth,'method'),
+                                  samples.per.point=samples.per.point, 
+                                  sd.count=sd.count, 
+                                  quantile.requested=quantile.requested, 
+                                  quantile.requested.type=quantile.requested.type))
   
   # apply desired threshold type
   hv_gaussian_thresholded = hypervolume_threshold(hv_gaussian, 

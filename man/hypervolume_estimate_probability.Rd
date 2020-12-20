@@ -60,12 +60,13 @@ A vector of probability densities of length corresponding to m, the number of in
 \code{\link{hypervolume_inclusion_test}}, \code{\link{hypervolume_redundancy}} 
 }
 \examples{
-data(penguins)
+data(penguins,package='palmerpenguins')
 penguins_no_na = as.data.frame(na.omit(penguins))
-penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
+penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",
+                    c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
 hv = hypervolume_box(penguins_adelie,name='Adelie')
 
-new_points = data.frame(bill_length_mm=c(0,38), bill_depth_mm=c(0,18))
+new_points = data.frame(bill_length_mm=c(0,38), bill_depth_mm=c(0,18),flipper_length_mm=c(0,190))
 
 probs <- hypervolume_estimate_probability(hv, points=new_points)
 probs

@@ -1,17 +1,39 @@
-estimate_bandwidth <- function(data,method="silverman")
+estimate_bandwidth <- function(data,method="silverman",value=NULL)
 {
   # remove missing cases
   data <- na.omit(data)
   npoints = nrow(data)
   ndim <- ncol(data)
   
-  if (method=="silverman")
+  bandwidth_final = NULL
+  
+  if (method=='fixed')
+  {
+    if (is.null(value))
+    {
+      stop('When using fixed bandwidth, value must be non-NULL')
+    }
+    else
+    {
+      if (length(value)==1)
+      {
+        bandwidth_final = rep(value, ncol(data))
+      }
+      else if (length(value)==ndim)
+      {
+        bandwidth_final = value
+      }
+      else
+      {
+        stop('value must have either length=1 or =number of columns of input data')
+      }
+    }
+  }
+  else if (method=="silverman")
   {
     stdev = apply(data,2,sd)
     
-    normal_silverman_bw = 1.06 * stdev * npoints ^ (-1/5)
-    
-    return(normal_silverman_bw)
+    bandwidth_final = 1.06 * stdev * npoints ^ (-1/5)
   }
   else
   {
@@ -22,18 +44,14 @@ estimate_bandwidth <- function(data,method="silverman")
        bw_plugin <- ks::Hpi.diag(data, nstage=2, pilot="samse",pre="scale")
        
        # convert estimated variances to standard deviations
-       bw_plugin_scaled <- sqrt(diag(bw_plugin))
-       
-       return(bw_plugin_scaled)
+       bandwidth_final <- sqrt(diag(bw_plugin))
      }
      else if (method=="cross-validation")
      {
        bw_crossvalidation <- ks::Hscv.diag(data, pilot="samse", pre="scale")
        
        # convert estimated variances to standard deviations
-       bw_crossvalidation_scaled <- sqrt(diag(bw_crossvalidation))
-       
-       return(bw_crossvalidation_scaled)
+       bandwidth_final <- sqrt(diag(bw_crossvalidation))
      }
      else
      {
@@ -45,4 +63,9 @@ estimate_bandwidth <- function(data,method="silverman")
       stop("Non-Silverman bandwidth estimators not available for n>6 dimensions.")
     }
   }
+  
+  # set attribute on method
+  attr(bandwidth_final,"method") <- method
+  
+  return(bandwidth_final)
 }

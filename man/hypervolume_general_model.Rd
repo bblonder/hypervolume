@@ -47,7 +47,7 @@ Other arguments to be passed to \code{predict}, e.g. \code{type='response'}.
 A \code{Hypervolume}-class object corresponding to retained values within the hyperbox of interest.
 }
 \examples{
-data(penguins)
+data(penguins,package='palmerpenguins')
 penguins_no_na = as.data.frame(na.omit(penguins))
 penguins_no_na$is_adelie = penguins_no_na$species=="Adelie"
 penguins_no_na = penguins_no_na[,c("is_adelie","bill_length_mm","bill_depth_mm")]

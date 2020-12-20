@@ -21,9 +21,10 @@ Either a vector or a matrix of column of centroid values along each axis.
 }
 \examples{
 \dontrun{
-data(penguins)
+data(penguins,package='palmerpenguins')
 penguins_no_na = as.data.frame(na.omit(penguins))
-penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
+penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",
+                    c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
 hv = hypervolume_gaussian(penguins_adelie)
 get_centroid(hv)
 }

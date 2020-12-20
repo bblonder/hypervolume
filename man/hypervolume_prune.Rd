@@ -34,9 +34,10 @@ Either \code{minnp} or \code{minvol} (but not both) must be specified.
 A \code{HypervolumeList} pruned to only those hypervolumes of sizes above the desired value. If \code{returnids=TRUE}, instead returns a list structure with first item being the \code{HypervolumeList} and the second item being the indices of the retained hypervolumes.
 }
 \examples{
-data(penguins)
+data(penguins,package='palmerpenguins')
 penguins_no_na = as.data.frame(na.omit(penguins))
-penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
+penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",
+                    c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
 
 hv = hypervolume_gaussian(penguins_adelie,name='Adelie')
 

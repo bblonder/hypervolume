@@ -44,9 +44,8 @@ An optional vector of weights for the kernel density estimation. Defaults to eve
 Number of random points to be evaluated per data point in \code{data}.
 }
   \item{kde.bandwidth}{
-A scalar or a n x 1 vector corresponding to the diagonal covariance matrix entries of the Gaussian kernel in each dimension. If a scalar input, the single value is used for all dimensions. Several esimation methods are available in \code{\link{estimate_bandwidth}}.
+A bandwidth vector obtained by running \code{\link{estimate_bandwidth}} Note that previous package version (<3.0.0) allowed inputting a scalar/vector value here - this is now handled through the \code{\link{estimate_bandwidth}} interface.
 }
-
 
   \item{sd.count}{
 The number of standard deviations (converted to actual units by multiplying by \code{kde.bandwidth}) at which the 'edge' of the hypervolume should be evaluated. Larger values of \code{threshold.sd.count} will come closer to a true estimate of the Gaussian density over a larger region of hyperspace, but require rapidly increasing computational resources (see Details section). It is generally better to use a large/default value for this parameter. Warnings will be generated if chosen to take a value less than 3.}
@@ -73,10 +72,13 @@ A \code{\link{Hypervolume-class}} object corresponding to the inferred hypervolu
 \code{\link{hypervolume_threshold}}
 }
 \examples{
-data(penguins)
+data(penguins,package='palmerpenguins')
 penguins_no_na = as.data.frame(na.omit(penguins))
-penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
+penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",
+                    c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
   
-hv = hypervolume_gaussian(penguins_adelie,name='Adelie')
+# low samples per point for CRAN demo
+hv = hypervolume_gaussian(penguins_adelie,name='Adelie',samples.per.point=100)
 summary(hv)
+
 }
