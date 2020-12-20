@@ -33,11 +33,14 @@ Each data point is jittered a single time. To sample many points from a distribu
 A data frame with the rows of \code{data} repeated by \code{weights}, potentially with noise added. The output has the same columns as the input but \code{sum(weights)} total rows.
 }
 \examples{
-data(iris)
-weighted_data <- weight_data(iris[,1:3],weights=1+rpois(n=nrow(iris),lambda=3))
-pairs(weighted_data)
+data(penguins)
+penguins_no_na = as.data.frame(na.omit(penguins))
+penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
 
-weighted_noisy_data <- weight_data(iris[,1:3],weights=1+rpois(n=nrow(iris),lambda=3),jitter.sd=0.5)
-pairs(weighted_noisy_data)
+weighted_data <- weight_data(penguins_adelie,weights=1+rpois(n=nrow(penguins_adelie),lambda=3))
+pairs(weighted_data,col=rgb(1,0,0,alpha=0.15)) # color points by alpha to show overlaps
+
+weighted_noisy_data <- weight_data(penguins_adelie,weights=1+rpois(n=nrow(penguins_adelie),lambda=3),jitter.sd=0.5)
+pairs(weighted_noisy_data,col=rgb(1,0,0,alpha=0.15)) # color points by alpha to show overlaps
 }
 \seealso{\code{\link{hypervolume_gaussian}}}

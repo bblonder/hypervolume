@@ -38,9 +38,13 @@ The distance between the two hypervolumes.
 
 \examples{
 \dontrun{
-data(iris)
-hv1 = hypervolume_gaussian(subset(iris, Species=="setosa")[,1:3])
-hv2 = hypervolume_gaussian(subset(iris, Species=="virginica")[,1:3])
+data(penguins)
+penguins_no_na = as.data.frame(na.omit(penguins))
+penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
+penguins_chinstrap = penguins_no_na[penguins_no_na$species=="Chinstrap",c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
+
+hv1 = hypervolume_gaussian(penguins_adelie)
+hv2 = hypervolume_gaussian(penguins_chinstrap)
 
 # note that minimum distance is smaller than centroid distance as expected
 hypervolume_distance(hv1, hv2, type='centroid')

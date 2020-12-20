@@ -57,7 +57,9 @@ A \code{\link{Hypervolume-class}} object corresponding to the expectation hyperv
 
 \examples{
 \dontrun{
-data(iris)
-e_convex <- expectation_convex(iris[,1:3], check.memory=FALSE)
+data(penguins)
+penguins_no_na = as.data.frame(na.omit(penguins))
+penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
+e_convex <- expectation_convex(penguins_adelie, check.memory=FALSE)
 }
 }

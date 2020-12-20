@@ -36,8 +36,12 @@ Vector of length n with each entry corresponding to the estimated bandwidth alon
 Duong, T. (2007) ks: Kernel Density Estimation and Kernel Discriminant Analysis for Multivariate Data in R. Journal of Statistical Software 21, (7)
 }
 \examples{
-data(iris)
-print(estimate_bandwidth(iris[,1:2],method="silverman"))
-print(estimate_bandwidth(iris[,1:2],method="plug-in"))
-print(estimate_bandwidth(iris[,1:2],method="cross-validation"))
+\dontrun{
+data(penguins)
+penguins_no_na = as.data.frame(na.omit(penguins))
+penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
+estimate_bandwidth(penguins_adelie,method="silverman")
+estimate_bandwidth(penguins_adelie,method="plug-in") # may be quite slow to run
+estimate_bandwidth(penguins_adelie,method="cross-validation") # may be quite slow to run
+}
 }

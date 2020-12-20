@@ -43,10 +43,7 @@ A \code{raster} object of same resolution and extent as the input layers corresp
 \code{\link{hypervolume_estimate_probability}}, \code{\link{hypervolume_inclusion_test}}
 }
 \examples{
-# example does not run to meet CRAN runtime guidelines - set TRUE to run
-hypervolume_project_demo = FALSE
-if (hypervolume_project_demo==TRUE)
-{
+\dontrun{
   # load in lat/lon data
   data('quercus') 
   data_alba = subset(quercus, Species=="Quercus alba")[,c("Longitude","Latitude")]

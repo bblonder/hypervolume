@@ -29,10 +29,13 @@ Either \code{factor} or \code{npoints} (but not both) must be specified.
 A \code{Hypervolume} object
 }
 \examples{
-data(iris)
-hv1 = hypervolume_gaussian(subset(iris, Species=="setosa")[,1:3])
+data(penguins)
+penguins_no_na = as.data.frame(na.omit(penguins))
+penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
+  
+hv = hypervolume_box(penguins_adelie,name='Adelie')
 
 # downsample to 1000 random points
-hv1_thinned = hypervolume_thin(hv1, num.points=1000)
-hv1_thinned
+hv_thinned = hypervolume_thin(hv, num.points=1000)
+hv_thinned
 }

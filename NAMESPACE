@@ -101,6 +101,7 @@ import(foreach)
 import(doParallel)
 import(parallel)
 import(ggplot2)
+import(palmerpenguins)
 #import(alphahull)
 #import(concaveman)
 

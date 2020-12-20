@@ -62,25 +62,17 @@ If one of the input hypervolumes has no random points, returns \code{NA} with a 
 }
 
 \examples{
-\dontrun{
-data(iris)
+data(penguins)
+penguins_no_na = as.data.frame(na.omit(penguins))
+penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
+penguins_chinstrap = penguins_no_na[penguins_no_na$species=="Chinstrap",c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
 
-hv1 = hypervolume_gaussian(subset(iris, Species=="setosa")[,1:3],
-  name='setosa')
-hv2 = hypervolume_gaussian(subset(iris, Species=="virginica")[,1:3],
-  name='virginica')
-hv3 = hypervolume_gaussian(subset(iris, Species=="versicolor")[,1:3],
-  name='versicolor')
+hv1 = hypervolume_box(penguins_adelie,name='Adelie')
+hv2 = hypervolume_box(penguins_chinstrap,name='Chinstrap')
 
-hv_set12 = hypervolume_set(hv1, hv2, check.memory=FALSE)
-hv_set23 = hypervolume_set(hv2, hv3, check.memory=FALSE)
+hv_set <- hypervolume_set(hv1, hv2, check.memory=FALSE)
 
-# no overlap found between setosa and virginica
-hypervolume_overlap_statistics(hv_set12)
-
-# some overlap found between virginica and versicolor
-hypervolume_overlap_statistics(hv_set23)
+hypervolume_overlap_statistics(hv_set)
 # examine volumes of each set component
-get_volume(hv_set23)
-}
+get_volume(hv_set)
 }

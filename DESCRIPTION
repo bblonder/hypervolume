@@ -13,7 +13,8 @@ Depends: Rcpp, methods, R (>= 3.0.2)
 LinkingTo: Rcpp, RcppArmadillo, progress
 Imports: raster, maps, MASS, geometry, ks, pdist, fastcluster,
         compiler, e1071, hitandrun, progress, mvtnorm, data.table,
-        rgeos, sp, foreach, doParallel, parallel, ggplot2, pbapply
+        rgeos, sp, foreach, doParallel, parallel, ggplot2, pbapply,
+        palmerpenguins
 Suggests: 
     rgl,
     magick,

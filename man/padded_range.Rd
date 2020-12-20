@@ -27,7 +27,14 @@ A non-negative factor used to add to the range limits. Can have either dimension
 A 2 x n matrix, whose first row is the low value along each axis and whose second row is the high value along each axis.
 }
 \examples{
-data(iris)
-iris_rangebox_nopadding = padded_range(iris[,1:3])
-iris_rangebox_padding = padded_range(iris[,1:3], multiply.interval.amount=0.5, add.amount=0.1)
+data(morphSnodgrassHeller)
+finch_isabela <- na.omit(morphSnodgrassHeller[morphSnodgrassHeller$IslandID=="Isa_Alb",
+      c("WingL","TailL","BeakW","BeakH")])
+
+finch_isabela_rangebox_nopadding = padded_range(finch_isabela)
+finch_isabela_rangebox_nopadding
+
+finch_isabela_rangebox_padding = padded_range(finch_isabela,
+  multiply.interval.amount=0.5, add.amount=0.1)
+finch_isabela_rangebox_padding
 }

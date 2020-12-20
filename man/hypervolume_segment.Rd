@@ -40,11 +40,16 @@ A \code{HypervolumeList} object.
 
 \examples{
 # low sample sizes to meet CRAN time requirements
-data(iris)
-hv1 <- hypervolume_gaussian(iris[,1:3],kde.bandwidth=0.1)
-hv1_segmented <- hypervolume_segment(hv1, num.points.max=100, 
-                  distance.factor=2, check.memory=FALSE)
-plot(hv1_segmented)
+data(penguins)
+penguins_no_na = as.data.frame(na.omit(penguins))
+penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
+  
+hv = hypervolume_gaussian(penguins_adelie,name='Adelie',kde.bandwidth=0.2) # intentionally make a holey shape
+
+hv_segmented <- hypervolume_segment(hv, 
+                          num.points.max=200, distance.factor=1.25,
+                          check.memory=FALSE) # intentionally under-segment
+plot(hv_segmented,show.contour=FALSE)
 }
 \seealso{
 \code{\link{hypervolume_thin}}

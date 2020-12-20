@@ -5,9 +5,9 @@ weight_data <- function(data, weights, jitter.sd=matrix(0, nrow=nrow(data),ncol=
   
   colClasses <- lapply(data, class)
   
-  if (any(colClasses!="numeric"))
+  if (any(!colClasses %in% c("numeric","integer")))
   {
-    stop("All columns must be numeric type.")
+    stop("All columns must be numeric or integer type.")
   }
   
   if (length(weights)==1)

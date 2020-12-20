@@ -22,8 +22,13 @@ A \code{HypervolumeList} containing all hypervolumes in all arguments.
 }
 
 \examples{
-# data(iris)
-# data_split = split(iris[,1:3],iris$Species)
-# hvs_split = lapply(data_split, hypervolume); 
-# hvs_joined = hypervolume_join(hvs_split)
+data(penguins)
+penguins_no_na = as.data.frame(na.omit(penguins))
+penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
+penguins_chinstrap = penguins_no_na[penguins_no_na$species=="Chinstrap",c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
+
+hv1 = hypervolume_box(penguins_adelie,name='Adelie')
+hv2 = hypervolume_box(penguins_chinstrap,name='Chinstrap')
+
+hvs_joined = hypervolume_join(hv1, hv2)
 }

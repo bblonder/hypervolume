@@ -29,6 +29,8 @@ If \code{TRUE} and the \code{input} is of class \code{Hypervolume}, sets boundar
 A \code{Hypervolume-class} object corresponding to the expectation.
 }
 \examples{
-data(iris)
-e_box <- expectation_box(iris[,1:3])
+data(penguins)
+penguins_no_na = as.data.frame(na.omit(penguins))
+penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
+e_box <- expectation_box(penguins_adelie)
 }

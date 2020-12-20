@@ -47,12 +47,16 @@ Other arguments to be passed to \code{predict}, e.g. \code{type='response'}.
 A \code{Hypervolume}-class object corresponding to retained values within the hyperbox of interest.
 }
 \examples{
-data(iris)
-iris[,"Species"] <- iris[,"Species"] == "setosa"
-m_glm = glm(Species~.,data=iris)
+data(penguins)
+penguins_no_na = as.data.frame(na.omit(penguins))
+penguins_no_na$is_adelie = penguins_no_na$species=="Adelie"
+penguins_no_na = penguins_no_na[,c("is_adelie","bill_length_mm","bill_depth_mm")]
+
+
+m_glm = glm(is_adelie~.,data=penguins_no_na)
 
 hv_general_glm = hypervolume_general_model(m_glm, 
-  range.box=padded_range(iris[,1:4]),type='response')
+  range.box=padded_range(penguins_no_na[,2:3]),type='response')
 plot(hv_general_glm)	
 	
 }

@@ -55,17 +55,20 @@ A list containing two elements: a \code{HypervolumeList} or \code{Hypervolume} o
 }
 \examples{
 \dontrun{
-data(iris)
-hv = hypervolume_gaussian(data=subset(iris, Species=="setosa")[,1:3],name='setosa')
+data(penguins)
+penguins_no_na = as.data.frame(na.omit(penguins))
+penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
+  
+hv = hypervolume_box(penguins_adelie,name='Adelie')
 
 # get hypervolumes at multiple thresholds
 hvlist = hypervolume_threshold(hv, plot=TRUE)
 head(hvlist$Statistics)
 plot(hvlist$HypervolumesThresholded[[c(1,5,10,15,20)]],
-  show.random=FALSE, show.data=FALSE,show.centroid=FALSE)
+  show.random=TRUE, show.data=FALSE,show.centroid=FALSE)
 
 # get hypervolume for a single low quantile value
 plot(hypervolume_threshold(hv, plot=FALSE, verbose=FALSE,
-  quantile.requested=0.2,quantile.requested.type="volume")[[1]])
+  quantile.requested=0.1,quantile.requested.type="volume")[[1]])
 }
 }

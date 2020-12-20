@@ -60,13 +60,15 @@ A vector of probability densities of length corresponding to m, the number of in
 \code{\link{hypervolume_inclusion_test}}, \code{\link{hypervolume_redundancy}} 
 }
 \examples{
-data(iris)
-iris_ss = subset(iris, Species=="setosa")[,1:3]
-hv = hypervolume_box(data=iris_ss,name='setosa')
+data(penguins)
+penguins_no_na = as.data.frame(na.omit(penguins))
+penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
+hv = hypervolume_box(penguins_adelie,name='Adelie')
 
-new_points = data.frame(Sepal.Length=c(0,5), Sepal.Width=c(0,3.5), Petal.Length=c(0,1.5))
+new_points = data.frame(bill_length_mm=c(0,38), bill_depth_mm=c(0,18))
 
 probs <- hypervolume_estimate_probability(hv, points=new_points)
+probs
 # should give a zero value and a non-zero value
 
 # example for parallel operation

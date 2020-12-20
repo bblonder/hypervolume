@@ -34,15 +34,18 @@ Either \code{minnp} or \code{minvol} (but not both) must be specified.
 A \code{HypervolumeList} pruned to only those hypervolumes of sizes above the desired value. If \code{returnids=TRUE}, instead returns a list structure with first item being the \code{HypervolumeList} and the second item being the indices of the retained hypervolumes.
 }
 \examples{
-# low sample sizes to meet CRAN time requirements
-data(iris)
-hv1 <- hypervolume_gaussian(iris[,1:3],kde.bandwidth=0.1)
-hv1_segmented <- hypervolume_segment(hv1, 
-                          num.points.max=100, distance.factor=1,
+data(penguins)
+penguins_no_na = as.data.frame(na.omit(penguins))
+penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
+
+hv = hypervolume_gaussian(penguins_adelie,name='Adelie')
+
+hv_segmented <- hypervolume_segment(hv, 
+                          num.points.max=200, distance.factor=1,
                           check.memory=FALSE) # intentionally under-segment
-hv1_segmented_pruned <- hypervolume_prune(hv1_segmented, 
-                          num.points.min=10)
-plot(hv1_segmented_pruned)
+hv_segmented_pruned <- hypervolume_prune(hv_segmented, 
+                          num.points.min=20)
+plot(hv_segmented_pruned)
 }
 \seealso{
 \code{\link{hypervolume_holes}}, \code{\link{hypervolume_segment}} 

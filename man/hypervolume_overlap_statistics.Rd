@@ -26,9 +26,14 @@ A set of multiple metrics
 
 \examples{
 \dontrun{
-data(iris)
-hv1 = hypervolume_gaussian(subset(iris, Species=="virginica")[,1:3])
-hv2 = hypervolume_gaussian(subset(iris, Species=="versicolor")[,1:3])
+data(penguins)
+penguins_no_na = as.data.frame(na.omit(penguins))
+penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
+penguins_chinstrap = penguins_no_na[penguins_no_na$species=="Chinstrap",c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
+
+hv1 = hypervolume_box(penguins_adelie,name='Adelie')
+hv2 = hypervolume_box(penguins_chinstrap,name='Chinstrap')
+
 hv_set <- hypervolume_set(hv1, hv2, check.memory=FALSE)
 
 hypervolume_overlap_statistics(hv_set)

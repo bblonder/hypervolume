@@ -45,12 +45,17 @@ None; used for the side-effect of producing files.
 }
 \examples{
 \dontrun{
-data(iris)
-hv = hypervolume_gaussian(iris[,1:3])
+data(penguins)
+penguins_no_na = as.data.frame(na.omit(penguins))
+penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
+  
+hv = hypervolume_gaussian(penguins_adelie,name='Adelie')
+
 if(interactive())
 {
   plot(hv, show.3d=TRUE)
   hypervolume_save_animated_gif()
+  rgl.close()
 }
 }
 }

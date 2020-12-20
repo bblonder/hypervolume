@@ -31,8 +31,12 @@ A named vector with importance scores for each axis. Note that these scores are 
 }
 \examples{
 # low parameter values for speed
-data(iris)
-hv = hypervolume_gaussian(subset(iris, Species=="versicolor")[,1:2],samples.per.point=10)
+data(penguins)
+penguins_no_na = as.data.frame(na.omit(penguins))
+penguins_adelie = penguins_no_na[penguins_no_na$species=="Adelie",c("bill_length_mm","bill_depth_mm","flipper_length_mm")]
+
+hv = hypervolume_box(penguins_adelie,name='Adelie')
+
 varimp = hypervolume_variable_importance(hv,verbose=FALSE)
-barplot(varimp)
+barplot(varimp,ylab='Importance',xlab='Variable')
 }
