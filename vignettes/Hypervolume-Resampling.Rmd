@@ -16,13 +16,14 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(hypervolume)
+library(palmerpenguins)
 library(ggplot2)
 library(gridExtra)
 set.seed(123)
 ```
 
 ```{r, results = "hide"}
-data(iris)
+data(penguins)
 data(quercus)
 ```
 
@@ -36,94 +37,112 @@ This update to the package provides the following functionalities:
 The purpose of this document is to provide use cases and explain best practice when using the new methods. The examples are chosen to highlight all the considerations that go into interpreting results.  
 
 ## Use case 1: Effect of sample size on volume
-The following code demonstrates the effect of sample size on the construction of hypervolume constructed using gaussian kernels. Fifty hypervolumes are constructed per sample size.  
+The following code demonstrates the effect of sample size on hypervolumes constructed using gaussian kernels. Thirty hypervolumes are constructed per sample size.  
 
 To plot a parameter of a hypervolume, a function must be passed to the `func` field of `hypervolume_funnel`. A user inputted function must take a hypervolume object as an input and output a number. By default, `func = get_volume`. When using `hypervolume_funnel` to plot the output of `hypervolume_resample`, a ggplot object is returned. It is then possible to add more plot elements to the result.  
 
-```{r, results = "hide", fig.width=8}
-# Run time with cores = 2
-# We only resample up to size 50 for sake of computational ease
-hv = hypervolume(iris[,1:4], verbose = FALSE)
-resample_seq_path = hypervolume_resample("iris_hvs", hv, method = "bootstrap seq", n = 50, seq = c(10, 20, 30, 40, 50), cores = 2)
+```{r, results = "hide", eval = FALSE}
+# Run time with cores = 2 is around 25 minutes
+hv = hypervolume(na.omit(penguins)[,3:4], verbose = FALSE)
+resample_seq_path = hypervolume_resample("penguins_hvs", hv, method = "bootstrap seq", n = 30, seq = c(100, 125, 150, 175, 200, 225, 250, 275, 300), cores = 20)
 
 hypervolume_funnel(resample_seq_path, title = "Volume of Hypervolumes at Different Resample Sizes") + ylab("Volume")
 
-plot1 = hypervolume_funnel(resample_seq_path, title = "Mean of Sepal Length at Different Resample Sizes",
-                   func = function(x) {get_centroid(x)["Sepal.Length"]}) +
-  ylab("Sepal Length")
+plot1 = hypervolume_funnel(resample_seq_path, title = "Mean of Bill Length at Different Resample Sizes",
+                   func = function(x) {get_centroid(x)["bill_length_mm"]}) +
+  ylab("Bill Length (mm)")
 
-plot2 = hypervolume_funnel(resample_seq_path, title = "Mean of Sepal Width at Different Resample Sizes",
-                   func = function(x) {get_centroid(x)["Sepal.Width"]}) +
-  ylab("Sepal Width")
+plot2 = hypervolume_funnel(resample_seq_path, title = "Mean of Bill Depth at Different Resample Sizes",
+                   func = function(x) {get_centroid(x)["bill_depth_mm"]}) +
+  ylab("Bill Depth (mm)")
 
-plot3 = hypervolume_funnel(resample_seq_path, title = "Mean of Petal Length at Different Resample Sizes",
-                   func = function(x) {get_centroid(x)["Petal.Length"]}) +
-  ylab("Petal Length")
+grid.arrange(plot1, plot2, nrow = 2)
+```
+```{r, fig.width=8, echo=FALSE}
+upperq = c(205.1020, 198.3495, 197.0977, 185.7079, 179.1139, 184.4861, 180.7195, 176.4766, 175.8285)
+sample_mean = c(179.3345, 176.0790, 170.4279, 170.0950, 167.8839, 166.2428, 167.3649, 162.8489, 162.5742)
+lowerq = c(158.3234, 151.5433, 153.7521, 153.8541, 157.1399, 147.0054, 152.7173, 151.0459, 148.4239)
+n = c(100, 125, 150, 175, 200, 225, 250, 275, 300)
+volume_dat = data.frame(upperq, sample_mean, lowerq, n)
+ggplot(volume_dat, aes(x = n)) + geom_line(aes(y = upperq)) + geom_line(aes(y = sample_mean), col = "blue") + geom_line(aes(y = lowerq)) + ggtitle("Volume of Hypervolumes at Different Resample Sizes", "Confidence interval: 0.95") + ylab("Volume") + xlab("Resample size")
 
-plot4 = hypervolume_funnel(resample_seq_path, title = "Mean of Sepal Width at Different Resample Sizes",
-                   func = function(x) {get_centroid(x)["Petal.Width"]}) +
-  ylab("Petal Width")
+upperq = c(45.20545, 44.78558, 44.99452, 45.02968, 45.02962, 44.76026, 45.04892, 45.11330, 44.91576)
+sample_mean = c(44.21241, 44.24773, 44.40511, 44.21123, 44.28321, 44.32482, 44.44618, 44.35699, 44.38820)
+lowerq = c(43.39146, 43.62949, 43.73162, 43.77126, 43.74826, 43.72950, 43.89345, 43.65643, 43.85460)
+length_dat = data.frame(upperq, sample_mean, lowerq, n)
+plot1 = ggplot(length_dat, aes(x = n)) + geom_line(aes(y = upperq)) + geom_line(aes(y = sample_mean), col = "blue") + geom_line(aes(y = lowerq)) + ggtitle("Average Bill Length at Different Resample Sizes", "Confidence interval: 0.95") + ylab("bill length (mm)") + xlab("Resample size")
 
-grid.arrange(plot1, plot2, plot3, plot4, ncol = 2)
+upperq = c(17.59443, 17.58865, 17.50011, 17.54498, 17.52506, 17.59228, 17.53206, 17.47092, 17.54269)
+sample_mean = c(17.33624, 17.33152, 17.30638, 17.34717, 17.30928, 17.33852, 17.31785, 17.32374, 17.34064)
+lowerq = c(16.96755, 17.09749, 17.12346, 17.15404, 17.10467, 17.12946, 17.13240, 17.16913, 17.17636)
+depth_dat = data.frame(upperq, sample_mean, lowerq, n)
+plot2 = ggplot(depth_dat, aes(x = n)) + geom_line(aes(y = upperq)) + geom_line(aes(y = sample_mean), col = "blue") + geom_line(aes(y = lowerq)) + ggtitle("Average Bill Depth at Different Resample Sizes", "Confidence interval: 0.95") + ylab("bill length (mm)") + xlab("Resample size")
+
+grid.arrange(plot1, plot2, nrow = 2)
 ```
 
-The default contruction of hypervolumes uses `kde.bandwidth = estimate_bandwidth(data, method = "silverman")`. The first plot shows that volume decreases with sample size due to Silverman bandwidth decreasing with sample size. In fact, Silverman bandwidth isn't appropriate for multimodel data such as `iris`. The plot demonstrates this fact and shows that at small sample size, the hypervolume overestimates the true volume. Other methods for estimating bandwidth may be more accurate, but are computationally unfeasible for data with more than 3 dimensions. The estimated volume converges to the true volume of the population as sample size increases; however, at 150 data points, the result from `hypervolume_funnel` suggests that the volume is being overestimated.  
+
+The default contruction of hypervolumes uses `kde.bandwidth = estimate_bandwidth(data, method = "silverman")`. The first plot shows that volume decreases with sample size due to Silverman bandwidth decreasing with sample size. In fact, Silverman bandwidth isn't appropriate for multimodel data such as `penguins`. The plot demonstrates this fact and shows that at small sample size, the hypervolume overestimates the true volume. Other methods for estimating bandwidth may be more accurate, but are computationally unfeasible for data with more than 3 dimensions. The estimated volume converges to the true volume of the population as sample size increases; however, at 300 data points, the result from `hypervolume_funnel` suggests that the volume is being overestimated.  
 
 On the other hand, The plots for the mean of each column of data show that the centroid of the data is preserved by hypervolume construction using gaussian kernels.  
 
-The confidence intervals in the plots are generated non-parametrically by taking quantiles at each sample size. In the example, each confidence interval is a quantile of a sample size of 50. Improving the accuracy requires larger sample sizes which proportionally increases run time. It is recommended to use more cores to allow hypervolumes to be generated in parallel; however, by default, `cores = 1` and the function runs sequentially.  
+The confidence intervals in the plots are generated non-parametrically by taking quantiles at each sample size. In the example, each confidence interval is a quantile of a sample size of 30. Improving the accuracy requires larger sample sizes which proportionally increases run time. It is recommended to use more cores to allow hypervolumes to be generated in parallel; however, by default, `cores = 1` and the function runs sequentially.  
 
 ## Use case 2: Effect of simulating bias when resampling
-The following code demonstrates the effect of applying a bias to resampling data. In the example, we use `iris` data to construct a hypervolume object, then resample it while biasing towards large petal sizes. In this example, this is done by weighing the points closer to the maximum observed values higher when resampling.  
+The following code demonstrates the effect of applying a bias while resampling data. In the example, we use `penguins` data to construct a hypervolume object, then resample it while biasing towards large beak sizes. In this example, this is done by more strongly weighing the points closer to the maximum observed values when resampling.  
 
 Weights can be applied when resampling points by either passing a user defined function to the `weight_func` field of `hypervolume_resample`, or by specifying the `mu` and `sigma` fields. When using `mu` and `sigma`, the weight function is a multivariate normal distribution. `mu` is the mean of multivariate normal distribution while `sigma` is the covariance matrix of a multivariate normal distribution. `cols_to_bias` specify which columns to use as the input of the weight function.
 
 ```{r, results = "hide"}
-hv = hypervolume(iris[,1:4], verbose = FALSE)
-cols_to_bias = c("Petal.Length", "Petal.Width")
+hv = hypervolume(na.omit(penguins)[,3:6], verbose = FALSE)
+cols_to_bias = c("bill_length_mm", "bill_depth_mm")
 mu = apply(hv@Data, 2, max)[cols_to_bias]
 sigma = apply(hv@Data, 2, var)[cols_to_bias]*2
-biased_path = hypervolume_resample("Petal bias", hv, method = "biased bootstrap", n = 1, mu = mu, sigma = sigma, cols_to_bias = cols_to_bias)
+biased_path = hypervolume_resample("Bill bias", hv, method = "biased bootstrap", n = 1, mu = mu, sigma = sigma, cols_to_bias = cols_to_bias)
 
 # Read in hypervolume object from file
 biased_hv = readRDS(file.path(biased_path, "resample 1.rds"))
 
 combined_dat = data.frame(rbind(hv@Data, biased_hv@Data))
-combined_dat['Type'] = rep(c('original', 'biased'), each = 150)
+combined_dat['Type'] = rep(c('original', 'biased'), each = nrow(hv@Data))
 ```
 
-```{r, fig.width=8}
-plot1 = ggplot(combined_dat, aes(y = ..density..)) + geom_histogram(aes(x = Petal.Width, fill = Type), bins = 20) +
+```{r, fig.width=8, fig.height=8}
+plot1 = ggplot(combined_dat, aes(y = ..density..)) + geom_histogram(aes(x = bill_depth_mm, fill = Type), bins = 20) +
   facet_wrap(~Type) +
-  ggtitle("Distribution of Petal Width", "Biased resample vs Original sample")
-plot2 = ggplot(combined_dat, aes(y = ..density..)) + geom_histogram(aes(x = Petal.Length, fill = Type), bins = 20) +
+  ggtitle("Distribution of Bill Depth", "Biased resample vs Original sample") +
+  xlab("bill depth (mm)")
+plot2 = ggplot(combined_dat, aes(y = ..density..)) + geom_histogram(aes(x = bill_length_mm, fill = Type), bins = 20) +
   facet_wrap(~Type) +
-  ggtitle("Distribution of Petal Length", "Biased resample vs Original sample")
-grid.arrange(plot1, plot2, ncol = 2)
+  ggtitle("Distribution of Bill Length", "Biased resample vs Original sample") +
+  xlab("bill length(mm)")
+grid.arrange(plot1, plot2, nrow = 2)
 ```
 
-```{r, fig.width=8}
-plot1 = ggplot(combined_dat, aes(y = ..density..)) + geom_histogram(aes(x = Sepal.Width, fill = Type), bins = 20) +
+```{r, fig.width=8, fig.height=8}
+plot1 = ggplot(combined_dat, aes(y = ..density..)) + geom_histogram(aes(x = flipper_length_mm, fill = Type), bins = 20) +
   facet_wrap(~Type) +
-  ggtitle("Distribution of Sepal Width", "Biased resample vs Original sample")
-plot2 = ggplot(combined_dat, aes(y = ..density..)) + geom_histogram(aes(x = Sepal.Length, fill = Type), bins = 20) +
+  ggtitle("Distribution of Flipper Length", "Biased resample vs Original sample") + 
+  xlab("flipper length (mm)")
+plot2 = ggplot(combined_dat, aes(y = ..density..)) + geom_histogram(aes(x = body_mass_g, fill = Type), bins = 20) +
   facet_wrap(~Type) +
-  ggtitle("Distribution of Sepal Length", "Biased resample vs Original sample")
-grid.arrange(plot1, plot2, ncol = 2)
+  ggtitle("Distribution of Body Mass", "Biased resample vs Original sample") +
+  xlab("body mass (g)")
+grid.arrange(plot1, plot2, nrow = 2)
 ```
 
-The result shows that a bias is induced, but as a result, variance for all dimensions is decreases as there are less unique points sampled. The volume will also be significantly reduced if the applied bias is too strong. In this example, sigma is chosen arbitrarily as twice the variance of the original columns. Change sigma to control the strength of the bias. The larger sigma is, the weaker the bias and vice versa.  
+The result shows that a bias is induced, but as a result, variance for all dimensions is decreases as there are less unique points sampled. The volume will also be significantly reduced if the applied bias is strong. In this example, sigma is chosen arbitrarily as twice the variance of the original columns. Change sigma to control the strength of the bias. The larger sigma is, the weaker the bias and vice versa.  
 
 ## Use case 3: Using overlap statistics to test for similarity of populations
-The following code demonstrates how to test the null hypothesis that two samples come from the same distribution. In this example, we treat the data from `quercus` as the population and draw two samples of 50 independently.  
+The following code demonstrates how to test the null hypothesis that two samples come from the same distribution. In this example, we treat the longitude and latitude data from `quercus` as the true spatial distribution of the species represented in the data. Samples of 150 are drawn from each species in the dataset.  
 
-To test whether the two sample come from the same distribution, there are two approaches. In the first approach, we us the combined sample data as an approximation of the true distribution. To generate the null distribution for overlap statistics, size 50 hypervolumes are resampled from the combined data of the original samples. The overlap of the resampled hypervolumes are used to generate the distribution of the overlap statistics. If the size of the two samples are the same, the function takes half the hypervolumes and overlaps them with each of the other hypervolumes. (See documentation for case when sample sizes aren't the same)  
+To test whether these two species have the same spatial distribution, there are two approaches. In the first approach, we use the combined sample data as an approximation of the true distribution. To generate the null distribution for overlap statistics, size 150 hypervolumes are resampled from the combined data of the original samples. The overlap of the resampled hypervolumes are used to generate the distribution of the overlap statistics. If the size of the two samples are the same, the function takes half the hypervolumes and overlaps them with each of the other hypervolumes. (See documentation for case when sample sizes aren't the same)  
 
-The second approach is permutation test. For this method, the combined sample data is rearranged and split. A pair of hypervolumes are generated from each split and overlap statistics are generated from each pair.  
+The second approach is a permutation test. For this method, the combined sample data is rearranged and split. A pair of hypervolumes are generated from each split and overlap statistics are generated from each pair.  
 
-The benefit of the first method is the ability to generate multiple overlap statistics per hypervolume. If both methods generate $N$ hypervolumes, the first method will generate $\frac{N^2}{4}$ overlap statistics while the second method will generate $\frac{N}{2}$ overlap statistics. Since hypervolume generation can be a non-deterministic process, method one will account for more of the variance from generating the hypervolume. However, when sample size is small, the combined data may not be a good approximation of the population. In this case, it is better to use the second method, since it doesn't make any assumptions about the population, and generating more hypervolumes is cheaper for smaller sample sizes.
+The benefit of the first method is the ability to generate multiple overlap statistics per hypervolume. If both methods generate $N$ hypervolumes, the first method will generate $\frac{N^2}{4}$ overlap statistics while the second method will generate $\frac{N}{2}$ overlap statistics. Since hypervolume generation can be a non-deterministic process, method one will account for more of the variance from generating the hypervolume. However, when sample size is small, the combined data may not be a good approximation of the population. In this case, it is better to use the second method, since it doesn't make any assumptions about the population, and generating more hypervolumes is fast for smaller sample sizes.
 
-```{r, fig.width=8, results = "hide"}
+```{r, eval=FALSE}
 data("quercus")
 qsample1 = quercus[sample(1:nrow(quercus), 50),]
 qsample2 = quercus[sample(1:nrow(quercus), 50),]
@@ -131,27 +150,114 @@ qsample2 = quercus[sample(1:nrow(quercus), 50),]
 hv1 = hypervolume(qsample1[,2:3])
 hv2 = hypervolume(qsample2[,2:3])
 
-# Method 1
+# Method 1: 2 min runtime with 12 threads
 combined_sample = rbind(qsample1, qsample2)
 population_hat = hypervolume(combined_sample[,2:3])
 
-method1_path = hypervolume_resample("quercus_50_boot", population_hat, "bootstrap", n = 50, points_per_resample = 50, cores = 2)
+method1_path = hypervolume_resample("quercus_150_boot", population_hat, "bootstrap", n = 50, points_per_resample = 50, cores = 2)
 
 
 result1 = hypervolume_overlap_test(hv1, hv2, method1_path, cores = 2)
 
-#Method 2
-method2_path = hypervolume_permute("quercus_50_perm", hv1, hv2, n = 100, cores = 2)
+#Method 2: 18 min runtime with 12 threads
+method2_path = hypervolume_permute("quercus_150_perm", hv1, hv2, n = 100, cores = 2)
 
 result2 = hypervolume_overlap_test(hv1, hv2, method2_path, cores = 2)
 
-# Graphical Results of sorensen statistic
-plot1 = result1$plots$sorensen + ggtitle("Method 1") + xlab("Sorensen Index")
-plot2 = result2$plots$sorensen + ggtitle("Method 2") + xlab("Sorensen Index")
+# Graphical Results of jaccard statistic
+plot1 = result1$plots$jaccard + ggtitle("Method 1", as.character(result1$p_values$jaccard)) + xlab("Jaccard Index")
+plot2 = result2$plots$jaccard + ggtitle("Method 2", as.character(result2$p_values$jaccard)) + xlab("Jaccard Index")
+grid.arrange(plot1, plot2, ncol=2)
+```
+```{r, fig.width=8, echo=FALSE}
+dist1 = c(0.6175967,0.5476497,0.5643776,0.375681,0.6018111,0.6092501,0.2940978,0.456526,0.4437668,0.6071126,0.3990394,0.4200228,0.370436,
+0.6962512,0.4106954,0.5200452,0.5921147,0.4437339,0.5224621,0.4545711,0.470474,0.4904795,0.4384275,0.4830518,0.5887894,0.4701903,
+0.4062898,0.3319806,0.5471581,0.4891401,0.5074795,0.4625837,0.537953,0.5382544,0.4763588,0.5056481,0.4627377,0.5679835,0.4097712,
+0.5283797,0.4814949,0.5490443,0.503826,0.4307694,0.5328386,0.5024495,0.6357277,0.5665028,0.5304901,0.4236197,0.3839066,0.3297364,
+0.2390834,0.4289611,0.4008764,0.3765296,0.5388037,0.3946601,0.4066548,0.3699817,0.512307,0.393324,0.4033261,0.3046136,0.5073447,
+0.4226823,0.3916056,0.467156,0.3247411,0.42357,0.4218559,0.4217818,0.4308084,0.4277591,0.3372216,0.6895242,0.6383102,0.5449503,
+0.5053091,0.6274286,0.6397147,0.3782239,0.5582594,0.4860196,0.6061164,0.523025,0.5167736,0.4723319,0.6471979,0.5369846,0.6603812,
+0.6973837,0.5601853,0.5987529,0.4997517,0.6131374,0.5638062,0.485635,0.5194599,0.6505126,0.576685,0.5689938,0.4811085,0.6091617,
+0.6094996,0.5778788,0.5045925,0.6072167,0.5973796,0.575869,0.6519194,0.6373345,0.6109807,0.5135273,0.608396,0.6347984,0.5876328,
+0.6152713,0.5811586,0.6314703,0.5909842,0.5788186,0.5810277,0.63143,0.5476278,0.6018481,0.5283911,0.4791682,0.5512599,0.6275139,
+0.6065896,0.445125,0.6919274,0.5480937,0.6002785,0.5965557,0.5477156,0.5472215,0.5450518,0.5968632,0.6693864,0.6518587,0.5077826,
+0.6091136,0.554505,0.6171429,0.5751784,0.5427208,0.5654695,0.5616831,0.6346011,0.5963858,0.5236824,0.464158,0.6065265,0.5992937,
+0.3430214,0.5419357,0.6204452,0.694689,0.4758965,0.5101324,0.526662,0.5767298,0.5216097,0.6315802,0.5725229,0.5487852,0.6132102,
+0.6151923,0.5119656,0.5846252,0.4865279,0.4970771,0.5818604,0.6560623,0.6017771,0.4995638,0.5856049,0.6537257,0.6082234,0.4493567,
+0.6222073,0.5689402,0.6183128,0.6369045,0.6574959,0.5675858,0.5596343,0.5939221,0.6460876,0.6797018,0.5765122,0.6741933,0.6324961,
+0.6203153,0.6145333,0.5546497,0.6096688,0.6255873,0.463963,0.4219486,0.3607936,0.5377045,0.457448,0.430177,0.4794876,0.5393432,
+0.5434276,0.457289,0.5584795,0.4965755,0.5508904,0.3736402,0.5571394,0.5230513,0.4636244,0.5167073,0.4561471,0.5852154,0.5906398,
+0.5362367,0.4911955,0.4347543,0.4305599,0.6539104,0.6309387,0.601281,0.5155595,0.6623814,0.6127084,0.3665879,0.54329,0.5055857,
+0.578403,0.5034222,0.536928,0.4812088,0.6715078,0.5076797,0.6296738,0.5917922,0.5446213,0.6546226,0.4902655,0.6278264,0.499426,
+0.4975469,0.4886007,0.6251176,0.6106856,0.5470347,0.538202,0.5888069,0.6251493,0.5705034,0.4275227,0.6168976,0.5560586,0.5438088,
+0.5495037,0.5370218,0.5493328,0.5606724,0.4956311,0.5954709,0.6492148,0.5269393,0.6177423,0.4712053,0.5890678,0.586437,0.5513973,
+0.5376665,0.5417808,0.6533427,0.6340042,0.5493042,0.5530933,0.6411088,0.5898551,0.4251713,0.5573609,0.5366177,0.6228273,0.5846955,
+0.5635652,0.5193711,0.5395681,0.5231098,0.6811912,0.6201602,0.562569,0.6300757,0.5770591,0.6880233,0.5337848,0.5145459,0.543869,
+0.7061515,0.5782704,0.5224232,0.4326272,0.491217,0.5946061,0.6068177,0.3562919,0.6278078,0.5363366,0.5921111,0.6019478,0.6151252,
+0.5604807,0.485821,0.6066387,0.6257747,0.6023563,0.5015447,0.5354917,0.6688075,0.5748873,0.6108261,0.4795274,0.4930177,0.5754105,
+0.6843096,0.6077271,0.562646,0.4386349,0.624434,0.6555886,0.2927155,0.5165265,0.4602842,0.5679628,0.4504461,0.5198303,0.4267186,
+0.6722097,0.4673474,0.5435377,0.6343215,0.4706273,0.5672569,0.4329479,0.4948017,0.5521472,0.4761012,0.4698781,0.6432185,0.6565826,
+0.594397,0.4885026,0.4934547,0.6533947,0.6456894,0.3404899,0.532753,0.5019886,0.5842614,0.5859385,0.5720231,0.491676,0.6810272,
+0.4943509,0.6309873,0.720196,0.4903256,0.5679177,0.495148,0.6112418,0.5943071,0.5101167,0.570787,0.6443526,0.625511,0.5140031,
+0.5952031,0.54961,0.6167832,0.669483,0.4177483,0.6726977,0.5115293,0.601569,0.473249,0.5329927,0.5408208,0.5234733,0.5281256,
+0.6701502,0.6638822,0.4374189,0.6156162,0.4991914,0.5787028,0.6168523,0.5088109,0.5378207,0.5629563,0.554891,0.4787059,0.4501863,
+0.3157067,0.4760702,0.542223,0.2440244,0.4051623,0.4029673,0.4818171,0.4049068,0.3621437,0.3423712,0.5842884,0.3971708,0.5226571,
+0.479375,0.4755358,0.4163284,0.3935727,0.4689039,0.443375,0.3612939,0.3187354,0.490211,0.5860346,0.6228474,0.4627578,0.5316913,
+0.5706455,0.5486532,0.4323136,0.5306606,0.516506,0.6163079,0.6155118,0.6082743,0.4797733,0.5628027,0.5431333,0.5739073,0.5990209,
+0.5742581,0.5848357,0.662354,0.5952055,0.5290436,0.479133,0.6051541,0.591533,0.5552532,0.5477146,0.5098765,0.5878752,0.6217615,
+0.5376085,0.4256023,0.5649952,0.6284166,0.5606709,0.4823494,0.5335923,0.5746011,0.578026,0.4616243,0.5195807,0.5729367,0.5543991,
+0.624122,0.4996197,0.4922629,0.5769381,0.6661257,0.6392925,0.5107953,0.6520898,0.6481117,0.5183655,0.5228789,0.661114,0.6366529,
+0.3997058,0.5713424,0.5696789,0.6686335,0.528604,0.5404175,0.5104269,0.6374113,0.5260799,0.6324862,0.6435023,0.5879184,0.6444732,
+0.5595363,0.578353,0.6099173,0.5624761,0.6194359,0.5952425,0.4307774,0.3789692,0.3893422,0.5635007,0.4476406,0.4252475,0.5184248,
+0.541276,0.5591043,0.4506319,0.4705567,0.43248,0.6349987,0.3588295,0.4879897,0.4588495,0.4357839,0.4838095,0.4271345,0.480953,
+0.4756374,0.5116638,0.5849725,0.4739405,0.3915694,0.4363748,0.3830023,0.3859738,0.521774,0.4654497,0.3937498,0.4351859,0.5396657,
+0.5255004,0.3806423,0.5245799,0.5481326,0.6333425,0.3592412,0.5230716,0.436407,0.4061381,0.4740373,0.481282,0.4757787,0.4510575,
+0.5041988,0.6141643,0.4401482,0.3852651,0.5702209,0.5008549,0.4336169,0.600003,0.5660663,0.5356713,0.4910721,0.5877204,0.532474,
+0.5091217,0.6957762,0.5833674,0.5587399,0.4874377,0.6081082,0.648757,0.5482178,0.641812,0.5653897,0.5273031,0.6217118,0.5326967,
+0.6168397,0.5847761,0.5265522,0.6797565,0.5887412,0.5013792,0.5056115,0.6910133,0.6519306,0.353775,0.5565413,0.5877258,0.7134372,
+0.5509678,0.5092509,0.5060273,0.6032074,0.546248,0.6312603,0.7378374,0.5108784,0.5706694,0.5614696,0.5674545,0.6696754,0.5386422,
+0.5385473,0.6438115,0.6332965,0.6386133,0.5221857,0.5902084,0.6273609,0.6328095,0.4203431,0.5687482,0.5047724,0.5929342,0.6168725,
+0.5966095,0.5209887,0.5144039,0.5518592,0.6423046,0.65168,0.4711454,0.5916224,0.5829005,0.6829937,0.5743051,0.4764477,0.5330313,
+0.690886)
+plot1 = ggplot(data = NULL, aes(x = dist1, y = ..density..)) + geom_histogram(bins = 100) + geom_point(aes(x = 0.3029568, y = 0), color = "red") + ggtitle("Method 1", paste("p =", as.character(.008))) + xlab("Jaccard Index")
+
+dist2 = c(0.4298952,0.563629,0.5411587,0.5221524,0.4648172,0.6248974,0.6709802,0.415075,0.5042416,0.5611219,0.4478647,0.4875187,0.4949892,
+0.4903146,0.4076048,0.4711865,0.5220453,0.4229535,0.580201,0.5447755,0.5250333,0.5287319,0.5041111,0.5424838,0.4822613,0.5199444,
+0.5731195,0.5248862,0.5343712,0.4665937,0.5176082,0.5860104,0.4918771,0.6021544,0.500821,0.5747783,0.5653811,0.5118649,0.5287151,
+0.4678775,0.5090004,0.5168913,0.5594802,0.5523406,0.5612163,0.5864067,0.3456592,0.5527877,0.5239593,0.5999527,0.621915,0.5858798,
+0.5148732,0.5650936,0.5555039,0.5954256,0.4759645,0.5731285,0.4762546,0.5014803,0.5337553,0.385572,0.5563612,0.4677854,0.4220668,
+0.4646334,0.3751829,0.4783207,0.3592357,0.5454755,0.6052711,0.5870862,0.5125632,0.4918376,0.5577472,0.5511375,0.5234411,0.6002009,
+0.4634935,0.5710029,0.4545481,0.5091771,0.3954284,0.4590215,0.5746679,0.5498761,0.5076613,0.4446724,0.5960414,0.3960318,0.5478926,
+0.6060987,0.4557524,0.5981609,0.5806149,0.4729868,0.5199266,0.5312548,0.526415,0.5181535,0.5904466,0.4818418,0.5236079,0.5101515,
+0.574395,0.5430866,0.5685422,0.5532701,0.5407348,0.4947039,0.49124,0.4759324,0.537485,0.5394909,0.589038,0.4605609,0.5597492,
+0.5016335,0.4994311,0.4880896,0.3148668,0.4615844,0.3714091,0.3974379,0.4580763,0.4955389,0.6058257,0.4946904,0.5174516,0.6130139,
+0.4115877,0.5849022,0.4838552,0.4549118,0.5386915,0.4545479,0.5138607,0.5601096,0.5302248,0.5484374,0.4106946,0.565677,0.6238636,
+0.4711363,0.4264804,0.407339,0.5372863,0.4962461,0.6195482,0.5767827,0.4093024,0.5234686,0.7146623,0.5559896,0.4853506,0.4141065,
+0.3957151,0.508925,0.5844688,0.5870386,0.5920404,0.5653997,0.5682745,0.5077199,0.5285137,0.6218009,0.4533536,0.5871687,0.5770871,
+0.5281182,0.5184475,0.5449572,0.5345257,0.4317698,0.5665824,0.5481256,0.4322032,0.3819038,0.4926711,0.6060888,0.5863785,0.6289205,
+0.4292441,0.5669609,0.5514742,0.4517369,0.5448691,0.5243109,0.6233364,0.4371866,0.4861142,0.5892384,0.5483661,0.5451857,0.596781,
+0.5076409,0.5590304,0.5718714,0.5589091,0.5345777,0.5255955,0.4811808,0.5075912,0.6326619,0.5371396,0.3721977,0.4070629,0.4815722,
+0.4578602,0.5811482,0.4307895,0.5373172,0.5527966,0.5618389,0.5027645,0.5661005,0.5833658,0.4938657,0.4870207,0.4666151,0.5994172,
+0.4999085,0.6256872,0.4469048,0.4957001,0.5639781,0.4308059,0.365901,0.5104466,0.5265404,0.5038099,0.6047072,0.6362213,0.4735337,
+0.4896354,0.4623614,0.5403851,0.5869696,0.6205473,0.4876124,0.660613,0.4496858,0.5806253,0.5097084,0.3808453,0.5443813,0.5365003,
+0.5508646,0.4689959,0.4886233,0.5002257,0.5576861,0.5146921,0.5264409,0.5493948,0.5290414,0.5029893,0.544772,0.440432,0.4286996,
+0.4746802,0.5684101,0.5785589,0.5860424,0.4991623,0.4629103,0.563702,0.5154451,0.4697077,0.5004694,0.5377048,0.5507091,0.4516351,
+0.5458937,0.5779378,0.4696179,0.4814407,0.5791291,0.590083,0.4590895,0.5091225,0.5314546,0.553681,0.5113242,0.4562029,0.5084285,
+0.5935231,0.5955274,0.4782657,0.4025727,0.3965242,0.498505,0.489732,0.5480315,0.4373782,0.5285563,0.4821845,0.4769847,0.5798971,
+0.5427491,0.4997653,0.4919547,0.4331472,0.500254,0.4502604,0.5008602,0.503674,0.5771585,0.3343125,0.5781834,0.5258929,0.6123713,
+0.5222361,0.4708778,0.4858772,0.4844432,0.5596206,0.4974939,0.4904446,0.3378054,0.5970122,0.494184,0.4579494,0.6059431,0.5155975,
+0.5227298,0.453477,0.5399813,0.4090217,0.5875597,0.6039085,0.4921851,0.5114109,0.5625775,0.5227077,0.4764307,0.489068,0.6287801,
+0.4563024,0.5773251,0.5106156,0.4501492,0.4540264,0.5020213,0.634089,0.524852,0.5266571,0.4530802,0.5218029,0.5582304,0.4509211,
+0.4862018,0.4155068,0.2699707,0.6042201,0.5258836,0.4827457,0.3516275,0.5933399,0.5338919,0.6024687,0.6032,0.5209565,0.648551,
+0.5281616,0.416088,0.5257215,0.5225613,0.4692828,0.598861,0.4442549,0.3460114,0.5676217,0.3875117,0.5320274,0.4576966,0.4061067,
+0.5323657,0.5909658,0.3730824,0.568246,0.4786313,0.5635727,0.517479,0.5758914,0.5174719,0.4826138,0.5383334,0.5293763,0.5123203,
+0.5150262,0.6212217,0.5766786,0.5369108,0.4616956,0.5365685,0.5143136,0.5629214,0.543579,0.5293087)
+plot2 = ggplot(data = NULL, aes(x = dist2, y = ..density..)) + geom_histogram(bins = 100) + geom_point(aes(x = 0.3029568, y = 0), color = "red") + ggtitle("Method 2", paste("p =", as.character(.0025))) + xlab("Jaccard Index")
 grid.arrange(plot1, plot2, ncol=2)
 ```
 
-For our example, the red point shows the observed value of the sorensen index. Both plots show that the getting the observed value or less is highly likely; therefore, the null hypothesis cannot be rejected.  
+
+For our example, the red point shows the observed value of the jaccard index. Both methods give similar p values for the observed value of jaccard index. Since p is small, we can conclude that .  
 
 ```{r}
 unlink("./Objects", recursive = TRUE)
