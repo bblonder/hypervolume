@@ -97,12 +97,14 @@ returns a string containing an absolute path equivalent to ./Objects/<name>
 }
 \examples{
 \dontrun{
-data(iris)
-hv = hypervolume(iris[,c(1,2)])
+library(palmerpenguins)
+data(penguins)
+bill_data = na.omit(penguins[,3:4])
+hv = hypervolume(bill_data)
 
-# Example 1
+# Example 1: Get 50 resampled hypervolumes
 # Use detectCores to see how many cores are availible in current environment
-# Get rid of cores argument or set cores = 1 to run sequentially
+# Set cores = 1 to run sequentially (default)
 path = hypervolume_resample("example_bootstrap", 
                               hv, 
                               method = "bootstrap", 
@@ -110,19 +112,19 @@ path = hypervolume_resample("example_bootstrap",
                               cores = 12)
 hvs = to_hv_list(path)
 
-# Example 2
-# Get maximum sepal length
-max_sepal = max(iris$Sepal.Length)
-# Make data with larger sepal size slightly more likley to be resampled
+# Example 2: Get resample with applied bias
+# Get maximum bill length
+max_bill = max(bill_data$bill_length_mm)
+# Make data with larger bill length slightly more likley to be resampled
 biased_path = hypervolume_resample("biased test", 
                                     hv, 
                                     method = "biased bootstrap", 
                                     n = 50, 
                                     cores = 12, 
-                                    mu = max_sepal, 
-                                    sigma = 30, 
-                                    cols_to_bias = "Sepal.Length")
-hvs_based = to_hv_list(biased_path)
+                                    mu = max_bill, 
+                                    sigma = 90, 
+                                    cols_to_bias = "bill_length_mm")
+hvs_biased = to_hv_list(biased_path)
 }
 }
 

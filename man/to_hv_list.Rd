@@ -24,8 +24,10 @@ Use to_hv_list on the output from \code{hypervolume_resample} when method = "boo
 }
 \examples{
 \dontrun{
-data(iris)
-hv = hypervolume(iris[c(1,2)])
+library(palmerpenguins)
+data(penguins)
+bill_data = na.omit(penguins[,3:4])
+hv = hypervolume(bill_data)
 
 # Use detectCores to see how many cores are availible in current environment
 path = hypervolume_resample("example_bootstrap", hv, method = "bootstrap", n = 50, cores = 12)

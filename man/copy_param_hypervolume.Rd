@@ -32,8 +32,10 @@ hypervolume object
 }
 \examples{
 \dontrun{
-data("iris")
-hv = hypervolume(iris[,c(1,2)], 
+library(palmerpenguins)
+data("penguins")
+bill_data = na.omit(penguins[,3:4])
+hv = hypervolume(data = bill_data, 
                   method = "gaussian", 
                   quantile.requested = .9, 
                   quantile.requested.type = "volume")
