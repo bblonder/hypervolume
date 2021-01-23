@@ -113,7 +113,7 @@ hypervolume_box <- function(data, name=NULL, verbose=TRUE, samples.per.point=cei
   hv_box@Dimensionality = dim
   hv_box@Volume = vc$final_volume
   hv_box@PointDensity = point_density_final
-  hv_box@Parameters = list(kde.bandwidth=kde.bandwidth, samples.per.point=samples.per.point)
+  hv_box@Parameters = list(kde.bandwidth=kde.bandwidth, kde.method=attr(kde.bandwidth,'method'), samples.per.point=samples.per.point)
   hv_box@RandomPoints = as.matrix(points_uniform_final);  
   hv_box@ValueAtRandomPoints = density_uniform_final
   

@@ -24,7 +24,7 @@ String name of hypervolume
 }
 \details{
 \code{copy_param_hypervolume} only works if the input hypervolume was generated using \code{method = "box"}, \code{method = "gaussian"}, or \code{method = "svm"}. Calling this function on hypervolumes generated from \code{hypervolume_set} will result in an error. 
-Note that \code{kde.bandwidth} is affected by size of the data and will be copied when \code{method = "gaussian"}.
+Note that \code{kde.bandwidth} is affected by size of the data and will be re-estimated using whichever method was used to generate the original bandwidth if \code{method = "gaussian"} or \code{method = "box"}.
 Use \code{hv@Parameters} to see what parameters are copied from the input hypervolume.
 }
 \value{

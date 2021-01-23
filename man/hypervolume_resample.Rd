@@ -86,7 +86,7 @@ Used for \code{method = "biased bootstrap"}.
 Use \code{to_hv_list} to extract every hypervolume object in a directory into a HypervolumeList object.
 It is also possible to access the hypervolumes by using readRDS to read the hypervolume objects in one by one.
 
-The resampled hypervolumes are generated using the same parameters used to generate the input hypervolume. The only exception is if the method for generating the input hypervolume is \code{"gaussian"} (the default), then bandwidth isn't preserved for different sampe sizes.
+The resampled hypervolumes are generated using the same parameters used to generate the input hypervolume. The only exception is that the bandwidth is re-estimated if \code{method = "gaussian"} or \code{method = "box"}. See \code{\link{copy_param_hypervolume}} for more details.
 }
 \value{
 returns a string containing an absolute path equivalent to ./Objects/<name>
