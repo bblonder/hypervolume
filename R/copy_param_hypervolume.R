@@ -17,6 +17,7 @@ copy_param_hypervolume <- function(hv, data, name = NULL) {
     }
     return(hypervolume_box(data, name,
                            samples.per.point = hv@Parameters$samples.per.point,
+                           kde.bandwidth = estimate_bandwidth(data, method = method, value = value),
                            verbose = FALSE))
   } else if(hv@Method == 'Gaussian kernel density estimate') {
     method = attr(hv@Parameters$kde.bandwidth, "method")
