@@ -33,6 +33,14 @@ estimate_bandwidth <- function(data,method="silverman",value=NULL)
   {
     stdev = apply(data,2,sd)
     
+    message("Note that the formula used for the Silverman estimator differs in version 3 compared to prior versions of this package.\nUse method=\'silverman-1d\' to replicate prior behavior.")
+    
+    bandwidth_final = (4/(ndim+2))^(1/(ndim+4)) * npoints^(-1/(ndim+4))*stdev
+  }
+  else if (method=="silverman-1d")
+  {
+    stdev = apply(data,2,sd)
+    
     bandwidth_final = 1.06 * stdev * npoints ^ (-1/5)
   }
   else
