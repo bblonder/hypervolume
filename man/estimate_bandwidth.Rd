@@ -15,7 +15,7 @@ estimate_bandwidth(data,method="silverman",value=NULL)
 m x n matrix or data frame, where m is the number of observations and n the number of dimensions.
 }
   \item{method}{
-One of \code{"fixed"}, \code{"silverman"}, \code{"plug-in"}, or \code{"cross-validation"} - see 'details' section.
+One of \code{"fixed"}, \code{"silverman"}, \code{"silverman-1d"}, \code{"plug-in"}, or \code{"cross-validation"} - see 'details' section.
 }
   \item{value}{
 If \code{method="fixed"}, a scalar or vector value to be used. Otherwise ignored.
@@ -24,7 +24,9 @@ If \code{method="fixed"}, a scalar or vector value to be used. Otherwise ignored
 \details{
 The fixed (\code{"fixed"}) is a constant value (scalar or vector of length equal to the dimensionality of the data). The value can be set via the \code{value} argument. If the input has length 1, the value will be repeated for all dimensions.
 
-The Silverman (\code{"silverman"}) estimator is defined as 1.06 * sd(X) * m^(-1/5) where m is the number of observations and X is the data vector in each dimension. Minimizes mean integrated square error along each axis independently. This is the default option due ONLY to computational simplicity.
+The Silverman (\code{"silverman"}) estimator is defined as (4/(n+2))^(1/(n+4)) * m^(-1/(n+4))*sd(X) where m is the number of observations, n is the dimensionality, and X is the data vector in each dimension. This corresponds to the Silverman rule of thumb for multivariate data and is chosen as the default for computational speed, though other more advanced algorithms may perform better.
+
+The Silverman (\code{"silverman-1d"}) estimator is defined as 1.06 * sd(X) * m^(-1/5) where m is the number of observations and X is the data vector in each dimension. Minimizes mean integrated square error under the assumption the data are univariate normal. This was the default behavior in versions 1.x and 2.x of the package.
 
 The plug-in (\code{"plug-in"}) estimator is defined using a diagonal plug-in estimator with a 2-stage pilot estimation and a pre-scaling transformation (in \code{ks::Hpi.diag}). The resulting diagonal variances are then transformed to standard deviations and multiplied by two to be consistent for the box kernels used here. Available only in n<7 dimensions. Minimizes sum of asymptotic mean squared error.
 

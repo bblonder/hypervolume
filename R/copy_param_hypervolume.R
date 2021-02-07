@@ -7,7 +7,7 @@ copy_param_hypervolume <- function(hv, data, name = NULL) {
                            verbose = FALSE))
   } else if(hv@Method == 'Box kernel density estimate') {
     method = attr(hv@Parameters$kde.bandwidth, "method")
-    if(!(method %in% c("fixed", "silverman", "plug-in", "cross-validation"))) {
+    if(!(method %in% c("fixed", "silverman", "silverman-1d", "plug-in", "cross-validation"))) {
       stop("Hypervolume does not have valid bandwidth estimation method")
     }
     if(method == "fixed") {
@@ -21,7 +21,7 @@ copy_param_hypervolume <- function(hv, data, name = NULL) {
                            verbose = FALSE))
   } else if(hv@Method == 'Gaussian kernel density estimate') {
     method = attr(hv@Parameters$kde.bandwidth, "method")
-    if(!(method %in% c("fixed", "silverman", "plug-in", "cross-validation"))) {
+    if(!(method %in% c("fixed", "silverman", "silverman-1d", "plug-in", "cross-validation"))) {
       stop("Hypervolume does not have valid bandwidth estimation method")
     }
     if(method == "fixed") {
