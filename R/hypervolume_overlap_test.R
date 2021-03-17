@@ -86,20 +86,20 @@ hypervolume_overlap_test <- function(hv1, hv2, path, alternative = "one-sided", 
   }
   plots = list(
     "jaccard" = ggplot(data.frame(distribution), aes(x = jaccard, y = ..density..)) + 
-      geom_histogram(bins = bins) + 
-      geom_point(aes(x = observed["jaccard"], y = 0), color = "red") + 
+      geom_histogram(bins = bins, alpha = .7) + 
+      geom_vline(aes(xintercept = observed["jaccard"]), color = "red") + 
       ggtitle("Distribution of jaccard index"),
     "sorensen" = ggplot(data.frame(distribution), aes(x = sorensen, y = ..density..)) + 
-      geom_histogram(bins = bins) + 
-      geom_point(aes(x = observed["sorensen"], y = 0), color = "red") + 
+      geom_histogram(bins = bins, alpha = .7) + 
+      geom_vline(aes(xintercept = observed["sorensen"]), color = "red") + 
       ggtitle("Distribution of sorensen index"),
     "frac_unique_1" = ggplot(data.frame(distribution), aes(x = frac_unique_1, y = ..density..)) + 
-      geom_histogram(bins = bins) + 
-      geom_point(aes(x = observed["frac_unique_1"], y = 0), color = "red") + 
+      geom_histogram(bins = bins, alpha = .7) + 
+      geom_vline(aes(xintercept = observed["frac_unique_1"]), color = "red") + 
       ggtitle("Distribution of fraction of Hypervolume 1 that is unique"),
     "frac_unique_2" = ggplot(data.frame(distribution), aes(x = frac_unique_2, y = ..density..)) + 
-      geom_histogram(bins = bins) + 
-      geom_point(aes(x = observed["frac_unique_2"], y = 0), color = "red") + 
+      geom_histogram(bins = bins, alpha = .7) + 
+      geom_vline(aes(xintercept = observed["frac_unique_2"]), color = "red") + 
       ggtitle("Distribution of fraction of Hypervolume 2 that is unique")
   )
   result = list(p_values = p_values, plots = plots, distribution = distribution)

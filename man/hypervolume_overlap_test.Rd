@@ -57,7 +57,7 @@ The four overlap statistics are Sorensen, Jaccard, frac_unique_1, frac_unique_2.
 a list of p_values indexed by the name of the relevant statistic
 }
   \item{plots}{
-a list of ggplot objects indexed by the name of the relevant statistic. The observed value of each statistic is represented as a dot on the x axis.
+a list of ggplot objects indexed by the name of the relevant statistic. The observed value of each statistic is represented as a vertical line on the x axis.
 }
   \item{distribution}{
 a matrix of overlap statistics used to generate the null distribution
