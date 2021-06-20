@@ -46,6 +46,7 @@ export(
   hypervolume_save_animated_gif,
   hypervolume_segment, 
   hypervolume_set, 
+  hypervolume_set_n_intersection,
   hypervolume_svm,
   hypervolume_thin, 
   hypervolume_variable_importance, 
@@ -115,6 +116,7 @@ importFrom("graphics", "abline", "legend", "mtext")
 importFrom("stats", "predict", "var")
 importFrom("utils", "str")
 importFrom("rgeos","gBuffer")
+importFrom("purrr","reduce")
 
 # problematic sections when using rastertopolygons with dissolve=TRUE
 #importMethodsFrom("rgeos", "rbind2")
