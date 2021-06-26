@@ -1,5 +1,5 @@
 hypervolume_set_n_intersection <- function (hv_list, num.points.max = NULL, verbose = TRUE, check.memory = TRUE, 
-                             distance.factor = 1) {
+                                            distance.factor = 1) {
   
   ########################################################################################################################
   np_list <- c()
@@ -115,8 +115,20 @@ hypervolume_set_n_intersection <- function (hv_list, num.points.max = NULL, verb
   final_points_intersection_list <- c()
   
   #compare the set to the resampled HVs, individually 
+  
+  if (verbose == TRUE){
+    pb <- progress_bar$new(total = length(hv_points_ss_list))
+    pb$tick(0)
+  }
+  
   for (i in 1:length(hv_points_ss_list)){
-    ### GREGOIRE TO ADD PROGRESS BAR HERE
+    
+    if (verbose == TRUE){
+      if (!pb$finished == TRUE){
+        pb$update(i/length(hv_points_ss_list))
+      }
+    }
+    
     hv_points_in_i_all <- evalfspherical(data = hv_points_ss_list[[i]], radius = cutoff_dist, 
                                          points =  total_hv_points_ss )
     
@@ -125,6 +137,11 @@ hypervolume_set_n_intersection <- function (hv_list, num.points.max = NULL, verb
     
     final_points_intersection_list[[i]] <- hv_points_in_i
   } 
+  
+  if (verbose == TRUE){
+    pb$terminate()
+  }
+  
   
   #keep only the points that are common for all the dataframes of the list
   final_points_intersection <- unique(purrr::reduce(final_points_intersection_list, dplyr::inner_join))
@@ -158,6 +175,3 @@ hypervolume_set_n_intersection <- function (hv_list, num.points.max = NULL, verb
   
   return(result)
 }
-
-
-
