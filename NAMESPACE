@@ -117,6 +117,7 @@ importFrom("stats", "predict", "var")
 importFrom("utils", "str")
 importFrom("rgeos","gBuffer")
 importFrom("purrr","reduce")
+importFrom("caret","findLinearCombos")
 
 # problematic sections when using rastertopolygons with dissolve=TRUE
 #importMethodsFrom("rgeos", "rbind2")
