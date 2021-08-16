@@ -37,7 +37,7 @@ hypervolume_thin <- function(hv, factor=NULL, num.points=NULL)
   
   hv_out <- hv
   
-  hv_out@RandomPoints <- rp[sample(1:nrow(rp),nrow(rp)*factor),]
+  hv_out@RandomPoints <- rp[sample(1:nrow(rp),nrow(rp)*factor),,drop=FALSE]
   
   hv_out@PointDensity <- hv@PointDensity * factor
   
