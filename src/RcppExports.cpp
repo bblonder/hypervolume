@@ -6,6 +6,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // kdtree_build_intl
 SEXP kdtree_build_intl(SEXP d, SEXP nr, SEXP nc);
 RcppExport SEXP _hypervolume_kdtree_build_intl(SEXP dSEXP, SEXP nrSEXP, SEXP ncSEXP) {

@@ -24,6 +24,7 @@ export(
   expectation_convex, 
   expectation_maximal, 
   get_centroid,
+  get_centroid_weighted,
   get_volume, 
   hypervolume_box,
   hypervolume_distance, 
@@ -37,6 +38,9 @@ export(
   hypervolume_overlap_confidence,
   hypervolume_overlap_statistics,
   hypervolume_overlap_test,
+  hypervolume_n_occupancy,
+  hypervolume_n_occupancy_permute,
+  hypervolume_n_occupancy_test,
   hypervolume_permute,
   hypervolume_project,
   hypervolume_prune, 
@@ -54,6 +58,7 @@ export(
   padded_range,
   plot.Hypervolume,
   plot.HypervolumeList,
+  plot_n_occupancy,
   print.Hypervolume,
   print.HypervolumeList,
   show.Hypervolume,
@@ -113,8 +118,8 @@ importFrom("stats", "cor", "cutree", "dist", "dnorm", "na.omit", "pgamma", "rmul
 importFrom("utils", "data", "head")
 importFrom("maps", "map")
 importFrom("graphics", "abline", "legend", "mtext")
-importFrom("stats", "predict", "var")
-importFrom("utils", "str")
+importFrom("stats", "predict", "var", "weighted.mean")
+importFrom("utils", "str", "combn")
 importFrom("rgeos","gBuffer")
 importFrom("purrr","reduce")
 importFrom("caret","findLinearCombos")
