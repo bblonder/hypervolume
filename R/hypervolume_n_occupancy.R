@@ -192,7 +192,11 @@ hypervolume_n_occupancy <- function(hv_list, classification = NULL, FUN = mean, 
   
   
   # resample the points dividing their number by the number of hypervolumes compared
-  num_points_to_sample_in_intersection = nrow(res) / length(unique(classification)) #### IMPORTANT, DIVED BY THE NUMBER OF GROUPS
+  if(is.null(classification)){
+    num_points_to_sample_in_intersection = nrow(res) 
+  } else {
+    num_points_to_sample_in_intersection = nrow(res) / length(unique(classification)) #### IMPORTANT, DIVED BY THE NUMBER OF GROUPS
+  }
   to_keep <- sample(1:nrow(res), size = num_points_to_sample_in_intersection, prob = weight)
   total_hv_points_ss <- total_hv_points_ss[to_keep, , drop = FALSE]
   final_points_intersection <- res[to_keep, , drop = FALSE]

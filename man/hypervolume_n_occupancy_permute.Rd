@@ -5,7 +5,7 @@
 Hypervolumes through permuting labels of n pairwise groups of hypervolumes
 }
 \description{
-Takes two hypervolume objects and generates pairs of hypervolumes with the original sizes of the input hypervolumes but with permuted data (the rows of the original hypervolumes' data are combined and redistributed to the two new hypervolumes). This function is meant for taking a sample of all permutations and does not guarantee that permutations are not repeated. Newly generated hypervolume objects are written to file. This function is to be used within the n_occupancy routine.
+Permute labels of an \code{hypervolume_n_occupancy} object and calculate \code{hypervolume_n_occupancy} for the permuted objects. This function is meant for taking a sample of all permutations and does not guarantee that permutations are not repeated. Newly generated hypervolume objects are written to file. This function is to be used within the n_occupancy routine.
 }
 \usage{
 hypervolume_n_occupancy_permute(name, 
@@ -49,7 +49,7 @@ Number of logical cores to use while generating permuted hypervolumes. If parall
 
 }
 \details{
-\code{hypervolume_n_occupancy_permute} creates a directory called Objects in the current working directory if a directory of that name doesn't already exist. Within this directory, it creates a directory for each pairwise combinations of elements within hv_list1. Group labels are resampled and a new HypervolumeList is saved as a rds file for each pairwise combination. \code{hypervolume_n_occupancy_permute} kept the same random points used to generate hv_list1. 
+\code{hypervolume_n_occupancy_permute} creates a directory called Objects in the current working directory if a directory of that name doesn't already exist. Within this directory, it creates a directory for each pairwise combinations of elements within hv_list1. Group labels are permuted and a new HypervolumeList is saved as a rds file for each pairwise combination. IMPORTANT: only group labels are permuted, random points are kept fixed and will be the same across all the permuted hypervolumes. 
 
 Use \code{hypervolume_n_occupancy_permute} when generating null distribution of test statistics. \code{\link{hypervolume_n_occupancy_test}} takes in a \code{hypervolume_n_occupuancy_permute} filepath output.
 
@@ -68,19 +68,24 @@ data(penguins,package='palmerpenguins')
 penguins_no_na = as.data.frame(na.omit(penguins))
 
 
-penguins_no_na_split = split(penguins_no_na, paste(penguins_no_na$species, penguins_no_na$sex, sep = "_"))
+penguins_no_na_split = split(penguins_no_na, 
+  paste(penguins_no_na$species, penguins_no_na$sex, sep = "_"))
 
 
-hv_list = lapply(penguins_no_na_split, function(x) hypervolume_gaussian(x[, c("bill_length_mm","bill_depth_mm","flipper_length_mm")],samples.per.point=100))
+hv_list = lapply(penguins_no_na_split, function(x) 
+  hypervolume_gaussian(x[, c("bill_length_mm","bill_depth_mm","flipper_length_mm")], 
+  samples.per.point=100))
 
 names(hv_list) <- names(penguins_no_na_split)
 hv_list <- hypervolume_join(hv_list)
 
 
-hv_occupancy_list_sex <- hypervolume_n_occupancy(hv_list, classification = rep(c("female", "male"), each = 3))
+hv_occupancy_list_sex <- hypervolume_n_occupancy(hv_list, 
+  classification = rep(c("female", "male"), each = 3))
 
 # takes 9 permutations on 1 core
-hypervolume_n_occupancy_permute("permute", hv_occupancy_list_sex, hv_list, classification = rep(c("female", "male"), each = 3), n = 9, cores = 1)
+hypervolume_n_occupancy_permute("permute", hv_occupancy_list_sex, hv_list, 
+  classification = rep(c("female", "male"), each = 3), n = 9, cores = 1)
 
 
 

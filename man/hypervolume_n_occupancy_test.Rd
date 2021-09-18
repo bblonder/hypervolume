@@ -33,7 +33,7 @@ Number of logical cores to use while generating permuted hypervolumes. If parall
 }
 }
 \details{
-The observed difference between ValueAtRandomPoints of two groups is compared against null expectations generated with \code{hypervolume_n_occupancy_permute}
+The observed difference between ValueAtRandomPoints of two groups is compared against null expectations generated with \code{hypervolume_n_occupancy_permute}. 
 }
 \value{
 An HypervolumeList with length equal to the number of pairwise combination of the observed HypervolumeList elements. ValueAtRandomPoints are calculated as the difference between the ValueAtRandomPoints of the first and the second group for each pairwise combinations. Only significant values are retained according to CI.

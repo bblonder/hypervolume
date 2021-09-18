@@ -41,7 +41,7 @@ Check if data is hyperplanar.
 }
 }
 \details{
-Uses the inclusion test approach to count how many hypervolumes in each group includes random points. Counts range from 0 (no hypervolume contains a given random point), to the number of hypervolumes in a group (all the hypervolumes contains a given random point). A function \code{FUN}, usually \code{mean} or \code{sum}, is then applied. An hypervolume is then returned for each group and the occupancy stored in \code{@ValueAtRandomPoints}.  
+Uses the inclusion test approach to count how many hypervolumes in each group includes random points. Counts range from 0 (no hypervolume contains a given random point), to the number of hypervolumes in a group (all the hypervolumes contains a given random point). A function \code{FUN}, usually \code{mean} or \code{sum}, is then applied. An hypervolume is then returned for each group and the occupancy stored in \code{@ValueAtRandomPoints}. IMPORTANT: random points with \code{@ValueAtRandomPoints} equal to 0 are not removed to ease downstream calculation.  
 
 The computation is actually performed on a random sample from both input hypervolumes, constraining each to have the same point density given by the minimum of the point density of each input hypervolume, and the point density calculated using the volumes of each input hypervolume divided by \code{num.points.max}.
 
@@ -62,26 +62,21 @@ penguins_no_na_split = split(penguins_no_na,
 
 
 hv_list = lapply(penguins_no_na_split, function(x) 
-              hypervolume_gaussian(x[, c("bill_length_mm","bill_depth_mm","flipper_length_mm")],
-              samples.per.point=100))
+              hypervolume_gaussian(x[, 
+                c("bill_length_mm",
+                "bill_depth_mm",
+                "flipper_length_mm")],
+              samples.per.point=75))
 
 names(hv_list) <- names(penguins_no_na_split)
 hv_list <- hypervolume_join(hv_list)
 
 hv_occupancy <- hypervolume_n_occupancy(hv_list)
-set.seed(42)
-plot(hv_occupancy)
-set.seed(42)
-plot_n_occupancy(hv_occupancy, cex.random = 1)
+plot(hv_occupancy, cex.random = 1)
 
 hv_occupancy_list_sex <- hypervolume_n_occupancy(hv_list, 
                           classification = rep(c("female", "male"), each = 3))
-hv_occupancy_list_species <- hypervolume_n_occupancy(hv_list, 
-                          classification = rep(c("Adelie", "Chinstrap", "Gentoo"), each = 2))
 
-plot(hv_occupancy_list_sex)
-plot_n_occupancy(hv_occupancy_list_sex, cex.random = 1, show.density = FALSE)
+plot(hv_occupancy_list_sex, cex.random = 1, show.density = FALSE)
 
-plot(hv_occupancy_list_species)
-plot_n_occupancy(hv_occupancy_list_species, cex.random = 0.8)
 }

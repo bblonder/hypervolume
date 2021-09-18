@@ -58,7 +58,6 @@ export(
   padded_range,
   plot.Hypervolume,
   plot.HypervolumeList,
-  plot_n_occupancy,
   print.Hypervolume,
   print.HypervolumeList,
   show.Hypervolume,
