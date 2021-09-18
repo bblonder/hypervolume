@@ -10,9 +10,9 @@ hypervolume_n_occupancy <- function(hv_list, classification = NULL, FUN = mean, 
       stop("The length of hv_list must be the same as the length of classification.")
     }
   }
-
   
-
+  
+  
   # store some properties of the hypervolumes stored in hv_list:
   # dimensionality of random points, volume, density, names
   np_list <- unlist(lapply(hv_list@HVList, function(x) nrow(x@RandomPoints)))
@@ -40,7 +40,7 @@ hypervolume_n_occupancy <- function(hv_list, classification = NULL, FUN = mean, 
       warning("Some data is hyperplanar")
     }
   }
-
+  
   
   
   
@@ -59,13 +59,13 @@ hypervolume_n_occupancy <- function(hv_list, classification = NULL, FUN = mean, 
   
   #calculate max number of points according to dimensionality 
   if (is.null(num.points.max)) {
-      num.points.max = ceiling(10^(3 + sqrt(unique(dimhv_list))))
-      if (verbose) {
-        cat(sprintf("Choosing num.points.max=%.0f (use a larger value for more accuracy.)\n", 
-                    num.points.max))
+    num.points.max = ceiling(10^(3 + sqrt(unique(dimhv_list))))
+    if (verbose) {
+      cat(sprintf("Choosing num.points.max=%.0f (use a larger value for more accuracy.)\n", 
+                  num.points.max))
     }
   }
-
+  
   
   #get the density of the HV with minimum points density
   density_list <- c()
@@ -156,7 +156,7 @@ hypervolume_n_occupancy <- function(hv_list, classification = NULL, FUN = mean, 
     }
     
     final_points_intersection_list[[i]] <- evalfspherical(data = hv_points_ss_list[[i]], radius = cutoff_dist, 
-                                                                        points =  total_hv_points_ss, verbose = verbose )
+                                                          points =  total_hv_points_ss, verbose = verbose )
     
     # hv_points_in_i = as.data.frame(total_hv_points_ss)[hv_points_in_i_all > 0, 
     #                                                    , drop = FALSE]
@@ -170,7 +170,7 @@ hypervolume_n_occupancy <- function(hv_list, classification = NULL, FUN = mean, 
   
   res <- do.call("cbind", final_points_intersection_list)
   
-
+  
   
   total_hv_points_ss <- total_hv_points_ss [rowSums(res) > 0, ]
   
@@ -224,7 +224,7 @@ hypervolume_n_occupancy <- function(hv_list, classification = NULL, FUN = mean, 
     result@PointDensity = mindensity
     result@Parameters = list()
     result@RandomPoints = matrix(total_hv_points_ss, ncol = dim)
-    result@ValueAtRandomPoints = apply(final_points_intersection, 1, sum) / ncol(final_points_intersection)
+    result@ValueAtRandomPoints = apply(final_points_intersection, 1, FUN)
     
     # set dimnames
     dimnames(result@RandomPoints) = dn
@@ -275,7 +275,7 @@ hypervolume_n_occupancy <- function(hv_list, classification = NULL, FUN = mean, 
       # removed. This is for assuring the correct behaviour of furter calculations.
       
       empty_hypervolume@RandomPoints = matrix(as.matrix(as.data.frame(total_hv_points_ss)), 
-                                   ncol = dim)
+                                              ncol = dim)
       empty_hypervolume@Volume <- res_vol
       empty_hypervolume@PointDensity = mindensity
       
@@ -285,7 +285,7 @@ hypervolume_n_occupancy <- function(hv_list, classification = NULL, FUN = mean, 
       
       hv_list_res[[i]] <- empty_hypervolume
       
-
+      
       
       
     }
