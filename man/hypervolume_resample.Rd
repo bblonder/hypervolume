@@ -12,8 +12,6 @@ Hypervolume resampling methods
   - \code{"bootstrap seq"}:    Generates n hypervolumes for each sample size in sequence specified by user
   
   - \code{"biased bootstrap"}: Bootstraps input hypervolume with biases applied through multivariate normal weights or user specified weights
-  
-  - \code{"k_split"}:          Generates k hypervolumes while leaving out disjoint sets with size 1/k of total points each time
 }
 \usage{
 hypervolume_resample(name, 
@@ -39,7 +37,7 @@ File name; The function writes hypervolumes to file in ./Objects/<name>
 A hypervolume object
 }
   \item{method}{
-String input; options are \code{"bootstrap"}, \code{"bootstrap seq"}, \code{"biased bootstrap"}, and \code{"k_split"}
+String input; options are \code{"bootstrap"}, \code{"bootstrap seq"}, and \code{"biased bootstrap"}.
 }
   \item{n}{
 Number of resamples to take.
@@ -52,10 +50,6 @@ Used for \code{method = "bootstrap"} and \code{method = "biased bootstrap"}.
   \item{seq}{
 Sequence of sample sizes. If \code{method = "bootstrap seq"} then the function generates n bootstrapped hypervolumes for each sample size in seq.
 Used for \code{method = "bootstrap seq"}.
-}
-  \item{k}{
-Number of splits.
-Used for \code{method = "k_split"}
 }
   \item{cores}{
 Number of logical cores to use while generating bootstraped hypervolumes. If parallel backend already registered to \code{doParallel}, function will use that backend and ignore the argument in cores.
