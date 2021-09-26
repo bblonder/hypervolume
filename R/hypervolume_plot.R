@@ -74,6 +74,56 @@ plot.HypervolumeList <- function(x,
                                  verbose=FALSE,
                                  ...)
 {
+  
+  
+  #### ALEX !!!!!! check the method, if n_occupancy remove any 0
+  method_is_occupancy <- FALSE
+  
+  if (class(x) == "Hypervolume")
+  {
+    # with the new Method n_overlap and n_overlap_test it makes sense to calculate 
+    # weighted mean
+    if(identical(x@Method, "n_occupancy") | identical(x@Method, "n_occupancy_test")){
+      method_is_occupancy <- TRUE
+    }
+  }
+  
+  if (class(x)=="HypervolumeList"){
+    method_list <- unique(unlist(lapply(x@HVList, function(x) x@Method)))
+    if(identical(method_list, "n_occupancy") | identical(method_list, "n_occupancy_test")){
+      method_is_occupancy <- TRUE
+    }
+  }
+  
+  #### ALEX !!!!!! 
+  # remove 0 values from ValueAtRandomPoints
+  # remove the corresponding coordinates
+  
+  if(method_is_occupancy){
+    if(identical(class(x)[1], "HypervolumeList")){
+      for(i in 1:length(x@HVList)){
+        hv_temp <- x@HVList[[i]]
+        x@HVList[[i]]@RandomPoints <- hv_temp@RandomPoints[! is.na(hv_temp@ValueAtRandomPoints), ]
+        x@HVList[[i]]@ValueAtRandomPoints <- hv_temp@ValueAtRandomPoints[! is.na(hv_temp@ValueAtRandomPoints)]
+        hv_temp <- x@HVList[[i]]
+        x@HVList[[i]]@RandomPoints <- hv_temp@RandomPoints[hv_temp@ValueAtRandomPoints > 0, ]
+        x@HVList[[i]]@ValueAtRandomPoints <- hv_temp@ValueAtRandomPoints[hv_temp@ValueAtRandomPoints > 0]
+        
+      }
+      
+    }
+  }
+  
+  
+  #### ALEX !!!!!!
+  # remove columns that are not to be plotted, put here but it will be useful later
+  if(method_is_occupancy){
+    columns_to_remove <- 3
+  } else {
+    columns_to_remove <- 2
+  }
+
+  
   sapply(x@HVList, function(z)
   {
     if (verbose==TRUE)
@@ -100,24 +150,56 @@ plot.HypervolumeList <- function(x,
   allnames = sapply(x@HVList, function(z) { z@Name })
   stopifnot(all(alldims[1] == alldims))
   
-  all <- NULL
-  alldata <- NULL
-  for (i in 1:length(x@HVList))
-  {
-    ivals = sample(nrow(x@HVList[[i]]@RandomPoints), min(c(num.points.max.random, nrow(x@HVList[[i]]@RandomPoints))))
-    subsampledpoints = data.frame(x@HVList[[i]]@RandomPoints[ivals,,drop=FALSE])
-    densityvals = x@HVList[[i]]@ValueAtRandomPoints[ivals]
-    
-    if (nrow(subsampledpoints) > 0)
-    {  
-      subsampledpoints = cbind(subsampledpoints, ID=rep(i, nrow(subsampledpoints)), Density=(densityvals-min(densityvals,na.rm=TRUE))/(max(densityvals,na.rm=TRUE)-min(densityvals,na.rm=TRUE)))
-      subsampledpoints[is.nan(subsampledpoints[,"Density"]),"Density"] <- 1
-      all <- rbind(all, subsampledpoints)
-    }
-    
-    thisdata=x@HVList[[i]]@Data
-    alldata <- rbind(alldata, cbind(thisdata, ID=rep(i,nrow(thisdata))))
-  }  
+  ######################################################################################################
+  ### ALEX if-else, if the method is occupancy or occupancy test adds the occupancy column
+  # otherwise keep it normal
+  
+  if(method_is_occupancy){
+    all <- NULL
+    alldata <- NULL
+    for (i in 1:length(x@HVList))
+    {
+      ivals = sample(nrow(x@HVList[[i]]@RandomPoints), min(c(num.points.max.random, nrow(x@HVList[[i]]@RandomPoints))))
+      
+      #### ALEX !!!!!! 
+      # include the column "occupancy", it will be needed later for setting cex
+      
+      subsampledpoints = data.frame(x@HVList[[i]]@RandomPoints[ivals,,drop=FALSE])
+      densityvals = x@HVList[[i]]@ValueAtRandomPoints[ivals]
+      
+      if (nrow(subsampledpoints) > 0)
+      {  
+        subsampledpoints = cbind(subsampledpoints, ID=rep(i, nrow(subsampledpoints)), Density=(densityvals-min(densityvals,na.rm=TRUE))/(max(densityvals,na.rm=TRUE)-min(densityvals,na.rm=TRUE)), Occupancy = x@HVList[[i]]@ValueAtRandomPoints[ivals])
+        subsampledpoints[is.nan(subsampledpoints[,"Density"]),"Density"] <- 1
+        all <- rbind(all, subsampledpoints)
+      }
+      
+      thisdata=x@HVList[[i]]@Data
+      alldata <- rbind(alldata, cbind(thisdata, ID=rep(i,nrow(thisdata))))
+    } 
+  } else {
+    all <- NULL
+    alldata <- NULL
+    for (i in 1:length(x@HVList))
+    {
+      ivals = sample(nrow(x@HVList[[i]]@RandomPoints), min(c(num.points.max.random, nrow(x@HVList[[i]]@RandomPoints))))
+      subsampledpoints = data.frame(x@HVList[[i]]@RandomPoints[ivals,,drop=FALSE])
+      densityvals = x@HVList[[i]]@ValueAtRandomPoints[ivals]
+      
+      if (nrow(subsampledpoints) > 0)
+      {  
+        subsampledpoints = cbind(subsampledpoints, ID=rep(i, nrow(subsampledpoints)), Density=(densityvals-min(densityvals,na.rm=TRUE))/(max(densityvals,na.rm=TRUE)-min(densityvals,na.rm=TRUE)))
+        subsampledpoints[is.nan(subsampledpoints[,"Density"]),"Density"] <- 1
+        all <- rbind(all, subsampledpoints)
+      }
+      
+      thisdata=x@HVList[[i]]@Data
+      alldata <- rbind(alldata, cbind(thisdata, ID=rep(i,nrow(thisdata))))
+    }  
+  }
+  
+  ######################################################################################################
+  
 
   alldata <- as.data.frame(alldata)
   if (num.points.max.data < nrow(alldata) && !is.null(num.points.max.data))
@@ -150,7 +232,7 @@ plot.HypervolumeList <- function(x,
   if (is.null(names))
   {
     dn = dimnames(all)[[2]]
-    names = dn[1:(ncol(all)-2)]
+    names = dn[1:(ncol(all)-columns_to_remove)]
     
     no_names_supplied = TRUE
   }  
@@ -193,17 +275,18 @@ plot.HypervolumeList <- function(x,
     stop('Plotting only available in n>=2 dimensions.')
   }
   
+
   if (show.3d==FALSE)
   {
     op = par(no.readonly = T)
     
-    par(mfrow=c(ncol(all)-2, ncol(all)-2))
+    par(mfrow=c(ncol(all)-columns_to_remove, ncol(all)-columns_to_remove))
     par(mar=c(0,0,0,0))
     par(oma=c(0.5,0.5,0.5,0.5))
     
-    for (i in 1:(ncol(all)-2))
+    for (i in 1:(ncol(all)-columns_to_remove))
     {
-      for (j in 1:(ncol(all)-2))  
+      for (j in 1:(ncol(all)-columns_to_remove))  
       {
         if (j > i)
         {
@@ -213,7 +296,15 @@ plot.HypervolumeList <- function(x,
           # draw random points
           if(show.random==TRUE)
           {
-            points(all[,j], all[,i], col=colorlist,cex=cex.random,pch=16)
+            if(method_is_occupancy){
+              #### ALEX !!!!!! 
+              # here I set the cex 
+              cex.occupancy <- all[, "Occupancy"]
+              points(all[,j], all[,i], col=colorlist, cex= cex.occupancy / max(cex.occupancy) * cex.random, pch = 16) 
+            } else {
+              points(all[,j], all[,i], col=colorlist,cex=cex.random,pch=16)
+            }
+            
           }
           
           # show data
@@ -227,8 +318,19 @@ plot.HypervolumeList <- function(x,
             for (whichid in 1:length(unique(all$ID)))
             {
               allss <- subset(all, all$ID==whichid)
-              centroid_x <- mean(allss[,j],na.rm=TRUE) 
-              centroid_y <- mean(allss[,i],na.rm=TRUE)
+              
+              if(method_is_occupancy){
+                #### ALEX !!!!!!
+                # weighted centroids
+                
+                centroid_x <- weighted.mean(allss[,j], cex.occupancy[all$ID==whichid], na.rm=TRUE) 
+                centroid_y <- weighted.mean(allss[,i], cex.occupancy[all$ID==whichid], na.rm=TRUE)
+              } else{
+                centroid_x <- mean(allss[,j],na.rm=TRUE) 
+                centroid_y <- mean(allss[,i],na.rm=TRUE)
+              }
+              
+
               
               # draw point
               points(centroid_x, centroid_y, col=colors[whichid],cex=cex.centroid,pch=16)
@@ -300,7 +402,7 @@ plot.HypervolumeList <- function(x,
           plot(0,0,type="n",xlim=c(0,1),ylim=c(0,1),axes=FALSE)
           text(0.5, 0.5, names[j],cex=cex.names)
         }
-        else if (j==1 & i == (ncol(all) - 2))
+        else if (j==1 & i == (ncol(all) - columns_to_remove))
         {
           plot(0,0,type="n",xlim=c(0,1),ylim=c(0,1),axes=FALSE)
           

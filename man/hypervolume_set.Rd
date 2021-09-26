@@ -35,7 +35,9 @@ Numeric value; multiplicative factor applied to the critical distance for all in
 \details{
 Uses the inclusion test approach to identify points in the first hypervolume that are or are not within the second hypervolume and vice-versa, based on determining whether each random point in each hypervolume is within a critical distance of at least one random point in the other hypervolume.
 
-The intersection is the points in both hypervolumes, the union those in either hypervolume, and the unique components the points in one hypervolume but not the other.
+The intersection is the points in both hypervolumes, the union those in either hypervolume, and the unique components the points in one hypervolume but not the other. 
+
+If you have more than two hypervolumes and wish to calculate only an intersection, consider instead using \code{\link{hypervolume_set_n_intersection}} rather than iteratively applying this function.
 
 By default, the function uses \code{check.memory=TRUE} which will provide an estimate of the computational cost of the set operations. The function should then be re-run with {check_memory=FALSE} if the cost is acceptable. This algorithm's memory and time cost scale quadratically with the number of input points, so large datasets can have disproportionately high costs. This error-checking is intended to prevent the user from large accidental memory allocation. 
 
@@ -78,3 +80,5 @@ hypervolume_overlap_statistics(hv_set)
 # examine volumes of each set component
 get_volume(hv_set)
 }
+\seealso{
+\code{\link{hypervolume_set_n_intersection}}}
