@@ -28,18 +28,19 @@ data(quercus)
 ```
 
 # Introduction to Resampling Hypervolumes
-When working with the package `hypervolume`, it is important to understand the statistical significance of the resulting hypervolume or hypervolumes. Constructing a hypervolume using the default parameters is a non deterministic process. The methods introduced in this update are meant to characterize both variance from sampling and variance due to non deterministic model construction.   
+When working with the package `hypervolume`, it is important to understand the statistical significance of the resulting hypervolume or hypervolumes. The methods introduced in this update are meant to characterize both variance from data sampling and variance due to non-deterministic behavior in the hypervolume algorithms.   
 
 This update to the package provides the following functionalities:  
-- interface for generating large resamples of hypervolumes  
+- an interface for generating large resamples of hypervolumes  
 - methods for generating non-parametric confidence intervals for hypervolume parameters and null distributions for overlap statistics  
+- formal statistical tests based on hypervolumes
 
-The purpose of this document is to provide use cases and explain best practice when using the new methods. The examples are chosen to highlight all the considerations that go into interpreting results.  
+The purpose of this document is to provide use cases and explain best practices when using the new methods. The examples are chosen to highlight all the considerations that go into interpreting results.  
 
 ## Use case 1: Effect of sample size on volume
-The following code demonstrates the effect of sample size on hypervolumes constructed using gaussian kernels. Thirty hypervolumes are constructed per sample size.  
+The following code demonstrates visualizing the effect of sample size on hypervolumes constructed using Gaussian kernels. Thirty hypervolumes are constructed per sample size.  
 
-To plot a parameter of a hypervolume, a function must be passed to the `func` field of `hypervolume_funnel`. A user inputted function must take a hypervolume object as an input and output a number. By default, `func = get_volume`. When using `hypervolume_funnel` to plot the output of `hypervolume_resample`, a ggplot object is returned. It is then possible to add more plot elements to the result.  
+To plot how a summary statistic describing a hypervolume varies with sample size, a function must be passed to the `func` field of `hypervolume_funnel`. A user inputted function must take a `hypervolume` object as an input and output a `numeric`. By default, `func = get_volume`. The confidence intervals in the plots are generated non-parametrically by taking quantiles at each sample size. When using `hypervolume_funnel` to plot the output of `hypervolume_resample`, a ggplot object is returned. It is then possible to add more plot elements to the result.  
 
 ```{r, results = "hide", eval = FALSE}
 # Run time with cores = 2 is around 25 minutes
@@ -80,16 +81,16 @@ ggplot(depth_dat, aes(x = n)) + geom_line(aes(y = upperq)) + geom_line(aes(y = s
 ```
 
 
-The default contruction of hypervolumes uses `kde.bandwidth = estimate_bandwidth(data, method = "silverman")`. The first plot shows that volume decreases with sample size due to Silverman bandwidth decreasing with sample size. In fact, Silverman bandwidth isn't appropriate for multimodel data such as `penguins`. The plot demonstrates this fact and shows that at small sample size, the hypervolume overestimates the true volume. Other methods for estimating bandwidth may be more accurate, but are computationally unfeasible for data with more than 3 dimensions. The estimated volume converges to the true volume of the population as sample size increases; however, at 300 data points, the result from `hypervolume_funnel` suggests that the volume is being overestimated.  
+The default contruction of hypervolumes uses `kde.bandwidth = estimate_bandwidth(data, method = "silverman")`. The first plot shows that volume decreases with sample size due to Silverman bandwidth decreasing with sample size. In fact, Silverman bandwidth is not appropriate for multimodal data such as `penguins`. The plot demonstrates this fact and shows that at small sample size, the hypervolume overestimates the true volume. Other methods for estimating bandwidth may be more accurate, but are computationally unfeasible for data with more than 3 dimensions. The estimated volume converges to the true volume of the population as sample size increases; however, at 300 data points, the result from `hypervolume_funnel` suggests that the volume is being overestimated.  
 
-On the other hand, The plots for the mean of each column of data show that the centroid of the data is preserved by hypervolume construction using gaussian kernels.  
+In contrast, the plots for the mean of each column of data show that the centroid of the data is preserved by hypervolume construction using gaussian kernels.  
 
-The confidence intervals in the plots are generated non-parametrically by taking quantiles at each sample size. In the example, each confidence interval is a quantile of 30 resampled values. Improving the accuracy requires larger sample sizes which drastically increases run time. It is recommended to use more cores to allow hypervolumes to be generated in parallel; however, by default, `cores = 1` and the function runs sequentially.  
+In the example, each confidence interval is a quantile of 30 resampled values. Improving the accuracy requires larger sample sizes which drastically increases run time. It is recommended to use more cores to allow hypervolumes to be generated in parallel; however, by default, `cores = 1` and the function runs sequentially.  
 
 ## Use case 2: Effect of simulating bias when resampling
-The following code demonstrates the effect of applying a bias while resampling data. In the example, we use `penguins` data to construct a hypervolume object, then resample it while biasing towards large beak sizes. In this example, this is done by more strongly weighing the points closer to the maximum observed values when resampling.  
+The following code demonstrates the effect of applying a bias while resampling data. In the example, we use `penguins` data to construct a hypervolume object, then resample it while biasing towards large beak sizes. In this example, this is done by more strongly weighting the points closer to the maximum observed values when resampling.  
 
-Weights can be applied when resampling points by either passing a user defined function to the `weight_func` field of `hypervolume_resample`, or by specifying the `mu` and `sigma` fields. When using `mu` and `sigma`, the weight function is a multivariate normal distribution. `mu` is the mean of multivariate normal distribution while `sigma` is the diagonal covariance matrix of a multivariate normal distribution. `cols_to_bias` specify which columns to use as the input of the weight function.
+Weights can be applied when resampling points by either passing a user defined function to the `weight_func` field of `hypervolume_resample`, or by specifying the `mu` and `sigma` parameters. When using `mu` and `sigma`, the weight function is a multivariate normal distribution. `mu` is the mean of multivariate normal distribution while `sigma` is the diagonal covariance matrix of a multivariate normal distribution. `cols_to_bias` specifies which columns to use as the input of the weight function.
 
 ```{r, results = "hide"}
 hv = hypervolume(na.omit(penguins)[,3:6], verbose = FALSE)
@@ -129,16 +130,16 @@ plot2 = ggplot(combined_dat, aes(y = ..density..)) + geom_histogram(aes(x = body
 grid.arrange(plot1, plot2, nrow = 2)
 ```
 
-The result shows that a bias is induced, but as a result, variance for all dimensions is decreases as there are less unique points sampled. The volume will also be significantly reduced if the applied bias is strong. Therefore, it is recommended to only apply strong bias to larger datasets. In this example, sigma is chosen arbitrarily as twice the variance of the original columns. The larger sigma is, the weaker the bias and vice versa.  
+The result shows that a bias is induced, but as a result, variance for all dimensions decrease as there are less unique points sampled. The volume will also be significantly reduced if the applied bias is strong. Therefore, it is recommended to only apply strong bias to larger datasets. In this example, sigma is chosen arbitrarily as twice the variance of the original columns. The larger sigma is, the weaker the bias and vice versa.  
 
 ## Use case 3: Using overlap statistics to test for similarity of populations
-The following code demonstrates how to test the null hypothesis that two samples come from the same distribution. In this example, we map the longitude and latitude data from `quercus` to a four dimensional climate space.  
+The following code demonstrates how to test the null hypothesis that two samples come from the same distribution. In this example, we map the longitude and latitude data from `quercus` to a four dimensional climate space, as in `demo(quercus)`.  
 
-To test whether the two species *Quercus rubra* and *Quercus alba* have the same spatial distribution, there are two approaches. In the first approach, we use the combined sample data as an approximation of the true distribution. To generate the null distribution for overlap statistics, we treat the all of data as having the same label and then bootstrap hypervolumes from the combined data. The overlap of the resampled hypervolumes are used to generate the distribution of the overlap statistics. If the size of the two samples are the same, the function takes half the hypervolumes and overlaps them with each of the other hypervolumes. In this case, since the number of samples of *Quercus rubra* and *Quercus alba* are different, we need to bootstrap an equal number of hypervolumes for each sample size.   
+To test whether the two species *Quercus rubra* and *Quercus alba* have the same climate niche, there are two approaches. In the first approach, we use the combined sample data as an approximation of the true distribution. To generate the null distribution for overlap statistics, we treat all of the data as having the same label and then bootstrap hypervolumes from the combined data. The overlaps of the resampled hypervolumes are used to generate the distribution of the overlap statistics. If the size of the two samples is the same, the function takes half the hypervolumes and overlaps them with each of the other hypervolumes. In this case, since the number of samples of *Quercus rubra* and *Quercus alba* are different, we need to bootstrap an equal number of hypervolumes for each sample size.   
 
-The second approach is a permutation test. For this method, the label of the data are rearranged then the data is split by label. A pair of hypervolumes are generated from each split and overlap statistics are generated from each pair.  
+The second approach is a permutation test. For this method, the labels of the data are rearranged then the data is split by label. A pair of hypervolumes are generated from each split and overlap statistics are generated from each pair.  
 
-The benefit of the first method is the ability to generate multiple overlap statistics per hypervolume. If both methods generate $N$ hypervolumes, the first method will generate $\frac{N^2}{4}$ overlap statistics while the second method will generate $\frac{N}{2}$ overlap statistics. Since hypervolume construction and overlap can be a non-deterministic processes, method one will account for more of the variance from generating the overlap. However, when sample size is small, the combined data may not be a good approximation of the population. In this case, it is better to use the second method, since it doesn't make any assumptions about the population, and generating more hypervolumes is fast for smaller sample sizes.
+The benefit of the first method is the ability to generate multiple overlap statistics per hypervolume. If both methods generate $N$ hypervolumes, the first method will generate $\frac{N^2}{4}$ overlap statistics while the second method will generate $\frac{N}{2}$ overlap statistics. Since hypervolume construction and overlap both can be non-deterministic processes, method one will account for more of the variance from generating the overlap. However, when sample size is small, the combined data may not be a good approximation of the population. In this case, it is better to use method two, because it does not make any assumptions about the population, and generating more hypervolumes is fast for smaller sample sizes.
 
 ```{r, eval=FALSE}
 data("quercus")
@@ -196,7 +197,7 @@ grid.arrange(plot1, plot2, ncol=2)
 ```
 
 
-For our example, the red line shows the observed value of the sorensen index. Method 1 results in a significantly lower p value, but Method 2 also results in a low p value. Since p is less than than 0.5 in both cases, we can reject the hypothesis that the two *Quercus* species have identical climate niches.  
+For our example, the red line shows the observed value of the Sorensen overlap index. Method one results in a significantly lower p value, but Method two also results in a low p value. Since p is less than 0.05 in both cases, we can reject the hypothesis that the two *Quercus* species have identical climate niches.  
 
 ```{r, echo=FALSE}
 unlink("./Objects", recursive = TRUE)
