@@ -509,10 +509,12 @@ class KDTree {
                                             //extract best distance from queue top
                                             double best_dist = sqrt( pq.top().first ); 
                                             // check if ball is completely within BBOX
-                                            for (int d=0; d < ndim; d++)
-                                              if( fabs(Xq[d]-Bmin[d]) < best_dist || fabs(Xq[d]-Bmax[d]) < best_dist )
+                                            for (int d=0; d < ndim; d++) {
+                                              if( fabs(Xq[d]-Bmin[d]) < best_dist || fabs(Xq[d]-Bmax[d]) < best_dist ) {
                                                 return false;
-                                              return true;
+                                              }
+                                            }
+                                            return true;
                                           }
                                             /** @see knn_search
                                             * 
@@ -545,7 +547,7 @@ class KDTree {
                                                 }
                                                 // else it's in range, thus distance 0
                                               }
-                                              
+
                                               return true;
                                             }
                                               
@@ -708,10 +710,12 @@ class KDTree {
                                                         * @return true if the point lies in the box, false otherwise
                                                         */
                                                         private: bool lies_in_range( const vector<double>& p, const vector<double>& pMin, const vector<double>& pMax ){
-                                                          for (int dim=0; dim < ndim; dim++)
-                                                            if( p[dim]<pMin[dim] || p[dim]>pMax[dim] )
+                                                          for (int dim=0; dim < ndim; dim++) {
+                                                            if( p[dim]<pMin[dim] || p[dim]>pMax[dim] ) {
                                                               return false;
-                                                            return true;
+                                                            }
+                                                          }
+                                                          return true;
                                                         }
                                         };
 
