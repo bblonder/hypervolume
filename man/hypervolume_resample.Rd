@@ -20,6 +20,7 @@ hypervolume_resample(name,
                       n = 10, 
                       points_per_resample = "sample_size", 
                       seq = 3:nrow(hv@Data), 
+                      k = 5,
                       cores = 1,
                       verbose = TRUE, 
                       mu = NULL, 
@@ -49,6 +50,9 @@ Used for \code{method = "bootstrap"} and \code{method = "biased bootstrap"}.
   \item{seq}{
 Sequence of sample sizes. If \code{method = "bootstrap seq"} then the function generates n bootstrapped hypervolumes for each sample size in seq.
 Used for \code{method = "bootstrap seq"}.
+}
+  \item{k}{
+Number of splits. Used only for \code{method = "k_split"}.
 }
   \item{cores}{
 Number of logical cores to use while generating bootstraped hypervolumes. If parallel backend already registered to \code{doParallel}, function will use that backend and ignore the argument in cores.
