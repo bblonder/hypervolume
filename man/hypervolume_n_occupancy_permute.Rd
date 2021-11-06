@@ -54,6 +54,8 @@ Number of logical cores to use while generating permuted hypervolumes. If parall
 Use \code{hypervolume_n_occupancy_permute} when generating null distribution of test statistics. \code{\link{hypervolume_n_occupancy_test}} takes in a \code{hypervolume_n_occupuancy_permute} filepath output.
 
 It is also possible to access the hypervolumes by using readRDS to read the hypervolume objects in one by one.
+
+WARNING!!! \code{hypervolume_n_occupancy_permute} requires a lot of disk space especially when building occupancy hypervolumes with \code{method} = "box". Try with a small number of replication and check the folder Objects for memory usage before to proceed.
 }
 
 \value{

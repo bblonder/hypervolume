@@ -154,10 +154,6 @@ hypervolume_n_occupancy_permute <- function(name, hv_list1, hv_list2, classifica
   
   
   
-  # determine the range to build the convex hull
-  hv_points_ss_list <- lapply(hv_list2@HVList, function(x) x@RandomPoints)
-  
-  
   ############# IMPORTANT ############# 
   ### keep the same random points used in hypervolume_n_occupancy
   total_hv_points_ss <- hv_list1@HVList[[1]]@RandomPoints
@@ -184,32 +180,34 @@ hypervolume_n_occupancy_permute <- function(name, hv_list1, hv_list2, classifica
     final_points_intersection_list[[i]] <- evalfspherical(data = hv_points_ss_list[[i]], radius = cutoff_dist, 
                                                                         points =  total_hv_points_ss, verbose = verbose )
     
-    # hv_points_in_i = as.data.frame(total_hv_points_ss)[hv_points_in_i_all > 0, 
-    #                                                    , drop = FALSE]
-    # 
-    # final_points_intersection_list[[i]] <- hv_points_in_i
   } 
+  
   
   if (verbose){
     pb$terminate()
   }
   
   res <- do.call("cbind", final_points_intersection_list)
-  total_hv_points_ss <- total_hv_points_ss [rowSums(res) > 0, ]
+  # total_hv_points_ss <- total_hv_points_ss [rowSums(res) > 0, ]
   rownames(total_hv_points_ss) <- NULL
   colnames(total_hv_points_ss) <- colnames(hv_list2@HVList[[1]]@RandomPoints)
-  res <- res[rowSums(res) > 0, ]
-  res[res > 0]<- 1
+  # res <- res[rowSums(res) > 0, ]
+  res[res > 0] <- 1
   rownames(res) <- NULL
+
+  vol_list_occ <- unlist(lapply(hv_list1@HVList, function(x) x@Volume))
+  res_occ <- lapply(hv_list1@HVList, function(x) x@ValueAtRandomPoints)
+  res_occ <- do.call(cbind, res_occ)
+  res_occ[res_occ > 0] <- 1
   
-  
-  # resample the points dividing their number by the number of hypervolumes compared
-  total_hv_points_ss <- total_hv_points_ss
-  final_points_intersection <- res
+  # volume of the significant fraction for th groups under comparison
+  intersection_weights <- sweep(res_occ, 1, apply(res_occ, 1, sum), "/")
+  final_volume_intersection <- sum(apply(intersection_weights, 2, function(x) mean(x[x > 0], na.rm = TRUE)) * vol_list_occ, na.rm = TRUE)
+  final_density <- nrow(res) / final_volume_intersection
   
   
   # basically it is the volume of the union
-  final_volume_intersection <- nrow(res) *  (nrow(final_points_intersection) / sum( final_points_intersection )) / mindensity * ncol(res)
+  # final_volume_intersection <- nrow(res) *  (nrow(final_points_intersection) / sum( final_points_intersection )) / mindensity * ncol(res)
   
   
   # get names
@@ -245,7 +243,7 @@ hypervolume_n_occupancy_permute <- function(name, hv_list1, hv_list2, classifica
   dir.create(file.path('./Objects', name), recursive = TRUE)
 
   
-  unique_groups <- unique(classification)
+  # unique_groups <- unique(classification)
   
   # combinations for pairwise combinations
   pairwise_combn <- combn(unique_groups, 2)
@@ -291,16 +289,10 @@ hypervolume_n_occupancy_permute <- function(name, hv_list1, hv_list2, classifica
       # subset Data of the two groups under comparison
       data_merge <- Data[to_subset]
       
-      # extract the result of the two groups under comparison
-      result <- t(final_points_intersection[, to_subset, drop = FALSE])
+      res_temp <- res[, classification %in% pairwise_combn[, j], drop = FALSE]
       
       # resample the labels of the two groups under comparison
       classification_temp <- sample(classification[to_subset])
-      
-      # split the results according to the two groups under comparison and then apply FUN, default to min,
-      # to the columns. This step calculates ValueAtRandomPoints for both groups under comparison
-      result <- split(data.frame(result), classification_temp)
-      result <- lapply(result, function(x) apply(x, 2, FUN))
       
       ### first hypervolume group
       
@@ -311,10 +303,14 @@ hypervolume_n_occupancy_permute <- function(name, hv_list1, hv_list2, classifica
       data_merge_group <- unique(do.call(rbind, data_merge_group))
       
       # calculate volume for the first group
-      res_vol <- sum(result[[pairwise_combn[1, j]]] > 0) / mindensity
-
+      # res_vol <- sum(apply(intersection_weights[, classification_temp == pairwise_combn[1, j], drop = FALSE], 2, function(x) mean(x[x > 0])) * vol_list[classification_temp == pairwise_combn[1, j]])
+      
+      res_vol <- apply(res_temp [, classification_temp == pairwise_combn[1, j], drop = FALSE], 1, function(x) sum(x > 0))
+      res_vol <- sum(res_vol > 0) / nrow(res_temp) * final_volume_intersection
+      res_vol
+      
       # assign the ValueAtRandomPoints for the first group
-      empty_hypervolume@ValueAtRandomPoints <- result[[which(names(result) == pairwise_combn[1, j])]]
+      empty_hypervolume@ValueAtRandomPoints <- apply(res_temp [, classification_temp == pairwise_combn[1, j], drop = FALSE], 1, FUN)
       
       # I have called the Method "n_occupancy_permute"
       empty_hypervolume@Method <- "n_occupancy_permute"
@@ -322,12 +318,14 @@ hypervolume_n_occupancy_permute <- function(name, hv_list1, hv_list2, classifica
       # name of the first group
       empty_hypervolume@Name <- pairwise_combn[1, j]
       
+      p_dens <- apply(res_temp [, classification_temp == pairwise_combn[1, j], drop = FALSE], 1, function(x) sum(x > 0))
       # do assignments for other slots
       empty_hypervolume@Dimensionality <- dim
       empty_hypervolume@Parameters = list()
       empty_hypervolume@RandomPoints = matrix(total_hv_points_ss, ncol = dim)
       empty_hypervolume@Volume <- res_vol
-      empty_hypervolume@Data <-  data_merge_group
+      empty_hypervolume@Data <- data_merge_group
+      empty_hypervolume@PointDensity = sum(p_dens > 0) / res_vol
       
       # set dimnames
       dimnames(empty_hypervolume@RandomPoints) = dn
@@ -340,10 +338,12 @@ hypervolume_n_occupancy_permute <- function(name, hv_list1, hv_list2, classifica
       
       data_merge_group <- data_merge[classification_temp == pairwise_combn[2, j]]
       data_merge_group <- unique(do.call(rbind, data_merge_group))
+ 
+      res_vol <- apply(res_temp[, classification_temp == pairwise_combn[2, j], drop = FALSE], 1, function(x) sum(x > 0))
+      res_vol <- sum(res_vol > 0) / nrow(res_temp) * final_volume_intersection
       
-      res_vol <- sum(result[[pairwise_combn[2, j]]] > 0) / mindensity
-      
-      empty_hypervolume@ValueAtRandomPoints <- result[[which(names(result) == pairwise_combn[2, j])]]
+      p_dens <- apply(res_temp [, classification_temp == pairwise_combn[2, j], drop = FALSE], 1, function(x) sum(x > 0))
+      empty_hypervolume@ValueAtRandomPoints <- apply(res_temp[, classification_temp == pairwise_combn[2, j], drop = FALSE], 1, FUN)
       empty_hypervolume@Method <- "n_occupancy_permute"
       empty_hypervolume@Name <- pairwise_combn[2, j]
       empty_hypervolume@Dimensionality <- dim
@@ -351,6 +351,7 @@ hypervolume_n_occupancy_permute <- function(name, hv_list1, hv_list2, classifica
       empty_hypervolume@RandomPoints = matrix(total_hv_points_ss, ncol = dim)
       empty_hypervolume@Volume <- res_vol
       empty_hypervolume@Data <-  data_merge_group
+      empty_hypervolume@PointDensity =  sum(p_dens > 0) / res_vol
       
       # set dimnames
       dimnames(empty_hypervolume@RandomPoints) = dn
