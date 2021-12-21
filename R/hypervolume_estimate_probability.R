@@ -13,7 +13,6 @@ hypervolume_estimate_probability <- function(hv, points, reduction.factor = 1,
     stop("Reduction factor is not in (0,1].")
   }
   if (parallel) {
-    require(parallel)
     if (!class(n.cores) %in% c("integer", "numeric")) {
       stop("If specified n.cores needs to be an integer.")
     }
@@ -46,7 +45,6 @@ hypervolume_estimate_probability <- function(hv, points, reduction.factor = 1,
                          "edges.zero.distance.factor"),
                   envir = environment())
     probabilities <- pbapply::pbsapply(1:nrow(points), function(i) {
-      require(pdist)
       distances <- pdist::pdist(points[i, , drop = FALSE], 
                                 hv_points_ss)@dist
       weights <- distances^weight.exponent

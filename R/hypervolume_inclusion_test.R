@@ -35,7 +35,7 @@ hypervolume_inclusion_test <- function(hv, points, reduction.factor = 1,
     point_density = nrow(hv_points_ss)/hv@Volume
     cutoff_dist = point_density^(-1/dimhv) * fast.method.distance.factor
     if (nrow(hv_points_ss) > 0) {
-      points_in_hv_all = hypervolume:::evalfspherical(hv_points_ss, 
+      points_in_hv_all = evalfspherical(hv_points_ss, 
                                         cutoff_dist, points, verbose = verbose)
       points_in = (points_in_hv_all > 0)
       attr(points_in, "NAIdx") <- naIdx
