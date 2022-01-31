@@ -40,11 +40,13 @@ hypervolume_variable_importance <- function(hv, verbose=TRUE)
     }
     else if (method=="Gaussian kernel density estimate")
     {
+      kde.bandwidth <- params[["kde.bandwidth"]][vars]
+      attr(kde.bandwidth, "method") <- attr(params[["kde.bandwidth"]], "method")
       hv_this <- hypervolume_gaussian(data[,vars,drop=FALSE], 
                                       samples.per.point=params[["samples.per.point"]], 
                                       name=NULL, 
                                       verbose=verbose, 
-                                      kde.bandwidth=params[["kde.bandwidth"]][vars], 
+                                      kde.bandwidth=kde.bandwidth, 
                                       sd.count=params[["sd.count"]],
                                       quantile.requested=params[["quantile.requested"]],
                                       quantile.requested.type=params[["quantile.requested.type"]]
