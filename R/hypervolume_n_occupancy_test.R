@@ -152,6 +152,17 @@ hypervolume_n_occupancy_test <- function(observed, path, alternative = "two_side
   # get mindensity from observed, it is the same ofor all the hypervolumes
   mindensity <- observed@HVList[[1]]@PointDensity
   
+  
+  vol_list <- unlist(lapply(observed@HVList, function(x) x@Volume))
+  res <- lapply(observed@HVList, function(x) x@ValueAtRandomPoints)
+  res <- do.call(cbind, res)
+  res[res > 0] <- 1
+  
+  # volume of the significant fraction for th groups under comparison
+  intersection_weights <- sweep(res, 1, apply(res, 1, sum), "/")
+  vol_tot <- sum(apply(intersection_weights, 2, function(x) mean(x[x > 0], na.rm = TRUE)) * vol_list, na.rm = TRUE)
+
+  
   # dimnames
   cn <- dimnames(observed@HVList[[1]]@RandomPoints)[[2]]
   dn <- list(NULL, cn)
@@ -163,16 +174,24 @@ hypervolume_n_occupancy_test <- function(observed, path, alternative = "two_side
     group_1 <- which(group_names == observed_combn[1, i])
     group_2 <- which(group_names == observed_combn[2, i])
     
+    # vol_list <- c(observed@HVList[group_names == observed_combn[1, i]][[1]]@Volume, 
+    #               observed@HVList[group_names == observed_combn[2, i]][[1]]@Volume)
+    # 
+
     result <- lapply(observed[[c(group_1, group_2)]]@HVList, function(x) x@ValueAtRandomPoints)
     result <- do.call(cbind, result)
-    result <- result[colSums(result) != 0, ]
-
+    # result <- result[colSums(result) != 0, ]
+    result[result != 0] <- 1
+    
+    
+    res_vol <- sum(result_combn[, i] != 0) / nrow(res) * vol_tot
+    
     # get Data from observed, merge data for the two groups under comparison
     Data <- lapply(observed[[c(group_1, group_2)]]@HVList, function(x) x@Data)
     Data <- unique(do.call(rbind, Data))
     
     # volume of the significant fraction for th groups under comparison
-    res_vol <- sum(rowSums(result_combn[, i, drop = FALSE]) != 0) / mindensity 
+    # res_vol <- sum(rowSums(result_combn[, i, drop = FALSE]) != 0)
     
     # ValueAtRandomPoints, obtained from result_combn
     empty_hypervolume@ValueAtRandomPoints <- result_combn[, i]
@@ -184,7 +203,7 @@ hypervolume_n_occupancy_test <- function(observed, path, alternative = "two_side
     empty_hypervolume@Name <- label_res[i]
     
     # assign merged Data
-    empty_hypervolume@Data <-  Data
+    empty_hypervolume@Data <- Data
     
     # number of dimensions
     empty_hypervolume@Dimensionality <- ncol(observed@HVList[[1]]@RandomPoints)
@@ -199,7 +218,7 @@ hypervolume_n_occupancy_test <- function(observed, path, alternative = "two_side
     empty_hypervolume@Volume <- res_vol
     
     # meandensity is the same across all the hypervolumes 
-    empty_hypervolume@PointDensity <- mindensity
+    empty_hypervolume@PointDensity <- sum(result_combn[, i] != 0) / res_vol
     
     # set dimnames
     dimnames(empty_hypervolume@RandomPoints) = dn

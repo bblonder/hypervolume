@@ -83,14 +83,14 @@ plot.HypervolumeList <- function(x,
   {
     # with the new Method n_overlap and n_overlap_test it makes sense to calculate 
     # weighted mean
-    if(identical(x@Method, "n_occupancy") | identical(x@Method, "n_occupancy_test")){
+    if(identical(x@Method, "n_occupancy") | identical(x@Method, "n_occupancy_test") | identical(x@Method, "n_occupancy_permute")){
       method_is_occupancy <- TRUE
     }
   }
   
   if (class(x)=="HypervolumeList"){
     method_list <- unique(unlist(lapply(x@HVList, function(x) x@Method)))
-    if(identical(method_list, "n_occupancy") | identical(method_list, "n_occupancy_test")){
+    if(identical(method_list, "n_occupancy") | identical(method_list, "n_occupancy_test") | identical(method_list, "n_occupancy_permute")){
       method_is_occupancy <- TRUE
     }
   }
@@ -106,8 +106,8 @@ plot.HypervolumeList <- function(x,
         x@HVList[[i]]@RandomPoints <- hv_temp@RandomPoints[! is.na(hv_temp@ValueAtRandomPoints), ]
         x@HVList[[i]]@ValueAtRandomPoints <- hv_temp@ValueAtRandomPoints[! is.na(hv_temp@ValueAtRandomPoints)]
         hv_temp <- x@HVList[[i]]
-        x@HVList[[i]]@RandomPoints <- hv_temp@RandomPoints[hv_temp@ValueAtRandomPoints > 0, ]
-        x@HVList[[i]]@ValueAtRandomPoints <- hv_temp@ValueAtRandomPoints[hv_temp@ValueAtRandomPoints > 0]
+        x@HVList[[i]]@RandomPoints <- hv_temp@RandomPoints[hv_temp@ValueAtRandomPoints != 0, ]
+        x@HVList[[i]]@ValueAtRandomPoints <- hv_temp@ValueAtRandomPoints[hv_temp@ValueAtRandomPoints != 0]
         
       }
       
@@ -169,7 +169,7 @@ plot.HypervolumeList <- function(x,
       
       if (nrow(subsampledpoints) > 0)
       {  
-        subsampledpoints = cbind(subsampledpoints, ID=rep(i, nrow(subsampledpoints)), Density=(densityvals-min(densityvals,na.rm=TRUE))/(max(densityvals,na.rm=TRUE)-min(densityvals,na.rm=TRUE)), Occupancy = x@HVList[[i]]@ValueAtRandomPoints[ivals])
+        subsampledpoints = cbind(subsampledpoints, ID=rep(i, nrow(subsampledpoints)), Density=(densityvals-min(densityvals,na.rm=TRUE))/(max(densityvals,na.rm=TRUE)-min(densityvals,na.rm=TRUE)), Occupancy = abs(x@HVList[[i]]@ValueAtRandomPoints[ivals]))
         subsampledpoints[is.nan(subsampledpoints[,"Density"]),"Density"] <- 1
         all <- rbind(all, subsampledpoints)
       }
@@ -300,7 +300,7 @@ plot.HypervolumeList <- function(x,
               #### ALEX !!!!!! 
               # here I set the cex 
               cex.occupancy <- all[, "Occupancy"]
-              points(all[,j], all[,i], col=colorlist, cex= cex.occupancy / max(cex.occupancy) * cex.random, pch = 16) 
+              points(all[,j], all[,i], col=colorlist, cex= cex.occupancy / max(cex.occupancy) * cex.random, pch = 16)
             } else {
               points(all[,j], all[,i], col=colorlist,cex=cex.random,pch=16)
             }
