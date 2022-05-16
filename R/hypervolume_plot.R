@@ -79,7 +79,7 @@ plot.HypervolumeList <- function(x,
   #### ALEX !!!!!! check the method, if n_occupancy remove any 0
   method_is_occupancy <- FALSE
   
-  if (class(x) == "Hypervolume")
+  if (inherits(x,"Hypervolume"))
   {
     # with the new Method n_overlap and n_overlap_test it makes sense to calculate 
     # weighted mean
@@ -88,7 +88,7 @@ plot.HypervolumeList <- function(x,
     }
   }
   
-  if (class(x)=="HypervolumeList"){
+  if (inherits(x,"HypervolumeList")){
     method_list <- unique(unlist(lapply(x@HVList, function(x) x@Method)))
     if(identical(method_list, "n_occupancy") | identical(method_list, "n_occupancy_test") | identical(method_list, "n_occupancy_permute")){
       method_is_occupancy <- TRUE
@@ -100,7 +100,7 @@ plot.HypervolumeList <- function(x,
   # remove the corresponding coordinates
   
   if(method_is_occupancy){
-    if(identical(class(x)[1], "HypervolumeList")){
+    if(inherits(x,"HypervolumeList")){
       for(i in 1:length(x@HVList)){
         hv_temp <- x@HVList[[i]]
         x@HVList[[i]]@RandomPoints <- hv_temp@RandomPoints[! is.na(hv_temp@ValueAtRandomPoints), ]

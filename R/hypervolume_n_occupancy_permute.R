@@ -5,7 +5,7 @@ hypervolume_n_occupancy_permute <- function(name, hv_list1, hv_list2, classifica
   ########## SOME CHECKS ##########
   
   # check if hv_list2 is of class HypervolumeList
-  if(! class(hv_list2) %in% "HypervolumeList"){
+  if(! inherits(hv_list2,"HypervolumeList")){
     stop("An object of class HypervolumeList is needed.")
   }
   

@@ -12,11 +12,11 @@ hypervolume_join <- function(...)
     
     for (a in list(...))
     {
-      if (class(a) == "HypervolumeList")
+      if (inherits(a,"HypervolumeList"))
       {
         hvl <- c(hvl, a@HVList)
       }
-      else if (class(a) == "Hypervolume")
+      else if (inherits(a,"Hypervolume"))
       {
         hvl <- c(hvl, a)
       }

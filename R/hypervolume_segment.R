@@ -1,6 +1,6 @@
 hypervolume_segment <- function(hv,distance.factor=1, num.points.max=NULL, verbose=TRUE, check.memory=TRUE)
 {
-  if(class(hv) != "Hypervolume")
+  if(!inherits(hv,"Hypervolume"))
   {
     stop("Input must be a Hypervolume class object")
   }

@@ -1,6 +1,6 @@
 get_centroid_weighted <- function(hv)
 {
-  if (class(hv)=="Hypervolume")
+  if (inherits(hv,"Hypervolume"))
   {
     # with the new Method n_overlap and n_overlap_test it makes sense to calculate 
     # weighted mean
@@ -16,7 +16,7 @@ get_centroid_weighted <- function(hv)
     
   }
   
-  else if (class(hv)=="HypervolumeList")
+  else if (inherits(hv,"HypervolumeList"))
   
     { 
     method_list <- unique(unlist(lapply(hv@HVList, function(x) x@Method)))

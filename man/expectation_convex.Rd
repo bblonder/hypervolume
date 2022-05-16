@@ -11,7 +11,7 @@ Generates expectation hypervolume corresponding to a convex hull (polytope) that
 expectation_convex(input, point.density = NULL, num.samples = NULL,
                  num.points.on.hull = NULL, check.memory = TRUE,
                  verbose = TRUE, use.random = FALSE, method =
-                 "hitandrun", chunksize = 1000)
+                 "rejection", chunksize = 1000)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -50,6 +50,8 @@ Number of random points to process per internal step. Larger values may have bet
 The rejection sampling algorithm generates random points within a hyperbox enclosing the points, then sequentially tests whether each is in or out of the convex polytope based on a dot product test. It becomes exponentially inefficient in high dimensionalities. The hit-and-run sampling algorithm generates a Markov chain of samples that eventually converges to the true distribution of points within the convex polytope. It performs better in high dimensionalities but may not converge quickly. It will also be slow if the number of simplices on the convex polytope is large.
 
 Both algorithms may become impracticably slow in >= 6 or 7 dimensions.
+
+As of May 2022, the \code{hitandrun} package was removed from CRAN so the hit-and-run sampler is unfortunately no longer supported. Users who need this functionality should downgrade versions.
 }
 \value{
 A \code{\link{Hypervolume-class}} object corresponding to the expectation hypervolume.

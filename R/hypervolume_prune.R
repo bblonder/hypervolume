@@ -28,7 +28,7 @@ hypervolume_prune <- function(hvlist, num.points.min=NULL, volume.min=NULL, retu
     stop("Must specify either volume.min or num.points.min")
   }  
   
-  if(class(hvlist) != "HypervolumeList")
+  if(!inherits(hvlist,"HypervolumeList"))
   {
     stop("Input hvlist must be of class HypervolumeList.")
   }

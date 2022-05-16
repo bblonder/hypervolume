@@ -13,7 +13,7 @@ hypervolume_estimate_probability <- function(hv, points, reduction.factor = 1,
     stop("Reduction factor is not in (0,1].")
   }
   if (parallel) {
-    if (!class(n.cores) %in% c("integer", "numeric")) {
+    if (!(is(n.cores,"integer") | is(n.cores,"numeric"))) {
       stop("If specified n.cores needs to be an integer.")
     }
   }

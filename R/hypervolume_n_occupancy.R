@@ -2,7 +2,7 @@ hypervolume_n_occupancy <- function(hv_list, classification = NULL, method = "su
                                     distance.factor = 1, check.hyperplane = FALSE, box_density = 5000){
   
   # check if hv_list is of class HypervolumeList
-  if(! class(hv_list) %in% "HypervolumeList"){
+  if(! inherits(hv_list,"HypervolumeList")){
     stop("An object of class HypervolumeList is needed.")
   }
   
