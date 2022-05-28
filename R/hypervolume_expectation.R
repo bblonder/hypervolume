@@ -287,7 +287,7 @@ hullToConstr <- function(calpts, hull) {
 
 
 
-expectation_convex <- function(input, point.density=NULL, num.samples=NULL, num.points.on.hull=NULL, check.memory=TRUE, verbose=TRUE, use.random=FALSE, method="rejection", chunksize=1e3)
+expectation_convex <- function(input, point.density=NULL, num.samples=NULL, num.points.on.hull=NULL, check.memory=TRUE, verbose=TRUE, use.random=FALSE, method="hitandrun", chunksize=1e3)
 {
   if (inherits(input,"Hypervolume"))
   {
@@ -367,70 +367,70 @@ expectation_convex <- function(input, point.density=NULL, num.samples=NULL, num.
   
   if (method=="hitandrun")
   {
-    stop('Option \'hitandrun\' requires the hitandrun R package which was removed from CRAN in May 2022.\nTo use this functionality please obtain a copy of this package from CRAN archives.')
-    # if (verbose==TRUE)
-    # {
-    #   cat('Calculating linear constraints...')
-    # }
-    # constraints <- hitandrun::hullToConstr(data_reduced, convexhull$hull)
-    # if (verbose==TRUE)
-    # {
-    #   cat('done.\n')
-    # }
-    # 
-    # volume_convexhull <- convexhull$vol
-    # 
-    # 
-    # if (verbose==TRUE)
-    # {
-    #   cat(sprintf('Sampling %d random points via hit-and-run, %d per chunk...\n',np, chunksize))
-    # }
-    # num.samples.completed <- 0
-    # num.chunks <- ceiling(np/chunksize)
-    # samples <- vector(mode="list",length=num.chunks)
-    # 
-    # pb <- progress_bar$new(total=np)
-    # if(verbose==TRUE)
-    # {
-    #   pb$tick(0)
-    # }
-    # 
-    # for (i in 1:num.chunks)
-    # {
-    #   if (verbose==TRUE)
-    #   {
-    #     if (!pb$finished==TRUE)
-    #     {
-    #       pb$update(num.samples.completed/np)
-    #     }
-    #   }
-    #   num.samples.to.take <- min(chunksize, np - num.samples.completed)
-    #   samples_this <- hitandrun::hitandrun(constraints,n.samples=num.samples.to.take)
-    #   samples[[i]] <- samples_this
-    #   num.samples.completed <- num.samples.completed + num.samples.to.take
-    # }
-    # samples <- do.call("rbind",samples)
-    # dimnames(samples) <- list(NULL,dimnames(data)[[2]])
-    # if (verbose==TRUE)
-    # {
-    #   pb$terminate()
-    #   cat('\ndone.\n')
-    # }
-    # 
-    # hv_hull <- new("Hypervolume",
-    #                Data=data,
-    #                RandomPoints= samples,
-    #                PointDensity=point.density,
-    #                Volume= volume_convexhull,
-    #                Dimensionality=ncol(samples),
-    #                ValueAtRandomPoints=rep(1, nrow(samples)),
-    #                Name=sprintf("Convex expectation for %s", ifelse(class(input)=="Hypervolume", input@Name, deparse(substitute(data))[1])),
-    #                Method="Adaptive hit and run convex expectation")	
-    # 
-    # return(hv_hull)	    
-    # 
-    # 
-    # 
+    #stop('Option \'hitandrun\' requires the hitandrun R package which was removed from CRAN in May 2022.\nTo use this functionality please obtain a copy of this package from CRAN archives.')
+    if (verbose==TRUE)
+    {
+      cat('Calculating linear constraints...')
+    }
+    constraints <- hullToConstr(data_reduced, convexhull$hull)
+    if (verbose==TRUE)
+    {
+      cat('done.\n')
+    }
+
+    volume_convexhull <- convexhull$vol
+
+
+    if (verbose==TRUE)
+    {
+      cat(sprintf('Sampling %d random points via hit-and-run, %d per chunk...\n',np, chunksize))
+    }
+    num.samples.completed <- 0
+    num.chunks <- ceiling(np/chunksize)
+    samples <- vector(mode="list",length=num.chunks)
+
+    pb <- progress_bar$new(total=np)
+    if(verbose==TRUE)
+    {
+      pb$tick(0)
+    }
+
+    for (i in 1:num.chunks)
+    {
+      if (verbose==TRUE)
+      {
+        if (!pb$finished==TRUE)
+        {
+          pb$update(num.samples.completed/np)
+        }
+      }
+      num.samples.to.take <- min(chunksize, np - num.samples.completed)
+      samples_this <- hitandrun::hitandrun(constraints,n.samples=num.samples.to.take)
+      samples[[i]] <- samples_this
+      num.samples.completed <- num.samples.completed + num.samples.to.take
+    }
+    samples <- do.call("rbind",samples)
+    dimnames(samples) <- list(NULL,dimnames(data)[[2]])
+    if (verbose==TRUE)
+    {
+      pb$terminate()
+      cat('\ndone.\n')
+    }
+
+    hv_hull <- new("Hypervolume",
+                   Data=data,
+                   RandomPoints= samples,
+                   PointDensity=point.density,
+                   Volume= volume_convexhull,
+                   Dimensionality=ncol(samples),
+                   ValueAtRandomPoints=rep(1, nrow(samples)),
+                   Name=sprintf("Convex expectation for %s", ifelse(inherits(input,"Hypervolume"), input@Name, deparse(substitute(data))[1])),
+                   Method="Adaptive hit and run convex expectation")
+
+    return(hv_hull)
+
+
+
     
     
   }
@@ -494,7 +494,7 @@ expectation_convex <- function(input, point.density=NULL, num.samples=NULL, num.
     
     # MAKE a new hypervolume with the convex hull shape and volume
     hv_chull <- new("Hypervolume",
-                    Name=sprintf("Convex expectation for %s", ifelse(class(input)=="Hypervolume", input@Name, deparse(substitute(data))[1])),
+                    Name=sprintf("Convex expectation for %s", ifelse(inherits(input,"Hypervolume"), input@Name, deparse(substitute(data))[1])),
                     Method="Rejection sampling convex expectation",
                     Data=as.matrix(data),
                     RandomPoints=inpoints, 

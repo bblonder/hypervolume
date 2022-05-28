@@ -3,15 +3,15 @@ Type: Package
 Title: High Dimensional Geometry, Set Operations, Projection, and 
         Inference Using Kernel Density Estimation, Support Vector 
         Machines, and Convex Hulls
-Version: 3.0.3
-Date: 2022-05-15
+Version: 3.0.4
+Date: 2022-05-27
 Author: Benjamin Blonder, with contributions from Cecina Babich Morrow, David J. Harris, Stuart Brown, Gregoire Butruille, Alex Laini, and Dan Chen
 Maintainer: Benjamin Blonder <benjamin.blonder@berkeley.edu>
 Description: Estimates the shape and volume of high-dimensional datasets and performs set operations: intersection / overlap, union, unique components, inclusion test, and hole detection. Uses stochastic geometry approach to high-dimensional kernel density estimation, support vector machine delineation, and convex hull generation. Applications include modeling trait and niche hypervolumes and species distribution modeling.
 License: GPL-3
 Depends: Rcpp, methods, R (>= 3.0.2)
 LinkingTo: Rcpp, RcppArmadillo, progress
-Imports: raster, maps, MASS, geometry, ks, pdist, fastcluster,
+Imports: raster, maps, MASS, geometry, ks, hitandrun, pdist, fastcluster,
         compiler, e1071, progress, mvtnorm, data.table,
         rgeos, sp, foreach, doParallel, parallel, ggplot2, pbapply,
         palmerpenguins, purrr, dplyr, caret
