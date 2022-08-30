@@ -1,11 +1,10 @@
-hypervolume_n_occupancy_permute <- function(name, hv_list1, hv_list2, classification = NULL, verbose = TRUE, distance.factor = 1, 
-                                            FUN = mean, n = 9, cores = 1){
+hypervolume_n_occupancy_permute <- function(name, hv_list1, hv_list2, verbose = TRUE, n = 9, cores = 1){
   
   
   ########## SOME CHECKS ##########
   
   # check if hv_list2 is of class HypervolumeList
-  if(! inherits(hv_list2,"HypervolumeList")){
+  if(! class(hv_list2) %in% "HypervolumeList"){
     stop("An object of class HypervolumeList is needed.")
   }
   
@@ -19,11 +18,31 @@ hypervolume_n_occupancy_permute <- function(name, hv_list1, hv_list2, classifica
     stop("hv_list1 must be calculated with hypervolume_n_occupancy.")
   }
   
-  # check if the number of elements of hv_list2 match the length of classification
-  if(length(hv_list2@HVList) != length(classification)){
-    stop("The length of hv_list2 must be the same as the length of classification.")
-  }
+  # # check if the number of elements of hv_list2 match the length of classification
+  # if(length(hv_list2@HVList) != length(classification)){
+  #   stop("The length of hv_list2 must be the same as the length of classification.")
+  # }
   
+  
+  ##################################################################################################
+  # retrieve parameter from hv_list1
+  
+  parm <- hv_list1[[1]]@Parameters
+  
+  classification <- parm[["classification"]]
+  FUN <- parm[["FUN"]]
+  distance.factor <- parm[["distance.factor"]]
+  seed <- parm[["seed"]]
+  num.points.max <- parm[["num.points.max"]]
+  
+  # set seed
+  # get random state from global environment
+  old_state <- get0(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
+  
+  
+  if(!is.null(seed)){
+    set.seed(seed)
+  }
 
   ##################################################################################################
   # This is the same code of hypervolume_n_occupancy
@@ -240,7 +259,7 @@ hypervolume_n_occupancy_permute <- function(name, hv_list1, hv_list2, classifica
   }
   
   # Create folder to store permuted hypervolumes
-  dir.create(file.path('./Objects', name), recursive = TRUE)
+  dir.create(file.path('./Objects', name), recursive = TRUE, showWarnings = FALSE)
 
   
   # unique_groups <- unique(classification)
@@ -255,139 +274,145 @@ hypervolume_n_occupancy_permute <- function(name, hv_list1, hv_list2, classifica
   for(i in 1:ncol(pairwise_combn)){
     label <- paste(pairwise_combn[1, i], pairwise_combn[2, i], sep = "__")
     store_labels <- c(store_labels, label)
-    dir.create(file.path('./Objects', name, label), recursive = TRUE)
+    dir.create(file.path('./Objects', name, label), recursive = TRUE, showWarnings = FALSE)
   }
   
   # initialize an empty hypervolume, used in the following loop
   empty_hypervolume <- new("Hypervolume")
   
-  if(verbose) {
-    pb2 = progress_bar$new(total = n*length(store_labels))
-  }
   
   # the next loop is for resampling hypervolumes
+  
   # basically, for each pairwise combination of the n groups (assigned with classification)
-  # we resample the labels and creates a new HypervolumeList of lenght two
+  # we resample the labels and creates a new HypervolumeList of length two
   # elements of the HypervolumeList are the resampled version of hypervolume_n_occupancy
   
   # I nested the foreach loop into a normal loop to avoid to go out of memory
   # with 16 Gb RAM I had problems in performing nested loops with foreach
   # Probably this problem is because of my bad coding ability
   
+  if(verbose){
+    Fun <- function(...) progress_bar_foreach(iterator = n, fun = function (a, ...)c(a, list(...)), clear = FALSE) 
+  } else {
+    Fun <- function(...) function (a, ...)c(a, list(...))
+  }
+  
+  
   for(j in 1:length(store_labels)){
-    foreach(i = 1:n) %dopar% {
-      
-      ### extract information that will be useful later
-      # create a list of length 2 to host the two hypervolumes of the i-th comparison
-      # I think it can be put outside of the loop
-      temp_list <- vector(2, mode = "list")
-      
-      # vector of TRUE FALSE to subset elements of hv_list2 belonging to
-      # the two groups under comparison (remember that we are working on pairwise comparisons)
-      to_subset <- classification %in% pairwise_combn[, j]
-      
-      # subset Data of the two groups under comparison
-      data_merge <- Data[to_subset]
-      
-      res_temp <- res[, classification %in% pairwise_combn[, j], drop = FALSE]
-      
-      # resample the labels of the two groups under comparison
-      classification_temp <- sample(classification[to_subset])
-      
-      ### first hypervolume group
-      
-      # extract data from resampled hypervolumes of the group 1
-      
-      # extract data for the first group and keep only the unique values
-      data_merge_group <- data_merge[classification_temp == pairwise_combn[1, j]]
-      data_merge_group <- unique(do.call(rbind, data_merge_group))
-      
-      # calculate volume for the first group
-      # res_vol <- sum(apply(intersection_weights[, classification_temp == pairwise_combn[1, j], drop = FALSE], 2, function(x) mean(x[x > 0])) * vol_list[classification_temp == pairwise_combn[1, j]])
-      
-      res_vol <- apply(res_temp [, classification_temp == pairwise_combn[1, j], drop = FALSE], 1, function(x) sum(x > 0))
-      res_vol <- sum(res_vol > 0) / nrow(res_temp) * final_volume_intersection
-      res_vol
-      
-      # assign the ValueAtRandomPoints for the first group
-      empty_hypervolume@ValueAtRandomPoints <- apply(res_temp [, classification_temp == pairwise_combn[1, j], drop = FALSE], 1, FUN)
-      
-      # I have called the Method "n_occupancy_permute"
-      empty_hypervolume@Method <- "n_occupancy_permute"
-      
-      # name of the first group
-      empty_hypervolume@Name <- pairwise_combn[1, j]
-      
-      p_dens <- apply(res_temp [, classification_temp == pairwise_combn[1, j], drop = FALSE], 1, function(x) sum(x > 0))
-      # do assignments for other slots
-      empty_hypervolume@Dimensionality <- dim
-      empty_hypervolume@Parameters = list()
-      empty_hypervolume@RandomPoints = matrix(total_hv_points_ss, ncol = dim)
-      empty_hypervolume@Volume <- res_vol
-      empty_hypervolume@Data <- data_merge_group
-      empty_hypervolume@PointDensity = sum(p_dens > 0) / res_vol
-      
-      # set dimnames
-      dimnames(empty_hypervolume@RandomPoints) = dn
-      
-      # assign the hypervolume of the first group to the list created at the beginning of the loops
-      temp_list[[1]] <- empty_hypervolume
-      
-      ### second hypervolume group
-      # steps are the same as for the first group
-      
-      data_merge_group <- data_merge[classification_temp == pairwise_combn[2, j]]
-      data_merge_group <- unique(do.call(rbind, data_merge_group))
- 
-      res_vol <- apply(res_temp[, classification_temp == pairwise_combn[2, j], drop = FALSE], 1, function(x) sum(x > 0))
-      res_vol <- sum(res_vol > 0) / nrow(res_temp) * final_volume_intersection
-      
-      p_dens <- apply(res_temp [, classification_temp == pairwise_combn[2, j], drop = FALSE], 1, function(x) sum(x > 0))
-      empty_hypervolume@ValueAtRandomPoints <- apply(res_temp[, classification_temp == pairwise_combn[2, j], drop = FALSE], 1, FUN)
-      empty_hypervolume@Method <- "n_occupancy_permute"
-      empty_hypervolume@Name <- pairwise_combn[2, j]
-      empty_hypervolume@Dimensionality <- dim
-      empty_hypervolume@Parameters = list()
-      empty_hypervolume@RandomPoints = matrix(total_hv_points_ss, ncol = dim)
-      empty_hypervolume@Volume <- res_vol
-      empty_hypervolume@Data <-  data_merge_group
-      empty_hypervolume@PointDensity =  sum(p_dens > 0) / res_vol
-      
-      # set dimnames
-      dimnames(empty_hypervolume@RandomPoints) = dn
-      
-      # assign the hypervolume of the first group to the list created at the beginning of the loops
-      temp_list[[2]] <- empty_hypervolume
-      
-      # transform the list in an HypervolumeList
-      temp_list <- hypervolume_join(temp_list)
-      
-      # save the HypervolumeList as an RDS file
-      name1 = paste0("permutation", as.character(i), '.rds')
-      saveRDS(temp_list, file.path('./Objects', name, store_labels[j],  name1))
-      
-      # not working with multicore calculations
-      if(verbose) {
-        pb2$tick()
+    
+    if(verbose){
+      cat("\nPermuting the pair ", store_labels[j], "...\n", sep = "")
+    }
       
       
+      foreach(i = 1:n, .combine = Fun()) %dopar% {
+        ### extract information that will be useful later
+        # create a list of length 2 to host the two hypervolumes of the i-th comparison
+        # I think it can be put outside of the loop
+        temp_list <- vector(2, mode = "list")
+        
+        # vector of TRUE FALSE to subset elements of hv_list2 belonging to
+        # the two groups under comparison (remember that we are working on pairwise comparisons)
+        to_subset <- classification %in% pairwise_combn[, j]
+        
+        # subset Data of the two groups under comparison
+        data_merge <- Data[to_subset]
+        
+        res_temp <- res[, classification %in% pairwise_combn[, j], drop = FALSE]
+        
+        # resample the labels of the two groups under comparison
+        classification_temp <- sample(classification[to_subset])
+        
+        ### first hypervolume group
+        
+        # extract data from resampled hypervolumes of the group 1
+        
+        # extract data for the first group and keep only the unique values
+        data_merge_group <- data_merge[classification_temp == pairwise_combn[1, j]]
+        data_merge_group <- unique(do.call(rbind, data_merge_group))
+        
+        # calculate volume for the first group
+        # res_vol <- sum(apply(intersection_weights[, classification_temp == pairwise_combn[1, j], drop = FALSE], 2, function(x) mean(x[x > 0])) * vol_list[classification_temp == pairwise_combn[1, j]])
+        
+        res_vol <- apply(res_temp [, classification_temp == pairwise_combn[1, j], drop = FALSE], 1, function(x) sum(x > 0))
+        res_vol <- sum(res_vol > 0) / nrow(res_temp) * final_volume_intersection
+        # res_vol
+        
+        # assign the ValueAtRandomPoints for the first group
+        empty_hypervolume@ValueAtRandomPoints <- apply(res_temp [, classification_temp == pairwise_combn[1, j], drop = FALSE], 1, FUN)
+        
+        # I have called the Method "n_occupancy_permute"
+        empty_hypervolume@Method <- "n_occupancy_permute"
+        
+        # name of the first group
+        empty_hypervolume@Name <- pairwise_combn[1, j]
+        
+        # set classification
+        parm_temp <- parm
+        parm_temp[["classification"]] <- classification_temp
+        
+        p_dens <- apply(res_temp [, classification_temp == pairwise_combn[1, j], drop = FALSE], 1, function(x) sum(x > 0))
+        # do assignments for other slots
+        empty_hypervolume@Dimensionality <- dim
+        empty_hypervolume@Parameters = parm_temp
+        empty_hypervolume@RandomPoints = matrix(total_hv_points_ss, ncol = dim)
+        empty_hypervolume@Volume <- res_vol
+        empty_hypervolume@Data <- data_merge_group
+        empty_hypervolume@PointDensity = sum(p_dens > 0) / res_vol
+        
+        # set dimnames
+        dimnames(empty_hypervolume@RandomPoints) = dn
+        
+        # assign the hypervolume of the first group to the list created at the beginning of the loops
+        temp_list[[1]] <- empty_hypervolume
+        
+        ### second hypervolume group
+        # steps are the same as for the first group
+        
+        data_merge_group <- data_merge[classification_temp == pairwise_combn[2, j]]
+        data_merge_group <- unique(do.call(rbind, data_merge_group))
+        
+        res_vol <- apply(res_temp[, classification_temp == pairwise_combn[2, j], drop = FALSE], 1, function(x) sum(x > 0))
+        res_vol <- sum(res_vol > 0) / nrow(res_temp) * final_volume_intersection
+        
+        p_dens <- apply(res_temp [, classification_temp == pairwise_combn[2, j], drop = FALSE], 1, function(x) sum(x > 0))
+        empty_hypervolume@ValueAtRandomPoints <- apply(res_temp[, classification_temp == pairwise_combn[2, j], drop = FALSE], 1, FUN)
+        empty_hypervolume@Method <- "n_occupancy_permute"
+        empty_hypervolume@Name <- pairwise_combn[2, j]
+        empty_hypervolume@Dimensionality <- dim
+        empty_hypervolume@Parameters = parm_temp
+        empty_hypervolume@RandomPoints = matrix(total_hv_points_ss, ncol = dim)
+        empty_hypervolume@Volume <- res_vol
+        empty_hypervolume@Data <-  data_merge_group
+        empty_hypervolume@PointDensity =  sum(p_dens > 0) / res_vol
+        
+        # set dimnames
+        dimnames(empty_hypervolume@RandomPoints) = dn
+        
+        # assign the hypervolume of the first group to the list created at the beginning of the loops
+        temp_list[[2]] <- empty_hypervolume
+
+        # transform the list in an HypervolumeList
+        temp_list <- hypervolume_join(temp_list)
+        name1 = paste0("permutation", as.character(i), '.rds')
+        saveRDS(temp_list, file.path('./Objects', name, store_labels[j],  name1))
+        
+      }
     }
 
-    
-    }
-    
-  }
-  
-  
-  if (verbose){
-    pb2$terminate()
-  }
-  
+
  # If a cluster was created for this specific function call, close cluster and register sequential backend
   if(!exists_cluster) {
     stopCluster(cl)
     registerDoSEQ()
   }
-  return(file.path(getwd(), 'Objects', name))
+  
+  # restore random state
+  if (!is.null(old_state)) {
+    assign(".Random.seed", old_state, envir = .GlobalEnv, inherits = FALSE)
   }
+  
+
+  return(file.path(getwd(), 'Objects', name))
+}
   

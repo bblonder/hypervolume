@@ -41,6 +41,21 @@ export(
   hypervolume_n_occupancy,
   hypervolume_n_occupancy_permute,
   hypervolume_n_occupancy_test,
+  hypervolume_n_occupancy_bootstrap,
+  occupancy_filter,
+  occupancy_to_intersection,
+  occupancy_to_unshared,
+  hypervolume_to_data_frame,
+  occupancy_to_union,
+  occupancy_bootstrap_gof, 
+  get_occupancy_stats,
+  get_occupancy_volume_bootstrap,
+  get_occupancy_intersection_bootstrap,
+  get_occupancy_unshared_bootstrap,
+  get_occupancy_stats_bootstrap,
+  get_relative_volume,
+  hypervolume_n_resample,
+  find_optimal_occupancy_thin,
   hypervolume_permute,
   hypervolume_project,
   hypervolume_prune, 
@@ -113,11 +128,10 @@ import(palmerpenguins)
 importFrom("raster","raster", "getValues","values","extent","rasterToPolygons","rasterize")
 importFrom("grDevices", "col2rgb", "rainbow", "rgb", "hsv", "rgb2hsv")
 importFrom("graphics", ".filled.contour", "axis", "box", "contour","par", "plot", "points", "text","lines")
-importFrom("stats", "cor", "cutree", "dist", "dnorm", "na.omit", "pgamma", "rmultinom", "rnorm", "runif", "sd", "median", "quantile","rbinom")
-importFrom("utils", "data", "head")
+importFrom("stats", "cor", "cutree", "dist", "dnorm", "na.omit", "pgamma", "rmultinom", "rnorm", "runif", "sd", "median", "quantile","rbinom", "p.adjust", "predict", "var", "weighted.mean", "aggregate")
+importFrom("utils", "data", "head", "write.table", "str", "combn", "read.table")
 importFrom("maps", "map")
 importFrom("graphics", "abline", "legend", "mtext")
-importFrom("stats", "predict", "var", "weighted.mean")
 importFrom("utils", "str", "combn")
 importFrom("rgeos","gBuffer")
 importFrom("purrr","reduce")
