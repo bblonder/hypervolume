@@ -33,7 +33,6 @@ hv_list = lapply(penguins_no_na_split, function(x)
   hypervolume_gaussian(x[, c("bill_length_mm","bill_depth_mm","flipper_length_mm")],
   samples.per.point=100))
 
-names(hv_list) <- names(penguins_no_na_split)
 hv_list <- hypervolume_join(hv_list)
 hv_occupancy <- hypervolume_n_occupancy(hv_list)
 

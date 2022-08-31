@@ -79,20 +79,37 @@ plot.HypervolumeList <- function(x,
   #### ALEX !!!!!! check the method, if n_occupancy remove any 0
   method_is_occupancy <- FALSE
   
-  if (inherits(x,"Hypervolume"))
+  if (class(x) == "Hypervolume")
   {
     # with the new Method n_overlap and n_overlap_test it makes sense to calculate 
     # weighted mean
-    if(identical(x@Method, "n_occupancy") | identical(x@Method, "n_occupancy_test") | identical(x@Method, "n_occupancy_permute")){
+    if(identical(x@Method, "n_occupancy") | identical(x@Method, "n_occupancy_test") | identical(x@Method, "n_occupancy_permute") |
+       identical(x@Method, "occupancy_to_union") | identical(x@Method, "occupancy_to_unshared") | identical(x@Method, "occupancy_to_intersection")){
       method_is_occupancy <- TRUE
+    }
+    if(nrow(x@RandomPoints) == 0){
+      stop("The hypervolume has no random points.")
     }
   }
   
-  if (inherits(x,"HypervolumeList")){
+  if (class(x)=="HypervolumeList"){
     method_list <- unique(unlist(lapply(x@HVList, function(x) x@Method)))
-    if(identical(method_list, "n_occupancy") | identical(method_list, "n_occupancy_test") | identical(method_list, "n_occupancy_permute")){
+    if(identical(method_list, "n_occupancy") | identical(method_list, "n_occupancy_test") | identical(method_list, "n_occupancy_permute") |
+       identical(method_list, "occupancy_to_union") | identical(method_list, "occupancy_to_unshared") | identical(method_list, "occupancy_to_intersection")){
       method_is_occupancy <- TRUE
     }
+    
+    rp_list <- sapply(x@HVList, function(x) nrow(x@RandomPoints))
+    if(all(rp_list == 0)){
+      stop("All the hypervolumes have no random points.")
+    } else if(any(rp_list == 0)){
+      x <- x[[which(rp_list > 0)]]
+      names_list <- sapply(x@HVList, function(x) x@Name)
+      names_list <- names_list[rp_list > 0]
+      names_list <- paste("Hypervolumes", paste(names_list, collapse = ", "), "were removed because had no random points")
+      message(names_list)
+    }
+    
   }
   
   #### ALEX !!!!!! 
@@ -100,7 +117,7 @@ plot.HypervolumeList <- function(x,
   # remove the corresponding coordinates
   
   if(method_is_occupancy){
-    if(inherits(x,"HypervolumeList")){
+    if(identical(class(x)[1], "HypervolumeList")){
       for(i in 1:length(x@HVList)){
         hv_temp <- x@HVList[[i]]
         x@HVList[[i]]@RandomPoints <- hv_temp@RandomPoints[! is.na(hv_temp@ValueAtRandomPoints), ]

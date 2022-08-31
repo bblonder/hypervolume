@@ -1,4 +1,4 @@
-hypervolume_n_occupancy_test <- function(observed, path, alternative = "two_sided", CI = 0.95, cores = 1) {
+hypervolume_n_occupancy_test <- function(observed, path, alternative = "two_sided", significance = 0.05, cores = 1, p_adjust = "none", multi_comp_type = "pairwise") {
   
   # intitialize multi core calculations
   
@@ -60,7 +60,7 @@ hypervolume_n_occupancy_test <- function(observed, path, alternative = "two_side
   # calculate the difference in the resampled hypervolumes
   # perform a nested loop with foreach and store the results
   # this loop will return a list of length equal to the number of pairwise combinations
-  # each list contains a marix, where the rose are the RandomPoints and columns represent
+  # each list contains a matrix, where the rose are the RandomPoints and columns represent
   # the difference between groups
   
   simu_res <- foreach(i = list.files(path)) %:% foreach(j = n, .combine = cbind) %dopar% {
@@ -91,37 +91,55 @@ hypervolume_n_occupancy_test <- function(observed, path, alternative = "two_side
     
     # calculates probabilities: can be more, less or two_sided
     # credits to vegan oecosimu
-    if(alternative == "less"){
+    if(alternative == "more"){
       result <- sweep(distribution, 1, obs, ">=")
       result <- apply(result, 1, sum)
       p <- pmin(1, (result  + 1)/(n + 1))
     }
     
-    if(alternative == "more"){
+    if(alternative == "less"){
       result <- sweep(distribution, 1, obs, "<=")
       result <- apply(result, 1, sum)
-      p <- pmin(1, (result  + 1)/(n + 1))
+      p <- pmin(1, (result + 1)/(n + 1))
     }
     
-    if(alternative == "more_less"){
-      result_less <- sweep(distribution, 1, obs, ">=")
-      result_more <- sweep(distribution, 1, obs, "<=")
-      result_less <- apply(result_less, 1, sum)
-      result_more <- apply(result_more, 1, sum)
-      p_less <- pmin(1, (result_less  + 1)/(n + 1))
-      p_more <- pmin(1, (result_more  + 1)/(n + 1))
-      p <- apply(data.frame(p_less, p_more), 1, max)
-    }
-    
+    # if(alternative == "more_less"){
+    #   result_less <- sweep(distribution, 1, obs, ">=")
+    #   result_more <- sweep(distribution, 1, obs, "<=")
+    #   result_less <- apply(result_less, 1, sum)
+    #   result_more <- apply(result_more, 1, sum)
+    #   p_less <- pmin(1, (result_less  + 1)/(n + 1))
+    #   p_more <- pmin(1, (result_more  + 1)/(n + 1))
+    #   p <- apply(data.frame(p_less, p_more), 1, max)
+    # }
+    # 
     
     if(alternative == "two_sided"){
-      result <- sweep(abs(distribution), 1, abs(obs), ">=")
-      result <- apply(result, 1, sum)
-      p <- pmin(1, (result  + 1)/(n + 1))
+      # result <- sweep(abs(distribution), 1, abs(obs), ">=")
+      # result <- apply(result, 1, sum)
+      result_less <- sweep(distribution, 1, obs, "<=")
+      result_more <- sweep(distribution, 1, obs, ">=")
+      result_less <- apply(result_less, 1, sum)
+      result_more <- apply(result_more, 1, sum)
+      result <- 2*pmin(result_less, result_more)
+      p <- pmin(1, (result + 1)/(n + 1))
     }
     
-    # retain only those probabilities that are greater than CI
-    p_obs <- p >=  CI
+    if(! identical(p_adjust, "none")){
+      if(identical(multi_comp_type, "pairwise")){
+        p <- p.adjust(p, method = p_adjust, n = length(p))
+      }
+      
+      if(identical(multi_comp_type, "all")){
+        p <- p.adjust(p, method = p_adjust, n = length(p) * groups)
+      } 
+      
+    }
+    
+    # retain only those probabilities that are greater than significance
+    p_obs <- p <= significance
+    
+
     
     # retain only ValueAtRandomPoints for which the difference is significant
     if(sum(p_obs) == 0){
