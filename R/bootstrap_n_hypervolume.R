@@ -14,6 +14,13 @@ bootstrap_n_hypervolumes <- function(name, hv, n = 10, points_per_resample = 'sa
     set.seed(seed)
   }
   
+  on.exit({
+    # restore random state
+    if (!is.null(old_state)) {
+      assign(".Random.seed", old_state, envir = .GlobalEnv, inherits = FALSE)
+    }
+  }, add = TRUE)
+  
   
   # Check if cluster registered to doparallel backend exists
   exists_cluster = TRUE
@@ -26,6 +33,15 @@ bootstrap_n_hypervolumes <- function(name, hv, n = 10, points_per_resample = 'sa
     registerDoParallel(cl)
     exists_cluster = FALSE
   }
+  
+  on.exit({
+    # If a cluster was created for this specific function call, close cluster and register sequential backend
+    if(!exists_cluster) {
+      stopCluster(cl)
+      registerDoSEQ()
+    }
+  }, add = TRUE)
+  
   
   # Create folder to store bootstrapped hypervolumes
   dir.create(file.path('./Objects', name), recursive = TRUE, showWarnings = FALSE)
@@ -72,17 +88,6 @@ bootstrap_n_hypervolumes <- function(name, hv, n = 10, points_per_resample = 'sa
   }
 
 
-  # If a cluster was created for this specific function call, close cluster and register sequential backend
-  if(!exists_cluster) {
-    stopCluster(cl)
-    registerDoSEQ()
-  }
-  
-  # restore random state
-  if (!is.null(old_state)) {
-    assign(".Random.seed", old_state, envir = .GlobalEnv, inherits = FALSE)
-  }
-  
   # Absolute path to hypervolume objects
   return(file.path(getwd(), 'Objects', name))
 }

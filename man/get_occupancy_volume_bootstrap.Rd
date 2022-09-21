@@ -6,7 +6,7 @@
 Extract the volume from occupancy bootstrap objects
 }
 \description{
-The function \code{get_occupancy_volume_bootstrap()} extract the volume from objects generated with \code{hypervolume_n_resample()}. It can provide raw values or summary statistics for both single groups or pairwise comparisons.
+The function \code{get_occupancy_volume_bootstrap()} extract the volume from objects generated with \code{hypervolume_n_occupancy_bootstrap()}. It provides raw values or summary statistics for both single hypervolumes or their pairwise comparisons.
 }
 \usage{
 get_occupancy_volume_bootstrap(path,
@@ -18,10 +18,10 @@ get_occupancy_volume_bootstrap(path,
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{path}{
-  A path to a directory containing bootstrapped hypervolumes generated with \code{get_occupancy_bootstrap_volume()}.
+  A path to a directory containing bootstrapped occupancy objects generated with \code{hypervolume_n_occupancy_bootstrap()}.
 }
   \item{method}{
-If \code{all} the function computes returns the volume of single bootstrapped hypervolumes. If \code{pairwise} returns the comparison among pairwise combination of hypervolumes.
+If \code{all} the function returns the volume of each bootstrapped hypervolume for each bootstrapped occupancy object in \code{path}. If \code{pairwise} returns the volume difference for each pairwise combination of hypervolumes within the bootstrapped occupancy objects found in \code{path}.
  }
   \item{res_type}{
   It can be \code{raw} or \code{pairwise}. See details.
@@ -30,19 +30,20 @@ If \code{all} the function computes returns the volume of single bootstrapped hy
   If \code{TRUE} it computes relative instead of absolute volumes.
 }
   \item{tol}{
-  Set the tolerance for reconstructing whole volume.
+  Set the tolerance for reconstructing whole volume. See details.
  }
 }
 \details{
-  The function \code{get_occupancy_volume_bootstrap()} returns the volume of bootstrapped hypervolumes if \code{res_type} is equal to \code{raw} and \code{method} to \code{all}. When \code{res_type} is equal to \code{summary} and method to \code{all} this function returns the mean volume as well as standard deviation, median, minimum, maximum and two quantiles of each group. These summary statistics are calculated for among groups pairwise comparisons when \code{res_type} is equal to \code{summary} and \code{method} to \code{pairwise}.
+The function \code{get_occupancy_volume_bootstrap()} returns the volume for each bootstrapped hypervolume if \code{res_type = "raw"} and \code{method = "all"}. When \code{res_type = "summary"} and \code{method = "all"} this function returns the mean volume as well as the standard deviation, median, minimum, maximum, 2.5\% and 97.5\% quantiles, skewness and kurtosis for each of hypervolume. The same summary statistics are calculated for the difference of volume for each pairwise combination of hypervolumes when \code{res_type = "summary"} and \code{method = "pairwise"}. \cr
+When \code{relative = TRUE} relative instead of absolute volumes are returned. The relative volume is calculated as the ratio between the volume of an hypervolume and the volume of the union of all the hypervolumes. The \code{get_occupancy_volume_bootstrap()} function attempts to reconstruct the volume of the union of all the hypervolumes from each bootstrapped hypervolume. At first, the volume of the union of hypervolumes is calculated for each hypervolume of the jth bootstrapped occupancy_object as the the ratio between the total number of random points and the number of random points of the ith hypervolume of the jth bootstrapped occupancy_object, multiplied by the volume of the ith hypervolume of the jth bootstrapped occupancy_object. This step results in a number of reconstructed volumes equal to the number of hypervolumes in the jth bootstrapped occupancy_object. Reconstructed volumes are then compared among each other to ensure the consistency of the reconstruction. To do this, the distance among reconstructed volumes is calculated with the \code{dist()} function of the \code{stats} package. If at least one of the distances is greater than \code{tol} the computation is stopped and some suggestions are returned.
 }
+
 \value{
-A \code{data.frame} with bootrapped volumes or summary statistics for single groups or pairwise comparisons.
+A \code{data.frame} with bootstrapped volumes or summary statistics for single hypervolumes or their pairwise comparisons.
 }
 
 \seealso{
-\code{\link{hypervolume_n_occupancy}}, \code{\link{hypervolume_n_occupancy_bootstrap}}, \cr \code{\link{hypervolume_n_occupancy_test}}, \code{\link{occupancy_to_intersection}},  \cr
-\code{\link{occupancy_to_union}} \code{\link{occupancy_filter}}
+\code{\link{hypervolume_n_occupancy}}, \code{\link{hypervolume_n_occupancy_bootstrap}}
 }
 
 \examples{

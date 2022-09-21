@@ -1,4 +1,4 @@
-get_occupancy_unshared_bootstrap <- function(path, method = "pairwise", res_type = "summary", relative = FALSE){
+get_occupancy_unshared_bootstrap <- function(path, method = "pairwise", res_type = "summary", relative = FALSE,  tol = 1e-10){
   
   if(! any(identical(res_type, "raw") | identical(res_type, "summary"))){
     stop("res_type must be raw or summary")
@@ -12,11 +12,11 @@ get_occupancy_unshared_bootstrap <- function(path, method = "pairwise", res_type
   
   if(identical(method, "all")){
     
-    res <- lapply(file_ls, function(z) occupancy_to_unshared(readRDS(file.path(path, z)), method = "all"))
+    res <- lapply(file_ls, function(z) occupancy_to_unshared(readRDS(file.path(path, z)), method = "all", tol = tol))
     
     if(relative){
       res <- lapply(res, get_volume)
-      res_union <- lapply(file_ls, function(x)get_volume(occupancy_to_union(readRDS(file.path(path, x)))))
+      res_union <- lapply(file_ls, function(x)get_volume(occupancy_to_union(readRDS(file.path(path, x)), method = "all", tol = tol)))
       res <- do.call(rbind, res)
       res_union <- do.call(c, res_union)
       res <- sweep(res, 1, res_union, "/")
@@ -42,13 +42,13 @@ get_occupancy_unshared_bootstrap <- function(path, method = "pairwise", res_type
                                                                      skewness = skewness(x),
                                                                      kurtosis = kurtosis(x))))
       colnames(final_res) <- c("hypervolume", "mean", "sd", "min", "quantile_2.5", "median", "quantile_97.5", "max",
-                               "skweness", "kurtosis")
+                               "skewness", "kurtosis")
       final_res[, "hypervolume"] <- as.character(final_res[, "hypervolume"])
     }
   }
   
   if(identical(method, "pairwise")){
-    res <- lapply(file_ls, function(z) occupancy_to_unshared(readRDS(file.path(path, z)), method = "all"))
+    res <- lapply(file_ls, function(z) occupancy_to_unshared(readRDS(file.path(path, z)), method = "all", tol = tol))
     res <- do.call(rbind, lapply(res, function(x) get_volume(x)))
     
     combn_hyper <-  readRDS(file.path(path, file_ls[1]))
@@ -65,7 +65,7 @@ get_occupancy_unshared_bootstrap <- function(path, method = "pairwise", res_type
     res <- combn_res
     
     if(relative){
-      res_union <- lapply(file_ls, function(z) get_volume(occupancy_to_union(readRDS(file.path(path, z)), method = "n_wise", m = 2)))
+      res_union <- lapply(file_ls, function(z) get_volume(occupancy_to_union(readRDS(file.path(path, z)), method = "n_wise", m = 2, tol = tol)))
       res_union <- do.call(rbind, res_union)
       res_union <- res_union[,match(colnames(res_union), colnames(res))]
       res <- res/res_union
@@ -87,7 +87,7 @@ get_occupancy_unshared_bootstrap <- function(path, method = "pairwise", res_type
                                                                      skewness = skewness(x),
                                                                      kurtosis = kurtosis(x))))
       colnames(final_res) <- c("comparison", "mean", "sd", "min", "quantile_2.5", "median", "quantile_97.5", "max",
-                               "skweness", "kurtosis")
+                               "skewness", "kurtosis")
       final_res[, "comparison"] <- gsub("_", " - ", final_res[, "comparison"])
     }
   }

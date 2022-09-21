@@ -21,6 +21,14 @@ n_occupancy_function <- function(hv_list, classification = NULL, method = "subsa
     set.seed(seed)
   }
   
+  on.exit({
+    # restore random state
+    if (!is.null(old_state)) {
+      assign(".Random.seed", old_state, envir = .GlobalEnv, inherits = FALSE)
+    }
+  })
+
+  
   # store some properties of the hypervolumes stored in hv_list:
   # dimensionality of random points, volume, density, names
   np_list <- unlist(lapply(hv_list@HVList, function(x) nrow(x@RandomPoints)))
@@ -506,11 +514,6 @@ n_occupancy_function <- function(hv_list, classification = NULL, method = "subsa
       result <- hv_list_res
     }
     
-  }
-  
-  # restore random state
-  if (!is.null(old_state)) {
-    assign(".Random.seed", old_state, envir = .GlobalEnv, inherits = FALSE)
   }
   
   result

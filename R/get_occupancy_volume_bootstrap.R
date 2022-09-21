@@ -39,7 +39,7 @@ get_occupancy_volume_bootstrap <- function(path, method = "all", res_type = "raw
                                                                      skewness = skewness(x),
                                                                      kurtosis = kurtosis(x))))
       colnames(final_res) <- c("hypervolume", "mean", "sd", "min", "quantile_2.5", "median", "quantile_97.5", "max",
-                               "skweness", "kurtosis")
+                               "skewness", "kurtosis")
       final_res[, "hypervolume"] <- as.character(final_res[, "hypervolume"])
     }
     
@@ -63,7 +63,7 @@ get_occupancy_volume_bootstrap <- function(path, method = "all", res_type = "raw
       char_combn <- combn(colnames(res), 2, FUN = function(x) paste(x[1], x[2], sep = " - "))
       res_pairwise <- matrix(NA, ncol = 9, nrow = ncol(file_combn))
       colnames(res_pairwise) <- c("mean", "sd", "min", "quantile_2.5", "median", "quantile_97.5", "max",
-                                  "skweness", "kurtosis")
+                                  "skewness", "kurtosis")
       
       
       

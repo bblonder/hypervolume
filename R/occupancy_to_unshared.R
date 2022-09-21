@@ -10,6 +10,7 @@ occupancy_to_unshared <- function(hv_list, method = "all", tol = 1e-10){
     stop("A HypervolumeList object is needed")
   }
   
+
   if(inherits(hv_list, "HypervolumeList")){
     
     # check construction method, it needs to be n_occupancy
@@ -23,7 +24,11 @@ occupancy_to_unshared <- function(hv_list, method = "all", tol = 1e-10){
       # get volume of the hyper list and try to reconstruct the volume of the union
       # the reconstruction is made for each hypervolume in the hypervolume list
       vols <- get_volume(hv_list)
-      all_length <- length(hv_list@HVList[[1]]@ValueAtRandomPoints)
+      #all_length <- length(hv_list@HVList[[1]]@ValueAtRandomPoints)
+      combine_vrp <- lapply(hv_list@HVList, function(x) x@ValueAtRandomPoints)
+      combine_vrp <- do.call(cbind, combine_vrp)
+      zeroes_check <- apply(combine_vrp, 1, function(x) sum(abs(x)))
+      all_length <- sum(zeroes_check != 0)
       i_length <- unlist(lapply(hv_list@HVList, function(z) sum(z@ValueAtRandomPoints != 0)))
       all_vol <- vols*all_length/i_length
       
@@ -79,7 +84,11 @@ occupancy_to_unshared <- function(hv_list, method = "all", tol = 1e-10){
       # get volume of the hyper list and try to reconstruct the volume of the union
       # the reconstruction is made for each hypervolume in the hypervolume list
       vols <- get_volume(hv_list)
-      all_length <- length(hv_list@HVList[[1]]@ValueAtRandomPoints)
+      #all_length <- length(hv_list@HVList[[1]]@ValueAtRandomPoints)
+      combine_vrp <- lapply(hv_list@HVList, function(x) x@ValueAtRandomPoints)
+      combine_vrp <- do.call(cbind, combine_vrp)
+      zeroes_check <- apply(combine_vrp, 1, function(x) sum(abs(x)))
+      all_length <- sum(zeroes_check != 0)
       i_length <- unlist(lapply(hv_list@HVList, function(z) sum(z@ValueAtRandomPoints != 0)))
       all_vol <- vols*all_length/i_length
       

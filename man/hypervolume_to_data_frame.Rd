@@ -16,16 +16,11 @@ hypervolume_to_data_frame(hv, remove_zeroes = TRUE)
 A \code{Hypervolume} or \code{HypervolumeList}.
 }
   \item{remove_zeroes}{
-Remove zeroes from ValuesAtRandomPoints. See Details for further information. It works when construction methods are \code{n_occupancy}, \code{n_occupancy_test}, \code{occupancy_to_union}, \code{occupancy_to_intersection} and \cr
-\code{occupancy_to_unshared}, otherwise ignored. 
+Remove zeroes from \code{ValuesAtRandomPoints}. See Details for further information. It works for \code{hypervolume_n_occupancy()}, \code{hypervolume_n_occupancy_test()}, \code{occupancy_to_union()}, \code{occupancy_to_intersection()} and \code{occupancy_to_unshared()}, otherwise ignored. 
 }
 }
 \details{
-Zero values are generated
-during the occupancy routine when a random point is included 
-in some group of hypervolumes but not in others. A tipical usage of
-\code{hypervolume_to_data_frame()} with objects generated with the occupancy routine
-should remove zeroes.
+Zero values are generated during the occupancy routine when a random point is included in some groups of hypervolumes but not in others. A tipical usage of \code{hypervolume_to_data_frame()} with objects generated with the occupancy routine should remove zeroes.
 }
 \value{
 A \code{data.frame}.

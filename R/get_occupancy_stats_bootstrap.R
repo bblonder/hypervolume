@@ -5,6 +5,11 @@ get_occupancy_stats_bootstrap <- function(path, FUN, remove_zeroes = TRUE, metho
     stop("This path does not exist.")
   }
   
+  if(identical(res_type, "raw") & identical(method, "pairwise")){
+    stop("The res_type raw is not available when method is equal to pairwise")
+  }
+  
+  
   # initialize multi-core calculations
   
   exists_cluster = TRUE
@@ -17,6 +22,15 @@ get_occupancy_stats_bootstrap <- function(path, FUN, remove_zeroes = TRUE, metho
     registerDoParallel(cl)
     exists_cluster = FALSE
   }
+  
+  
+  on.exit({
+    # If a cluster was created for this specific function call, close cluster and register sequential backend
+    if(!exists_cluster) {
+      stopCluster(cl)
+      registerDoSEQ()
+    }
+  }, add = TRUE)
   
   
   file_list <- list.files(path, pattern = ".rds")
@@ -52,13 +66,6 @@ get_occupancy_stats_bootstrap <- function(path, FUN, remove_zeroes = TRUE, metho
   }
 
   
-  if(!exists_cluster) {
-    stopCluster(cl)
-    registerDoSEQ()
-  }
-  
-  
-  
   rownames(result) <- NULL
   colnames(result) <- col_n
   
@@ -88,7 +95,7 @@ get_occupancy_stats_bootstrap <- function(path, FUN, remove_zeroes = TRUE, metho
                                                                      skewness = skewness(x),
                                                                      kurtosis = kurtosis(x))))
       colnames(final_res) <- c("hypervolume", "mean", "sd", "min", "quantile_2.5", "median", "quantile_97.5", "max",
-                               "skweness", "kurtosis")
+                               "skewness", "kurtosis")
     }
   }
   
@@ -96,17 +103,13 @@ get_occupancy_stats_bootstrap <- function(path, FUN, remove_zeroes = TRUE, metho
   
   if(identical(method, "pairwise")){
     
-    if(identical(res_type, "raw")){
-      stop("The res_type raw is not available when method is equal to pairwise")
-    }
-    
     res <- result
     
     file_combn <- combn(1:ncol(res), 2)
     char_combn <- combn(colnames(res), 2, FUN = function(x) paste(x[1], x[2], sep = " - "))
     res_pairwise <- matrix(NA, ncol = 9, nrow = ncol(file_combn))
     colnames(res_pairwise) <- c("mean", "sd", "min", "quantile_2.5", "median", "quantile_97.5", "max",
-                                "skweness", "kurtosis")
+                                "skewness", "kurtosis")
     
     
     

@@ -5,52 +5,52 @@
 Hypervolumes through permuting labels of n pairwise groups of hypervolumes
 }
 \description{
-Permute labels of an \code{hypervolume_n_occupancy()} object and calculate \code{hypervolume_n_occupancy()} for the permuted objects. This function is meant for taking a sample of all permutations and does not guarantee that permutations are not repeated. Newly generated hypervolume objects are written to file. This function is to be used within the n_occupancy routine.
+Permute labels of an \code{hypervolume_n_occupancy()} object and calculate \code{hypervolume_n_occupancy()} for the permuted objects. This function is meant for taking a sample of all permutations and does not guarantee that permutations are not repeated. Newly generated hypervolume objects are written to file. This function is to be used within the occupancy routine.
 }
 \usage{
 hypervolume_n_occupancy_permute(name, 
-  hv_list1,
-  hv_list2,
-  verbose = TRUE,
-  n = 9,
-  cores = 1)
+                                hv_list1,
+                                hv_list2,
+                                verbose = TRUE,
+                                n = 9,
+                                cores = 1)
 }
 \arguments{
   \item{name}{
 File name; The function writes hypervolumes to file in ./Objects/<name>
 }
   \item{hv_list1}{
-An hypervolume list generated with \code{hypervolume_n_occupancy()}
+An hypervolume list generated with \code{hypervolume_n_occupancy()}.
 }
   \item{hv_list2}{
-The hypervolume list used to generate hv_list1
+The hypervolume list used to generate \code{hv_list1}.
 }
   \item{verbose}{
-Logical value; If function is being run sequentially, outputs progress bar in console.
+Logical value; outputs progress bar in console.
 }
   \item{n}{
-number of permutations to take
+Number of permutations to take.
 }
   \item{cores}{
-Number of logical cores to use while generating permuted hypervolumes. If parallel backend already registered to \code{doParallel}, function will use that backend and ignore the argument in cores.
+Number of logical cores to use while generating permuted hypervolumes. If parallel backend already registered to \code{doParallel}, function will use that backend and ignore the argument in \code{cores}.
 }
 
 }
 \details{
-\code{hypervolume_n_occupancy_permute()} creates a directory called Objects in the current working directory if a directory of that name doesn't already exist. Within this directory, it creates a directory for each pairwise combinations of elements within hv_list1. Group labels are permuted and a new HypervolumeList is saved as a rds file for each pairwise combination. IMPORTANT: only group labels are permuted, random points are kept fixed and will be the same across all the permuted hypervolumes. 
+\code{hypervolume_n_occupancy_permute()} creates a directory called Objects in the current working directory if a directory of that name doesn't already exist. Within this directory, it creates a directory for each pairwise combinations of elements within \code{hv_list1}. Group labels are permuted and a new \code{HypervolumeList} is saved as a rds file for each pairwise combination. IMPORTANT: only group labels are permuted, random points are kept fixed and will be the same across all the permuted hypervolumes. 
 
-Use \code{hypervolume_n_occupancy_permute} when generating null distribution of test statistics. \code{hypervolume_n_occupancy_test()} takes in a \code{hypervolume_n_occupuancy_permute()} filepath output.
+\code{hypervolume_n_occupancy_test()} takes in a \code{hypervolume_n_occupuancy_permute()} filepath output.
 
 It is also possible to access the hypervolumes by using readRDS to read the hypervolume objects in one by one.
 }
 
 
 \section{Warning}{
-  \code{hypervolume_n_occupancy_permute()} requires a lot of disk space especially when building occupancy hypervolumes with \code{method = box}. Try with a small number of replications and check the folder Objects for memory usage before to proceed.
+  \code{hypervolume_n_occupancy_permute()} requires a lot of disk space especially when building occupancy hypervolumes with \code{method = "box"}. Try with a small number of replications and check the folder Objects for memory usage before to proceed.
 }
 
 \value{
-returns a string containing an absolute path equivalent to ./Objects/<name>
+Returns a string containing an absolute path equivalent to ./Objects/<name>
 }
 \seealso{
 \code{\link{hypervolume_n_occupancy}}

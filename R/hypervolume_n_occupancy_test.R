@@ -13,6 +13,15 @@ hypervolume_n_occupancy_test <- function(observed, path, alternative = "two_side
     exists_cluster = FALSE
   }
   
+  on.exit({
+    # If a cluster was created for this specific function call, close cluster and register sequential backend
+    if(!exists_cluster) {
+      stopCluster(cl)
+      registerDoSEQ()
+    }
+  }, add = TRUE)
+  
+  
   # check if the first element of the first pairwise combination is called permutation1.rds
   # n <- list all the files in the first pa
 
@@ -256,12 +265,7 @@ hypervolume_n_occupancy_test <- function(observed, path, alternative = "two_side
     hv_list_res <- new("HypervolumeList", HVList = hv_list_res)
     result <- hv_list_res
   }
-  
-  if(!exists_cluster) {
-    stopCluster(cl)
-    registerDoSEQ()
-  }
-  
+
   return(result)
 
 }
