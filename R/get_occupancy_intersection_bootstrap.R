@@ -13,11 +13,11 @@ get_occupancy_intersection_bootstrap <- function(path, method = "n_wise", res_ty
   
   if(identical(method, "all")){
     
-    res <- lapply(file_ls, function(z) occupancy_to_intersection(readRDS(file.path(path, z)), method = "all"))
+    res <- lapply(file_ls, function(z) occupancy_to_intersection(readRDS(file.path(path, z)), method = "all", tol = tol))
     
     if(relative){
       res <- lapply(res, get_volume)
-      res_union <- lapply(file_ls, function(x)get_volume(occupancy_to_union(readRDS(file.path(path, x)))))
+      res_union <- lapply(file_ls, function(x)get_volume(occupancy_to_union(readRDS(file.path(path, x)), tol = tol)))
       res <- do.call(rbind, res)
       res_union <- do.call(c, res_union)
       res <- sweep(res, 1, res_union, "/")
@@ -42,18 +42,18 @@ get_occupancy_intersection_bootstrap <- function(path, method = "n_wise", res_ty
                                                                      skewness = skewness(x),
                                                                      kurtosis = kurtosis(x))))
       colnames(final_res) <- c("hypervolume", "mean", "sd", "min", "quantile_2.5", "median", "quantile_97.5", "max",
-                               "skweness", "kurtosis")
+                               "skewness", "kurtosis")
       final_res[, "hypervolume"] <- as.character(final_res[, "hypervolume"])
     }
   }
   
 
   if(identical(method, "n_wise")){
-    res <- lapply(file_ls, function(z) occupancy_to_intersection(readRDS(file.path(path, z)), method = "n_wise", m = m))
+    res <- lapply(file_ls, function(z) occupancy_to_intersection(readRDS(file.path(path, z)), method = "n_wise", m = m, tol = tol))
     
     if(relative){
       res <- lapply(res, get_volume)
-      res_union <- lapply(file_ls, function(x)get_volume(occupancy_to_union(readRDS(file.path(path, x)), method = "n_wise", m = 2)))
+      res_union <- lapply(file_ls, function(x)get_volume(occupancy_to_union(readRDS(file.path(path, x)), method = "n_wise", m = m, tol = tol)))
       res <- do.call(rbind, res)
       res_union <- do.call(rbind, res_union)
       res <- res / res_union
@@ -80,7 +80,7 @@ get_occupancy_intersection_bootstrap <- function(path, method = "n_wise", res_ty
                                                                      skewness = skewness(x),
                                                                      kurtosis = kurtosis(x))))
       colnames(final_res) <- c("comparison", "mean", "sd", "min", "quantile_2.5", "median", "quantile_97.5", "max",
-                               "skweness", "kurtosis")
+                               "skewness", "kurtosis")
       final_res[, "comparison"] <- gsub("_", " - ", final_res[, "comparison"])
     }
   }

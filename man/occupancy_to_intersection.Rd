@@ -6,34 +6,41 @@
  Get the intersection of an occupancy object
 }
 \description{
-The \code{occupancy_to_intersection()} function is used to get the intersection in an object generated with \code{hypervolume_n_occupancy()}.
+The \code{occupancy_to_intersection()} function is used to get the intersection of hypervolumes of an object generated with the occupancy routine.
 }
 \usage{
-  occupancy_to_intersection(hv_list, method = "all", m = 2, tol = 1e-10)
+occupancy_to_intersection(hv_list, method = "all", m = 2, tol = 1e-10)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{hv_list}{
-  A \code{HypervolumeList} object generated with \code{hypervolume_n_occupancy()}.
+A \code{HypervolumeList} generated with \code{hypervolume_n_occupancy()},  \code{hypervolume_n_occupancy_test()}, \code{occupancy_to_union()}, \code{occupancy_to_unshared()} or \code{occupancy_filter()}.
 }
   \item{method}{
-If \code{all} the function compares the target hypervolume with all the hypervolume in \code{hv}. If \code{n_wise} it computes the intersection of each n_wise combination of hypervolumes in \code{hv}.
+If \code{all} compute the intersection among all the hypervolumes in \code{hv_list}. If \code{n_wise} compute the intersection for each n_wise combination of hypervolumes in \code{hv_list}.
  }
   \item{m}{
 Number of elements to choose. Default to 2 (pairwise comparisons). This argument is ignored when \code{method} is set to \code{all}.
  }
   \item{tol}{
-Set the tolerance for reconstructing whole volume.
+Set the tolerance for reconstructing whole volume. See details.
  }
 }
+
+\details{
+The \code{occupancy_to_intersection()} function takes as input a \code{HypervolumeList} generated with an occupancy function (check \code{See Also}) and returns a \code{Hypervolume} or \code{HypervolumeList} depending on \code{method}. When \code{method = "all"} the \code{occupancy_to_intersection()} function returns a \code{Hypervolume} representing the intersection of all the hypervolumes in \code{hv_list}. When \code{method = "n_wise"} a \code{HypervolumeList} in which each hypervolume represent the intersection of a combination of the hypervolumes in \code{hv_list} is returned. The number of hypervolumes for each combination is set with the argument \code{m}. Argument \code{m} can not be higher than the number of hypervolumes in \code{hv_list} and lower than 2. \cr
+The \code{occupancy_to_intersection()} function attempts to reconstruct the volume of the intersection from the \code{hv_list} provided by the user. At first, the volume of the union of hypervolumes is calculated for each hypervolume in \code{hv_list} as the the ratio between the total number of random points and the number of random points of the ith hypervolume of \code{hv_list}, multiplied by the volume of the ith hypervolume of \code{hv_list}. This step results in a number of reconstructed volumes equal to the number of hypervolumes in the jth bootstrapped occupancy_object. Reconstructed volumes are then compared among each other to ensure the consistency of the reconstruction. To do this, the distance among reconstructed volumes is calculated with the \code{dist()} function of the \code{stats} package. If at least one of the distances is greater than \code{tol} the computation is stopped and some suggestions are returned. The volume of the intersection is then calculated as the ratio between the number of random points of the intersection and the total number of random points, multiplied by the volume of the union of hypervolumes.
+}
+
+
 
 \value{
 A \code{\link{Hypervolume-class}} or \code{\link{HypervolumeList-class}} object.
 }
 
 \seealso{
-\code{\link{hypervolume_n_occupancy}}, \code{\link{hypervolume_n_occupancy_bootstrap}}, \cr \code{\link{hypervolume_n_occupancy_test}}, \code{\link{occupancy_to_union}}, \cr
-\code{\link{occupancy_to_unshared}} \code{\link{occupancy_filter}}
+\code{\link{hypervolume_n_occupancy}}, \code{\link{hypervolume_n_occupancy_test}}, \code{\link{occupancy_to_union}},
+\code{\link{occupancy_to_unshared}}, \code{\link{occupancy_filter}}
 }
 
 \examples{

@@ -6,27 +6,26 @@
  Goodness of fit metrics for bootstrapped occupancy objects
 }
 \description{
-The \code{occupancy_bootstrap_gof()} function calculates goodness of fit metrics for objects generated with  \code{hypervolume_n_occupancy_bootstrap()}.
+The \code{occupancy_bootstrap_gof()} function calculates goodness of fit metrics for objects generated with \code{hypervolume_n_occupancy_bootstrap()}.
 }
 \usage{
-  occupancy_bootstrap_gof(path, FUN)
+occupancy_bootstrap_gof(path, FUN)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{path}{
-  A path to a directory of bootstrapped hypervolumes generated with \cr
-  \code{hypervolume_n_occupancy_bootstrap()}.
+  A path to a directory of bootstrapped hypervolumes generated with \code{hypervolume_n_occupancy_bootstrap()}.
 }
   \item{FUN}{
-Function to calculate the goodness of fit. It can be \code{mae} for mean absolute error, \code{rmse} for root mean square error or a function provided by the user.  
+Function to calculate the goodness of fit. It can be \code{mae} for the mean absolute error, \code{rmse} for the root mean square error or a function provided by the user.  
  }
 }
 \details{
-Goodness of fit metrics are calculated on the difference between input and recomputed volumes for each bootstrapped element (set with n in \code{hypervolume_n_resample()}). \cr 
-See \code{hypervolume_n_occupancy()} for details on the meaning of input and recomputed hypervolumes. 
+Goodness of fit metrics are calculated on the difference between input and recomputed volumes for each bootstrapped element (set with \code{n} in \code{hypervolume_n_resample()}). See \code{\link[=hypervolume_n_occupancy]{hypervolume_n_occupancy()}} for details on the meaning of input and recomputed hypervolumes. 
 }
+
 \value{
-A one row \code{data.frame} reporting mean, standard deviation, minimum, maximum, median and 4 quantile values. 
+A one row \code{data.frame} reporting mean, standard deviation, minimum, maximum, median, 2.5\%, 25\%, 75\% ans 97.5\% quantiles. 
 }
 
 \examples{

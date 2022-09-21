@@ -10,7 +10,7 @@ get_relative_volume <- function(hv_list, tol = 1e-10){
   if(length(hv_list@HVList) < 2){
     stop("At least two hypervolumes are needed for a relative volume")
   }
-
+  
   # check if hypervolumes method were built within the occupancy routine
   hyper_methods <- sapply(hv_list@HVList, function(x) x@Method)
 
@@ -24,7 +24,11 @@ get_relative_volume <- function(hv_list, tol = 1e-10){
   # get volume of the hyper list and try to reconstruct the volume of the union
   # the reconstruction is made for each hypervolume in the hypervolume list
   vols <- get_volume(hv_list)
-  all_length <- length(hv_list@HVList[[1]]@ValueAtRandomPoints)
+  #all_length <- length(hv_list@HVList[[1]]@ValueAtRandomPoints)
+  combine_vrp <- lapply(hv_list@HVList, function(x) x@ValueAtRandomPoints)
+  combine_vrp <- do.call(cbind, combine_vrp)
+  zeroes_check <- apply(combine_vrp, 1, function(x) sum(abs(x)))
+  all_length <- sum(zeroes_check != 0)
   i_length <- unlist(lapply(hv_list@HVList, function(z) sum(z@ValueAtRandomPoints != 0)))
   all_vol <- vols*all_length/i_length
 

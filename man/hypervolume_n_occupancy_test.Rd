@@ -5,47 +5,46 @@
 Significance of random points occupancy
 }
 \description{
-Calculates overlap for two hypervolumes.
+The function \code{hypervolume_n_occupancy_test()} calculates the significance of the difference between occupancy values for each random point and for all the pairwise combinations of groups in objects generated with \code{hypervolume_n_occupancy()} and \code{hypervolume_n_occupancy_permute()}.
 }
 \usage{
 hypervolume_n_occupancy_test(observed,
-  path,
-  alternative = "two_sided",
-  significance = 0.05,
-  cores = 1, 
-  p_adjust = "none",
-  multi_comp_type = "pairwise")
+                             path,
+                             alternative = "two_sided",
+                             significance = 0.05,
+                             cores = 1, 
+                             p_adjust = "none",
+                             multi_comp_type = "pairwise")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{observed}{
-An HypervolumeList generated from \code{\link{hypervolume_n_occupancy}}.
+An \code{HypervolumeList} generated from \code{\link[=hypervolume_n_occupancy]{hypervolume_n_occupancy()}}.
 }
   \item{path}{
-A path to a directory of permuted hypervolumes generated with \cr
-\code{\link{hypervolume_n_occupancy_permute}}.
+A path to a directory of permuted hypervolumes generated with \code{\link[=hypervolume_n_occupancy_permute]{hypervolume_n_occupancy_permute()}}.
 }
   \item{alternative}{
-Alternative hypothesis, can be one of \code{two_sided}, \code{more}, \code{less} or \code{more_less}.
+Alternative hypothesis, can be one of \code{two_sided}, \code{more} or \code{less}.
 }
   \item{significance}{
-Occupancy values lower than the this threshold will be retained.
+Significance values lower than this threshold will be retained.
 }
   \item{cores}{
-Number of logical cores to use while generating permuted hypervolumes. If parallel backend already registered to \code{doParallel}, function will use that backend and ignore the argument in cores.
+Number of logical cores to use while generating permuted hypervolumes. If parallel backend already registered to \code{doParallel}, function will use that backend and ignore the argument in \code{cores}.
 }
   \item{p_adjust}{
-Method of correction for multiple comparisons, set to \code{none} by default. Otherwise look at \code{\link{p.adjust}} for alternative
+Method of correction for multiple comparisons, set to \code{none} by default. Otherwise look at \code{p.adjust} of the \code{stats} package for alternatives.
 }
   \item{multi_comp_type}{
-Type of multiple comparison. Can be \code{pairwise}, for which the number of comparison is set to the length of ValueAtRandomPoint, or \code{all},  for which the number of comparison is set to the length of ValueAtRandomPoint times the number of comparisons.
+Type of multiple comparison. Can be \code{pairwise}, for which the number of comparisons is set to the length of \code{ValueAtRandomPoints}, \code{all},  for which the number of comparisons is set to the length of \code{ValueAtRandomPoints} times the number of groups, or \code{none}.
 }
 }
 \details{
-The observed difference between ValueAtRandomPoints of two groups is compared against null expectations generated with \code{hypervolume_n_occupancy_permute}. 
+The observed difference between \code{ValueAtRandomPoints} of two groups is compared against null expectations generated with \code{hypervolume_n_occupancy_permute()}. 
 }
 \value{
-An HypervolumeList with length equal to the number of pairwise combination of the observed HypervolumeList elements. ValueAtRandomPoints are calculated as the difference between the ValueAtRandomPoints of the first and the second group for each pairwise combinations. Only significant values are retained according to CI.
+An \code{HypervolumeList} of length equal to the number of pairwise combinations of the observed \code{HypervolumeList} elements. \code{ValueAtRandomPoints} are calculated as the difference between the \code{ValueAtRandomPoints} of the first and the second group for each pairwise combination. Only significant values are retained according to \code{significance}.
 }
 
 \examples{

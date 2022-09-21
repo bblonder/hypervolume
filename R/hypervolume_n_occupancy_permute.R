@@ -4,7 +4,7 @@ hypervolume_n_occupancy_permute <- function(name, hv_list1, hv_list2, verbose = 
   ########## SOME CHECKS ##########
   
   # check if hv_list2 is of class HypervolumeList
-  if(! class(hv_list2) %in% "HypervolumeList"){
+  if(! inherits(hv_list2, "HypervolumeList")){
     stop("An object of class HypervolumeList is needed.")
   }
   
@@ -43,6 +43,31 @@ hypervolume_n_occupancy_permute <- function(name, hv_list1, hv_list2, verbose = 
   if(!is.null(seed)){
     set.seed(seed)
   }
+  
+  on.exit({
+    # restore random state
+    if (!is.null(old_state)) {
+      assign(".Random.seed", old_state, envir = .GlobalEnv, inherits = FALSE)
+    }
+  }, add = TRUE)
+  
+  
+  ### unique groups
+  unique_groups <- unique(classification)
+  
+  ### check if user provided a subset of hv_list used in hypervolume_n_occupancy
+  ### this could cause a problem because classification is extracted from the occupancy object
+  hv_name_list1 <- sapply(hv_list1@HVList, function(x) x@Name)
+  if(! setequal(hv_name_list1, classification)){
+    stop("Classification in hv_list1 differs from groups classification.")
+  }
+  
+  if(n < 2){
+    stop("n must be greater than 1.")
+  }
+  
+
+  
 
   ##################################################################################################
   # This is the same code of hypervolume_n_occupancy
@@ -235,17 +260,6 @@ hypervolume_n_occupancy_permute <- function(name, hv_list1, hv_list2, verbose = 
   dn <- list(NULL, cn)
   
 
-  
-  ### unique groups
-  unique_groups <- unique(classification)
-  
-  
-  if(n < 2){
-    stop("n must be greater than 1.")
-  }
-  
-  
-  
   # Check if cluster registered to doparallel backend exists
   exists_cluster = TRUE
   if(cores > 1 & getDoParWorkers() == 1) {
@@ -257,6 +271,15 @@ hypervolume_n_occupancy_permute <- function(name, hv_list1, hv_list2, verbose = 
     registerDoParallel(cl)
     exists_cluster = FALSE
   }
+  
+  on.exit({
+    # If a cluster was created for this specific function call, close cluster and register sequential backend
+    if(!exists_cluster) {
+      stopCluster(cl)
+      registerDoSEQ()
+    }
+  }, add = TRUE)
+  
   
   # Create folder to store permuted hypervolumes
   dir.create(file.path('./Objects', name), recursive = TRUE, showWarnings = FALSE)
@@ -399,19 +422,6 @@ hypervolume_n_occupancy_permute <- function(name, hv_list1, hv_list2, verbose = 
         
       }
     }
-
-
- # If a cluster was created for this specific function call, close cluster and register sequential backend
-  if(!exists_cluster) {
-    stopCluster(cl)
-    registerDoSEQ()
-  }
-  
-  # restore random state
-  if (!is.null(old_state)) {
-    assign(".Random.seed", old_state, envir = .GlobalEnv, inherits = FALSE)
-  }
-  
 
   return(file.path(getwd(), 'Objects', name))
 }

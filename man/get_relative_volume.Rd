@@ -5,30 +5,40 @@
 \title{
 Extract the relative volume
 }
+
 \description{
-Extract the relative volume from \code{hypervolume_n_occupancy()} \cr 
-or \code{hypervolume_n_occupancy_test()}.
+The function \code{get_relative_volume()} computes the relative volume from objects generated with the occupancy routine.
 }
+
 \usage{
 get_relative_volume(hv_list, tol = 1e-10)
 }
+
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{hv_list}{
-  A \code{Hypervolume} or \code{HypervolumeList} object generated with \cr
-  \code{hypervolume_n_occupancy()} or \code{hypervolume_n_occupancy_test()}.
+  A \code{Hypervolume} or \code{HypervolumeList} object generated with \code{hypervolume_n_occupancy()}, \code{hypervolume_n_occupancy_permute()}, \code{hypervolume_n_occupancy_test()}, \code{occupancy_to_union()}, \code{occupancy_to_intersection()}, \code{occupancy_to_unshared()}, or \code{occupancy_filter()}.
 }
   \item{tol}{
-Set the tolerance for reconstructing whole volume.
+Set the tolerance for reconstructing whole volume. See details.
  }
 }
+
 \details{
-This function tries to reconstruct the volume of the union of hypervolumes from the object. For some reasons,
-the reconstruction can fail. If the reconstruction fails, try to increase the tolerance or to check the accuracy of the \code{hypervolume_n_occupancy()} results.   
+The relative volume is calculated as the ratio between hypervolumes of an \code{HypervolumeList} and the volume resulting from the union of hypervolumes in the same \code{HypervolumeList}. Relative volumes can be calculated only for \code{HypervolumeList} generated with functions \code{hypervolume_n_occupancy()}, \code{hypervolume_n_occupancy_test()}, \code{hypervolume_n_occupancy_permute()}, \code{occupancy_to_union()}, \code{occupancy_to_ushared()}, \code{occupancy_to_intersection()} or \code{occupancy_filter()}. \cr
+The \code{get_relative_volume()} function attempts to reconstruct the volume of the union of hypervolumes from \code{hv_list}. At first, the volume of the union of hypervolumes is calculated for each hypervolume of \code{hv_list} as the the ratio between the total number of random points and the number of random points of the ith hypervolume of \code{hv_list}, multiplied by the volume of the ith hypervolume \code{hv_list}. This step results in a number of reconstructed volumes equal to the number of hypervolumes in \code{hv_list}. Reconstructed volumes are then compared to ensure the consistency of the reconstruction. To do this, the distance among reconstructed volumes is calculated with the \code{dist()} function of the \code{stats} package. If at least one of the distances is greater than \code{tol} the computation is stopped and some suggestions are returned.
 }
+
 \value{
 A named numeric vector with the relative volume of each input hypervolume
 }
+
+\seealso{
+\code{\link{hypervolume_n_occupancy}}, \code{\link{hypervolume_n_occupancy_permute}}, \code{\link{hypervolume_n_occupancy_test}}, \code{\link{occupancy_to_union}},
+\code{\link{occupancy_to_unshared}}, \code{\link{occupancy_to_intersection}},
+\code{\link{occupancy_filter}}
+}
+
 
 \examples{
 \dontrun{

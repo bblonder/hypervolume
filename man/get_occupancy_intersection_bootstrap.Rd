@@ -6,51 +6,52 @@
  Volume of the intersection of a bootstrapped occupancy object
 }
 \description{
-The \code{get_occupancy_intersection_bootstrap()} function is used to get the volume of the intersection of an object generated with \code{hypervolume_n_occupancy_bootstrap()}. It can provide raw values or summary statistics for both single groups or n_wise comparisons.
+The \code{get_occupancy_intersection_bootstrap()} function is used to get the volume of the intersection of objects generated with \code{hypervolume_n_occupancy_bootstrap()}. It provides raw values or summary statistics for all the hypervolumes or their n_wise combinations.
 }
 \usage{
-  get_occupancy_intersection_bootstrap(path,
-                                       method = "n_wise",
-                                       res_type = "summary",
-                                       m = 2, 
-                                       relative = FALSE,
-                                       tol = 1e-10)
+get_occupancy_intersection_bootstrap(path,
+                                     method = "n_wise",
+                                     res_type = "summary",
+                                     m = 2, 
+                                     relative = FALSE,
+                                     tol = 1e-10)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{path}{
-  A path to a directory of bootstrapped hypervolumes obtained with \cr
+  A path to a directory of bootstrapped occupancy objects obtained with \cr
   \code{hypervolume_n_occupancy_bootstrap()}.
 }
   \item{method}{
-If \code{all} the function compares the target hypervolume with all the hypervolumes in \code{path}. If \code{n_wise} it computes the intersection of each n_wise combination of hypervolumes in \code{path}.
+  If \code{all} compute the volume of the intersection among all the hypervolumes for each bootstrapped occupancy object found in \code{path}. If \code{n_wise} compute the volume of the intersection for each n_wise combination of hypervolumes within the bootstrapped occupancy objects found in \code{path}.
  }
   \item{res_type}{
   It can be \code{raw} or \code{pairwise}. See details.
 }
   \item{m}{
-Number of elements to choose. Default to 2 (pairwise comparisons). This argument is ignored when \code{method} is set to \code{all}.
+  Number of elements to choose. Default to 2 (pairwise comparisons). This argument is ignored when \code{method} is set to \code{all}.
  }
    \item{relative}{
   If \code{TRUE} it computes relative instead of absolute volumes.
 }
   \item{tol}{
-Set the tolerance for reconstructing whole volume.
+Set the tolerance for reconstructing whole volume. See details.
  }
 }
 
 \details{
-  The function \code{get_occupancy_intersection_bootstrap()} returns the volume of the intersection of bootstrapped hypervolumes if \code{res_type} is equal to \code{raw} and \code{method} to \code{all}. When \code{res_type} is equal to \code{summary} and method to \code{all} this function returns the mean volume as well as standard deviation, median, minimum, maximum and two quantiles of each group of the intersection. These summary statistics are calculated for among groups n_wise comparisons when \code{res_type} is equal to \code{summary} and \code{method} to \code{n_wise}.
+The function \code{get_occupancy_intersection_bootstrap()} returns the volume of the intersection for each bootstrapped occupancy object if \code{res_type = "raw"} and \code{method = "all"}. When \code{res_type = "summary"} and \code{method = "all"} this function returns the mean volume as well as the standard deviation, median, minimum, maximum, 2.5\% and 97.5\% quantiles, skewness and kurtosis of the intersection. The same summary statistics are calculated for each n_wise combination of hypervolumes when \code{res_type = "summary"} and \code{method = "n_wise"}. The number of elements of n_wise combinations is set with the argument \code{m}. The intersection is calculated by finding the set of random points shared by all or n_wise combinations of hypervolumes in each of the bootstrapped occupancy objects. More details on how the intersection is computed in \code{\link[=occupancy_to_intersection]{occupancy_to_intersection()}}. \cr
+The \code{get_occupancy_intersection_bootstrap()} function attempts to reconstruct the volume of the intersection from each bootstrapped occupancy object. At first, the volume of the union of hypervolumes is calculated for each hypervolume of the jth bootstrapped occupancy object as the ratio between the total number of random points and the number of random points of the ith hypervolume of the jth bootstrapped occupancy object, multiplied by the volume of the ith hypervolume of the jth bootstrapped occupancy object. This step results in a number of reconstructed volumes equal to the number of hypervolumes in the jth bootstrapped occupancy object. Reconstructed volumes are then compared among each other to ensure the consistency of the reconstruction. To do this, the distance among reconstructed volumes is calculated using the \code{dist()} function of the \code{stats} package. If at least one of the distances is greater than \code{tol} the computation is stopped and some suggestions are returned. The volume of the intersection is then calculated as the ratio between the number of random points of the intersection and the total number of random points, multiplied by the volume of the union of hypervolumes. \cr
+When \code{relative = TRUE} relative instead of absolute volumes are returned. The relative volume is calculated as the ratio between the volume of the intersection and the volume of the union of all the hypervolumes (or combination of hypervolumes when \code{method = "n_wise"}). The same approach described above is used to reconstruct the volume of the union of hypervolumes.
 }
 
 \value{
-A \code{data.frame} with bootrapped volumes or summary statistics of intersection for single groups or pairwise comparisons.
+A \code{data.frame} with bootstrapped volumes or summary statistics of the intersection.
 }
 
 
 \seealso{
-\code{\link{hypervolume_n_occupancy}}, \code{\link{hypervolume_n_occupancy_bootstrap}}, \cr \code{\link{hypervolume_n_occupancy_test}}, \code{\link{occupancy_to_union}}, \cr
-\code{\link{occupancy_to_unshared}} \code{\link{occupancy_filter}}
+\code{\link{hypervolume_n_occupancy}}, \code{\link{hypervolume_n_occupancy_bootstrap}}, \code{\link{occupancy_to_intersection}}
 }
 
 \examples{
