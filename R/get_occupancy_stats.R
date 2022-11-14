@@ -8,19 +8,19 @@ get_occupancy_stats <- function(hv, FUN, remove_zeroes = TRUE){
   
   # check the method, this function is intended to work
   # with the occupancy routine only
-  check_method <- unlist(lapply(hv@HVList, function(hv) hv@Method))
+  check_method <- sapply(hv@HVList, function(hv) hv@Method)
   
   if(any(! check_method %in% c("n_occupancy", "n_occupancy_permute", "n_occupancy_test"))){
     stop("get_occupancy_stats works for methods n_occupancy, n_occupancy_permute, n_occupany_test")
   }
   
-  # ehvtract the names of hypervolumes
-  h_names <- unlist(lapply(hv@HVList, function(hv) hv@Name))
+  # extract the names of hypervolumes
+  h_names <- sapply(hv@HVList, function(hv) hv@Name)
 
   # apply the function over the hypervolumes' ValueAtRandomPoints
   # remove zeroes will remove points not included in the hypervolume under evaluation
   if(remove_zeroes){
-    res <- lapply(hv@HVList, function(hv) FUN(hv@ValueAtRandomPoints[hv@ValueAtRandomPoints > 0]))
+    res <- lapply(hv@HVList, function(hv) FUN(hv@ValueAtRandomPoints[hv@ValueAtRandomPoints != 0]))
   } else {
     res <- lapply(hv@HVList, function(hv) FUN(hv@ValueAtRandomPoints))
   }
