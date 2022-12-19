@@ -1,6 +1,6 @@
 hypervolume_project <- function(hv, rasters, type = "probability", 
                                 verbose = TRUE, ...) {
-  raster.values = data.frame(raster::getValues(rasters))
+  raster.values = data.frame(terra::values(rasters))
   if (type == "probability") {
     projected.values <- hypervolume_estimate_probability(hv = hv,
                                                          points = raster.values, 

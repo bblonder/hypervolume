@@ -19,7 +19,7 @@ Plots a single hypervolume or multiple hypervolumes as either a pairs plot (all 
     contour.alphahull.alpha=0.25,
     contour.ball.radius.factor=1, 
     contour.kde.level=1e-04,
-    contour.raster.resolution=100,
+    contour.raster.resolution=20,
    show.centroid=TRUE, cex.centroid=2,
    colors=rainbow(floor(length(x@HVList)*1.5),alpha=0.8), 
    point.alpha.min=0.2, point.dark.factor=0.5,

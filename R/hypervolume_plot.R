@@ -13,7 +13,7 @@ do_outline_alpha <- function(rp, alpha)
 
 do_outline_ball <- function(rp, radius)
 {
-  gb = rgeos::gBuffer(sp::SpatialPoints(rp), quadsegs=2, width=radius)
+  gb = terra::buffer(sp::SpatialPoints(rp), quadsegs=2, width=radius)
   return(gb)
 }
 
@@ -23,13 +23,13 @@ do_outline_raster <- function(pts,res)
   
   pr <- padded_range(pts,multiply.interval.amount=0.25)
   
-  e <- extent(t(pr))
+  e <- terra::ext(pr[1,1], pr[2,1], pr[1,2], pr[2,2])
   
-  r <- raster::raster(e, ncol=res, nrow=res)
+  r <- terra::rast(e, ncols=res, nrows=res)
   
-  x <- raster::rasterize(pts, r, rep(1, nrow(pts)), fun=mean,background=NA)
+  x <- terra::rasterize(pts, r, rep(1, nrow(pts)), fun=mean,background=NA)
   
-  w <- raster::rasterToPolygons(x,dissolve=TRUE)
+  w <- terra::as.polygons(x,dissolve=TRUE)
   
   return(w)	
 }
@@ -64,7 +64,7 @@ plot.HypervolumeList <- function(x,
                                    contour.alphahull.alpha=0.25,
                                    contour.ball.radius.factor=1, 
                                    contour.kde.level=1e-4,
-                                   contour.raster.resolution=100,
+                                   contour.raster.resolution=20,
                                  show.centroid=TRUE, cex.centroid=2,
                                  colors=rainbow(floor(length(x@HVList)*1.5),alpha=0.8), 
                                  point.alpha.min=0.2, point.dark.factor=0.5,
