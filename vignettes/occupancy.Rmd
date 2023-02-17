@@ -1,8 +1,8 @@
 ---
-title: "occupancy"
+title: "Introduction to occupancy"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{occupancy}
+  %\VignetteIndexEntry{Introduction to occupancy}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -11,7 +11,6 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Introduction to occupancy
 The occupancy routine provides a framework to join and to calculate summary statistics for multiple hypervolumes simultaneously by leveraging on the concept of occupancy, a function of the number of hypervolumes including a point in the trait space. At first, a set of random points covering all the hypervolumes is selected through one of the two methods available. The `subsampling` method joins the random points of the input hypervolumes and then selects a uniformly distributed subset of them. The method `box` creates a bounding box around the union of the q hypervolumes that is then filled with random points drawn from a uniform distribution at a specified density. Secondly, a function (e.g. mean, sum) is applied to each random point. Occupancy can be calculated for groups of observations such that emerging from repeated measures over space, time or treatments and is intended to reflect the heterogeneity of trait space utilization by multiple hypervolumes, that could be in turn associated with relevant ecological processes.  
 The occupancy routine comes with a permutation test to detect between-group differences in occupancy values. For each pairwise group comparison, the original hypervolumes are randomly assigned to one of the two groups under comparison. The test itself is performed by counting the number of times the observed differences are smaller or greater than those expected by chance, or by combining them for obtaining a two-tailed test. 
 
@@ -121,7 +120,7 @@ knitr::include_graphics(url)
 # number of iterations
 N <- 19
 
-### 9 permutations ###
+### 9 permutations
 # initialize an empty vector to store the volume of the significant
 # fraction evaluated with the permutation test
 res_9 <- c()
@@ -149,7 +148,7 @@ for(i in 1:N){
 }
 
 
-### 19 permutations ###
+### 19 permutations
 res_19 <- c()
 
 for(i in 1:N){
@@ -166,7 +165,7 @@ for(i in 1:N){
 
 
 
-### 99 permutations ###
+### 99 permutations
 res_99 <- c()
 
 for(i in 1:N){
@@ -182,7 +181,7 @@ for(i in 1:N){
 }
 
 
-### 199 permutations ###
+### 199 permutations
 res_199 <- c()
 
 for(i in 1:N){
@@ -205,7 +204,7 @@ median(res_199)
 quantile(res_199, c(0.025, 0.975))
 
 
-### 999 permutations ###
+### 999 permutations
 res_999 <- c()
 
 for(i in 1:N){
