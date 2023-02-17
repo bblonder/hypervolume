@@ -1,7 +1,7 @@
 hypervolume_overlap_confidence <- function(path1, path2, CI = .95, cores = 1) {
   exists_cluster = TRUE
   if(cores > 1 & getDoParWorkers() == 1) {
-    # If no cluster is registered, create a new one based on use input
+    # If no cluster is registered, create a new one based on user input
     cl = makeCluster(cores)
     clusterEvalQ(cl, {
       library(hypervolume)

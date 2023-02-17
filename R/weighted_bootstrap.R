@@ -1,4 +1,4 @@
-sampling_bias_bootstrap <- function(name, hv, n = 10, points_per_resample = 'sample_size', cores = 1, verbose = TRUE, mu = NULL, sigma = NULL, cols_to_bias = 1:ncol(hv@Data), weight_func = NULL) {
+weighted_bootstrap <- function(name, hv, n = 10, points_per_resample = 'sample_size', cores = 1, verbose = TRUE, mu = NULL, sigma = NULL, cols_to_weigh = 1:ncol(hv@Data), weight_func = NULL) {
   # Check if cluster registered to doparallel backend exists
   exists_cluster = TRUE
   if(cores > 1 & getDoParWorkers() == 1) {
@@ -22,12 +22,12 @@ sampling_bias_bootstrap <- function(name, hv, n = 10, points_per_resample = 'sam
   foreach(i = 1:n, .combine = c) %dopar% {
     if(is.null(weight_func)) {
       if(length(mu) == 1) {
-        weights = dnorm(hv@Data[,cols_to_bias], mean = mu, sd = sqrt(sigma))
+        weights = dnorm(hv@Data[,cols_to_weigh], mean = mu, sd = sqrt(sigma))
       } else {
-        weights = dmvnorm(hv@Data[,cols_to_bias], mean = mu, sigma = diag(sigma))
+        weights = dmvnorm(hv@Data[,cols_to_weigh], mean = mu, sigma = diag(sigma))
       }
     } else {
-      weights = weight_func(hv@Data[,cols_to_bias])
+      weights = weight_func(hv@Data[,cols_to_weigh])
     }
     if(points_per_resample == 'sample_size') {
       points = apply(rmultinom(nrow(hv@Data), 1, weights) == 1, 2, which)
