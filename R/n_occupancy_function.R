@@ -13,20 +13,22 @@ n_occupancy_function <- function(hv_list, classification = NULL, method = "subsa
     }
   }
   
-  # get random state from global environment
-  old_state <- get0(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
-  
-  
+
   if(!is.null(seed)){
+    # get random state from global environment
+    old_state <- get0(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
+    
     set.seed(seed)
+    
+    on.exit({
+      # restore random state
+      if (!is.null(old_state)) {
+        assign(".Random.seed", old_state, envir = .GlobalEnv, inherits = FALSE)
+      }
+    })
+    
   }
   
-  on.exit({
-    # restore random state
-    if (!is.null(old_state)) {
-      assign(".Random.seed", old_state, envir = .GlobalEnv, inherits = FALSE)
-    }
-  })
 
   
   # store some properties of the hypervolumes stored in hv_list:
