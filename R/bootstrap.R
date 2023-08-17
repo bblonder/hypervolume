@@ -2,7 +2,7 @@ bootstrap <- function(name, hv, n = 10, points_per_resample = 'sample_size', cor
   # Check if cluster registered to doparallel backend exists
   exists_cluster = TRUE
   if(cores > 1 & getDoParWorkers() == 1) {
-    # If no cluster is registered, create a new one based on use input
+    # If no cluster is registered, create a new one based on user input
     cl = makeCluster(cores)
     clusterEvalQ(cl, {
       library(hypervolume)
@@ -10,6 +10,14 @@ bootstrap <- function(name, hv, n = 10, points_per_resample = 'sample_size', cor
     registerDoParallel(cl)
     exists_cluster = FALSE
   }
+  
+  on.exit({
+    # If a cluster was created for this specific function call, close cluster and register sequential backend
+    if(!exists_cluster) {
+      stopCluster(cl)
+      registerDoSEQ()
+    }
+  })
   
   if(to_file) {
     # Create folder to store bootstrapped hypervolumes
@@ -40,14 +48,6 @@ bootstrap <- function(name, hv, n = 10, points_per_resample = 'sample_size', cor
       h
     }
   }
-  
-  # If a cluster was created for this specific function call, close cluster and register sequential backend
-  on.exit({
-    if(!exists_cluster) {
-      stopCluster(cl)
-      registerDoSEQ()
-    }
-  })
   
   # Absolute path to hypervolume objects
   if(to_file) { 

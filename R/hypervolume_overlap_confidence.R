@@ -10,6 +10,14 @@ hypervolume_overlap_confidence <- function(path1, path2, CI = .95, cores = 1) {
     exists_cluster = FALSE
   }
   
+  on.exit({
+    # If a cluster was created for this specific function call, close cluster and register sequential backend
+    if(!exists_cluster) {
+      stopCluster(cl)
+      registerDoSEQ()
+    }
+  })
+  
   if(list.files(path1)[1] != "resample 1.rds" | list.files(path2)[1] != "resample 1.rds") {
     if(!exists_cluster) {
       stopCluster(cl)
@@ -31,12 +39,6 @@ hypervolume_overlap_confidence <- function(path1, path2, CI = .95, cores = 1) {
     "distribution" = distribution
   )
   
-  on.exit({
-    if(!exists_cluster) {
-      stopCluster(cl)
-      registerDoSEQ()
-    }
-  })
   
   return(results)
 }
