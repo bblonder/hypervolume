@@ -104,10 +104,12 @@ hypervolume_overlap_test <- function(hv1, hv2, path, alternative = "one-sided", 
   )
   result = list(p_values = p_values, plots = plots, distribution = distribution)
   
-  if(!exists_cluster) {
-    stopCluster(cl)
-    registerDoSEQ()
-  }
+  on.exit({
+    if(!exists_cluster) {
+      stopCluster(cl)
+      registerDoSEQ()
+    }
+  })
   
   return(result)
 }

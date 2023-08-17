@@ -31,10 +31,12 @@ hypervolume_overlap_confidence <- function(path1, path2, CI = .95, cores = 1) {
     "distribution" = distribution
   )
   
-  if(!exists_cluster) {
-    stopCluster(cl)
-    registerDoSEQ()
-  }
+  on.exit({
+    if(!exists_cluster) {
+      stopCluster(cl)
+      registerDoSEQ()
+    }
+  })
   
   return(results)
 }

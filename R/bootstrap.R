@@ -42,10 +42,12 @@ bootstrap <- function(name, hv, n = 10, points_per_resample = 'sample_size', cor
   }
   
   # If a cluster was created for this specific function call, close cluster and register sequential backend
-  if(!exists_cluster) {
-    stopCluster(cl)
-    registerDoSEQ()
-  }
+  on.exit({
+    if(!exists_cluster) {
+      stopCluster(cl)
+      registerDoSEQ()
+    }
+  })
   
   # Absolute path to hypervolume objects
   if(to_file) { 

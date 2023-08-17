@@ -53,10 +53,12 @@ weighted_bootstrap <- function(name, hv, n = 10, points_per_resample = 'sample_s
   }
   
   # If a cluster was created for this specific function call, close cluster and register sequential backend
-  if(!exists_cluster) {
-    stopCluster(cl)
-    registerDoSEQ()
-  }
+  on.exit({
+    if(!exists_cluster) {
+      stopCluster(cl)
+      registerDoSEQ()
+    }
+  })
   if(to_file) {
     return(file.path(getwd(), 'Objects', name))
   } else {

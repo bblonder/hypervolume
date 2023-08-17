@@ -23,9 +23,11 @@ bootstrap_seq <- function(name, hv, n = 10, seq = 3:nrow(hv@Data), cores = 1, ve
   }
   
   # If a cluster was created for this specific function call, close cluster and register sequential backend
-  if(!exists_cluster) {
-    stopCluster(cl)
-    registerDoSEQ()
-  }
+  on.exit({
+    if(!exists_cluster) {
+      stopCluster(cl)
+      registerDoSEQ()
+    }
+  })
   return(file.path(getwd(), 'Objects', name))
 }
