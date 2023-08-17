@@ -1,4 +1,4 @@
-weighted_bootstrap <- function(name, hv, n = 10, points_per_resample = 'sample_size', cores = 1, verbose = TRUE, mu = NULL, sigma = NULL, cols_to_weigh = 1:ncol(hv@Data), weight_func = NULL) {
+weighted_bootstrap <- function(name, hv, n = 10, points_per_resample = 'sample_size', cores = 1, verbose = TRUE, to_file = TRUE, mu = NULL, sigma = NULL, cols_to_weigh = 1:ncol(hv@Data), weight_func = NULL) {
   # Check if cluster registered to doparallel backend exists
   exists_cluster = TRUE
   if(cores > 1 & getDoParWorkers() == 1) {
@@ -12,14 +12,18 @@ weighted_bootstrap <- function(name, hv, n = 10, points_per_resample = 'sample_s
     exists_cluster = FALSE
   }
   
-  # Create folder to store bootstrapped hypervolumes
-  dir.create(file.path('./Objects', name))
+  if(to_file){
+    # Create folder to store bootstrapped hypervolumes
+    dir.create(file.path('./Objects', name))
+  } else {
+    hv_list = new("HypervolumeList")
+  }
   if(verbose) {
     pb = progress_bar$new(total = n)
   }
   
-  # Apply weights to data before bootstrapping
-  foreach(i = 1:n, .combine = c) %dopar% {
+  # Calculate weights from data before bootstrapping
+  list = foreach(i = 1:n, .combine = c) %dopar% {
     if(is.null(weight_func)) {
       if(length(mu) == 1) {
         weights = dnorm(hv@Data[,cols_to_weigh], mean = mu, sd = sqrt(sigma))
@@ -30,17 +34,22 @@ weighted_bootstrap <- function(name, hv, n = 10, points_per_resample = 'sample_s
       weights = weight_func(hv@Data[,cols_to_weigh])
     }
     if(points_per_resample == 'sample_size') {
-      points = apply(rmultinom(nrow(hv@Data), 1, weights) == 1, 2, which)
+      points = sample(1:nrow(hv@Data), size = nrow(hv@Data), replace = TRUE, prob = weights)
     } else {
-      points = apply(rmultinom(points_per_resample, 1, weights) == 1, 2, which)
+      points = sample(1:nrow(hv@Data), size = points_per_resample, replace = TRUE, prob = weights)
     }
     sample_dat = hv@Data[points,]
     h = copy_param_hypervolume(hv, sample_dat, name = paste("resample", as.character(i)))
-    path = paste0(h@Name, '.rds')
-    saveRDS(h, file.path('./Objects', name, path))
+    if(to_file) {
+      path = paste0(h@Name, '.rds')
+      saveRDS(h, file.path('./Objects', name, path))
+    } 
     if(verbose) {
       pb$tick()
     }
+    if(!to_file) {
+      h
+    } 
   }
   
   # If a cluster was created for this specific function call, close cluster and register sequential backend
@@ -48,5 +57,10 @@ weighted_bootstrap <- function(name, hv, n = 10, points_per_resample = 'sample_s
     stopCluster(cl)
     registerDoSEQ()
   }
-  return(file.path(getwd(), 'Objects', name))
+  if(to_file) {
+    return(file.path(getwd(), 'Objects', name))
+  } else {
+    hv_list@HVList = c(list)
+    return(hv_list)
+  }
 }

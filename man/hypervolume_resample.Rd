@@ -22,7 +22,8 @@ hypervolume_resample(name,
                       seq = 3:nrow(hv@Data), 
                       k = 5,
                       cores = 1,
-                      verbose = TRUE, 
+                      verbose = TRUE,
+                      to_file = TRUE,
                       mu = NULL, 
                       sigma = NULL, 
                       cols_to_weigh = 1:ncol(hv@Data), 
@@ -59,6 +60,10 @@ Number of logical cores to use while generating bootstraped hypervolumes. If par
 }
   \item{verbose}{
 Logical value; If function is being run sequentially, outputs progress bar in console.
+}
+  \item{to_file}{
+Logical value; If TRUE, writes resampled hypervolumes to file, otherwise returns an object from \code{\link{HypervolumeList-class}}.
+Used for \code{method = "bootstrap"} and \code{method = "weighted bootstrap"}
 }
   \item{mu}{
 Array of values specifying the mean of multivariate normal weights.
