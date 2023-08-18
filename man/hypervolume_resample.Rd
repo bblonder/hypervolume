@@ -20,14 +20,13 @@ hypervolume_resample(name,
                       n = 10, 
                       points_per_resample = "sample_size", 
                       seq = 3:nrow(hv@Data), 
-                      k = 5,
                       cores = 1,
                       verbose = TRUE,
                       to_file = TRUE,
                       mu = NULL, 
                       sigma = NULL, 
                       cols_to_weigh = 1:ncol(hv@Data), 
-                      weight_func = NULL)
+                      weights = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -52,9 +51,6 @@ Used for \code{method = "bootstrap"} and \code{method = "weighted bootstrap"}.
 Sequence of sample sizes. If \code{method = "bootstrap seq"} then the function generates n bootstrapped hypervolumes for each sample size in seq.
 Used for \code{method = "bootstrap seq"}.
 }
-  \item{k}{
-Number of splits. Used only for \code{method = "k_split"}.
-}
   \item{cores}{
 Number of logical cores to use while generating bootstraped hypervolumes. If parallel backend already registered to \code{doParallel}, function will use that backend and ignore the argument in cores.
 }
@@ -77,8 +73,8 @@ Used for \code{method = "weighted bootstrap"}.
 Array of column indices; must be same length as mu and sigma.  
 Used for \code{method = "weighted bootstrap"}.
 }
-  \item{weight_func}{
-Custom weight function that takes in a matrix of values and returns desired weights for each row
+  \item{weights}{
+Custom weight assigned to each row of data when resampling.
 Used for \code{method = "weighted bootstrap"}.
 }
 }
