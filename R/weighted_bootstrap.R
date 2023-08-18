@@ -1,4 +1,4 @@
-weighted_bootstrap <- function(name, hv, n = 10, points_per_resample = 'sample_size', cores = 1, verbose = TRUE, to_file = TRUE, mu = NULL, sigma = NULL, cols_to_weigh = 1:ncol(hv@Data), weight_func = NULL) {
+weighted_bootstrap <- function(name, hv, n = 10, points_per_resample = 'sample_size', cores = 1, verbose = TRUE, to_file = TRUE, mu = NULL, sigma = NULL, cols_to_weigh = 1:ncol(hv@Data), weights = NULL) {
   # Check if cluster registered to doparallel backend exists
   exists_cluster = TRUE
   if(cores > 1 & getDoParWorkers() == 1) {
@@ -10,6 +10,9 @@ weighted_bootstrap <- function(name, hv, n = 10, points_per_resample = 'sample_s
     })
     registerDoParallel(cl)
     exists_cluster = FALSE
+  }
+  if(cores >1 & getDoParWorkers() > 1) {
+    print("Exsisting cluster registered to doParallel. The existing cluster will be used instead of user specified number of cores.")
   }
   
   on.exit({
@@ -32,14 +35,14 @@ weighted_bootstrap <- function(name, hv, n = 10, points_per_resample = 'sample_s
   
   # Calculate weights from data before bootstrapping
   list = foreach(i = 1:n, .combine = c) %dopar% {
-    if(is.null(weight_func)) {
+    if(is.null(weights)) {
       if(length(mu) == 1) {
         weights = dnorm(hv@Data[,cols_to_weigh], mean = mu, sd = sqrt(sigma))
       } else {
         weights = dmvnorm(hv@Data[,cols_to_weigh], mean = mu, sigma = diag(sigma))
       }
     } else {
-      weights = weight_func(hv@Data[,cols_to_weigh])
+      weights = weights
     }
     if(points_per_resample == 'sample_size') {
       points = sample(1:nrow(hv@Data), size = nrow(hv@Data), replace = TRUE, prob = weights)

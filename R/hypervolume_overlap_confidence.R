@@ -9,6 +9,9 @@ hypervolume_overlap_confidence <- function(path1, path2, CI = .95, cores = 1) {
     registerDoParallel(cl)
     exists_cluster = FALSE
   }
+  if(cores >1 & getDoParWorkers() > 1) {
+    print("Exsisting cluster registered to doParallel. The existing cluster will be used instead of user specified number of cores.")
+  }
   
   on.exit({
     # If a cluster was created for this specific function call, close cluster and register sequential backend
