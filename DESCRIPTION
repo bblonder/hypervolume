@@ -3,7 +3,7 @@ Type: Package
 Title: High Dimensional Geometry, Set Operations, Projection, and 
         Inference Using Kernel Density Estimation, Support Vector 
         Machines, and Convex Hulls
-Version: 3.1.1
+Version: 3.1.2
 Date: 2023-05-05
 Author: Benjamin Blonder, with contributions from Cecina Babich Morrow, David J. Harris, Stuart Brown, Gregoire Butruille, Alex Laini, and Dan Chen
 Maintainer: Benjamin Blonder <benjamin.blonder@berkeley.edu>

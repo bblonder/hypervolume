@@ -8,7 +8,7 @@ hypervolume_resample <- function(name, hv, method, n = 10, points_per_resample =
     stop("Invalid input for seq")
   } else if (method == 'weighted bootstrap' & is.null(weights) & (length(mu) != length(sigma) | length(mu) != length(cols_to_weigh))) {
     stop("mu, sigma, and cols_to_weigh must have same length")
-  } else if (method == 'weighted bootstrap' & length(weights) != nrow(hv@Data)) {
+  } else if (method == 'weighted bootstrap' & !is.null(weights) & length(weights) != nrow(hv@Data)) {
     stop("Number of weights must match size of data.")
   } else if (cores < 1) {
     stop("cores must be greater than or equal to 1")

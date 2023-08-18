@@ -38,7 +38,7 @@ This update to the package provides the following functionalities:
 The purpose of this document is to provide use cases and explain best practices when using the new methods. The examples are chosen to highlight all the considerations that go into interpreting results.  
 
 ## Use case 1: Effect of sample size on volume
-The following code demonstrates visualizing the effect of sample size on hypervolumes constructed using Gaussian kernels. Thirty hypervolumes are constructed per sample size.  
+The following code demonstrates how to visualize the effect of sample size on hypervolumes constructed using Gaussian kernels. This example uses the measurements of the bill length and bill depth of penguins. Thirty hypervolumes are constructed per sample size.  
 
 To plot how a summary statistic describing a hypervolume varies with sample size, a function must be passed to the `func` field of `hypervolume_funnel`. A user inputted function must take a `hypervolume` object as an input and output a `numeric`. By default, `func = get_volume`. The confidence intervals in the plots are generated non-parametrically by taking quantiles at each sample size. When using `hypervolume_funnel` to plot the output of `hypervolume_resample`, a ggplot object is returned. It is then possible to add more plot elements to the result.  
 
@@ -88,16 +88,16 @@ In contrast, the plots for the mean of each column of data show that the centroi
 In the example, each confidence interval is a quantile of 30 resampled values. Improving the accuracy requires larger sample sizes which drastically increases run time. It is recommended to use more cores to allow hypervolumes to be generated in parallel; however, by default, `cores = 1` and the function runs sequentially.  
 
 ## Use case 2: Effect of simulating bias when resampling
-The following code demonstrates the effect of applying a bias while resampling data. In the example, we use `penguins` data to construct a hypervolume object, then resample it while biasing towards large beak sizes. In this example, this is done by more strongly weighting the points closer to the maximum observed values when resampling.  
+The following code demonstrates the effect of applying weights while resampling data. In the example, we use `quercus` data to construct a hypervolume object from geographical coordinates. For the sake of this example, consider a case of undersampling `quercus` observations to the west (imagine limited budget or time getting in the way of thorough sampling). We can attempt to reduce error by applying resampling weights based on this prior knowledge. 
 
-Weights can be applied when resampling points by either passing a user defined function to the `weight_func` field of `hypervolume_resample`, or by specifying the `mu` and `sigma` parameters. When using `mu` and `sigma`, the weight function is a multivariate normal distribution. `mu` is the mean of multivariate normal distribution while `sigma` is the diagonal covariance matrix of a multivariate normal distribution. `cols_to_bias` specifies which columns to use as the input of the weight function.
+Weights can be applied when resampling points by either passing a list of weights to the `weights` field of `hypervolume_resample`, or by specifying the `mu` and `sigma` parameters. When using `mu` and `sigma`, the weight function is a multivariate normal distribution. `mu` is the mean of multivariate normal distribution while `sigma` is the diagonal covariance matrix of a multivariate normal distribution. `cols_to_weigh` specifies which columns to use as the input of the weight function.
 
 ```{r, results = "hide"}
 hv = hypervolume(na.omit(penguins)[,3:6], verbose = FALSE)
-cols_to_bias = c("bill_length_mm", "bill_depth_mm")
-mu = apply(hv@Data, 2, max)[cols_to_bias]
-sigma = apply(hv@Data, 2, var)[cols_to_bias]*2
-biased_path = hypervolume_resample("Bill bias", hv, method = "biased bootstrap", n = 1, mu = mu, sigma = sigma, cols_to_bias = cols_to_bias)
+cols_to_weigh = c("bill_length_mm", "bill_depth_mm")
+mu = apply(hv@Data, 2, max)[cols_to_weigh]
+sigma = apply(hv@Data, 2, var)[cols_to_weigh]*2
+biased_path = hypervolume_resample("Bill bias", hv, method = "weighted bootstrap", n = 1, mu = mu, sigma = sigma, cols_to_weigh = cols_to_weigh)
 
 # Read in hypervolume object from file
 biased_hv = readRDS(file.path(biased_path, "resample 1.rds"))
