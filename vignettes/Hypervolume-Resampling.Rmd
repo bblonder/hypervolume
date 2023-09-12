@@ -38,59 +38,76 @@ The package provides the following functionalities:
 The purpose of this document is to provide use cases and explain best practices when using the new methods. The examples are chosen to highlight all the considerations that go into interpreting results.  
 
 ## Use case 1: Effect of sample size on volume
-The following code demonstrates how to visualize the effect of sample size on hypervolumes constructed using Gaussian kernels. This example uses the measurements of the bill length and bill depth of penguins. Thirty hypervolumes are constructed per sample size.  
+The following code demonstrates how to visualize the effect of sample size on hypervolumes constructed using Gaussian kernels. We obtain climate data for *Q. alba*
+and *Q. rubra* by georeferencing the climate data at the geographical coordinates of each observation.  
 
-To plot how a summary statistic describing a hypervolume varies with sample size, a function must be passed to the `func` field of `hypervolume_funnel`. A user inputted function must take a `hypervolume` object as an input and output a `numeric`. By default, `func = get_volume`. The confidence intervals in the plots are generated non-parametrically by taking quantiles at each sample size. When using `hypervolume_funnel` to plot the output of `hypervolume_resample`, a ggplot object is returned. It is then possible to add more plot elements to the result.  
 
 ```{r, results = "hide", eval = FALSE}
-# Run time with cores = 2 is around 25 minutes
-hv = hypervolume(na.omit(penguins)[,3:4], verbose = FALSE)
-resample_seq_path = hypervolume_resample("penguins_hvs", hv, method = "bootstrap seq", n = 30, seq = c(100, 125, 150, 175, 200, 225, 250, 275, 300), cores = 20)
+data("quercus")
+data_alba = subset(quercus, Species=="Quercus alba")[,c("Longitude","Latitude")]
+data_rubra = subset(quercus, Species=="Quercus rubra")[,c("Longitude","Latitude")]
+climatelayers <- getData('worldclim', var='bio', res=10, path=tempdir())
 
-hypervolume_funnel(resample_seq_path, title = "Volume of Hypervolumes at Different Resample Sizes") + ylab("Volume")
+# z-transform climate layers to make axes comparable
+climatelayers_ss = climatelayers[[c(1,4,12,15)]]
+for (i in 1:nlayers(climatelayers_ss))
+{
+  climatelayers_ss[[i]] <- (climatelayers_ss[[i]] - cellStats(climatelayers_ss[[i]], 'mean')) / cellStats(climatelayers_ss[[i]], 'sd') 
+}
+climatelayers_ss_cropped = crop(climatelayers_ss, extent(-150,-50,15,60))
 
-plot1 = hypervolume_funnel(resample_seq_path, title = "Mean of Bill Length at Different Resample Sizes",
-                   func = function(x) {get_centroid(x)["bill_length_mm"]}) +
-  ylab("Bill Length (mm)")
+# extract transformed climate values
+climate_alba = extract(climatelayers_ss_cropped, data_alba)
+climate_rubra = extract(climatelayers_ss_cropped, data_rubra)
+combined_sample = data.frame(rbind(climate_rubra, climate_alba))
+combined_sample["Species"] = quercus$Species
 
-plot2 = hypervolume_funnel(resample_seq_path, title = "Mean of Bill Depth at Different Resample Sizes",
-                   func = function(x) {get_centroid(x)["bill_depth_mm"]}) +
-  ylab("Bill Depth (mm)")
-
-grid.arrange(plot1, plot2, nrow = 2)
-```
-```{r, fig.width=8, echo=FALSE}
-upperq = c(205.1020, 198.3495, 197.0977, 185.7079, 179.1139, 184.4861, 180.7195, 176.4766, 175.8285)
-sample_mean = c(179.3345, 176.0790, 170.4279, 170.0950, 167.8839, 166.2428, 167.3649, 162.8489, 162.5742)
-lowerq = c(158.3234, 151.5433, 153.7521, 153.8541, 157.1399, 147.0054, 152.7173, 151.0459, 148.4239)
-n = c(100, 125, 150, 175, 200, 225, 250, 275, 300)
-volume_dat = data.frame(upperq, sample_mean, lowerq, n)
-ggplot(volume_dat, aes(x = n)) + geom_line(aes(y = upperq)) + geom_line(aes(y = sample_mean), col = "blue") + geom_line(aes(y = lowerq)) + ggtitle("Volume of Hypervolumes at Different Resample Sizes", "Confidence interval: 0.95") + ylab("Volume") + xlab("Resample size")
-
-upperq = c(45.20545, 44.78558, 44.99452, 45.02968, 45.02962, 44.76026, 45.04892, 45.11330, 44.91576)
-sample_mean = c(44.21241, 44.24773, 44.40511, 44.21123, 44.28321, 44.32482, 44.44618, 44.35699, 44.38820)
-lowerq = c(43.39146, 43.62949, 43.73162, 43.77126, 43.74826, 43.72950, 43.89345, 43.65643, 43.85460)
-length_dat = data.frame(upperq, sample_mean, lowerq, n)
-ggplot(length_dat, aes(x = n)) + geom_line(aes(y = upperq)) + geom_line(aes(y = sample_mean), col = "blue") + geom_line(aes(y = lowerq)) + ggtitle("Average Bill Length at Different Resample Sizes", "Confidence interval: 0.95") + ylab("bill length (mm)") + xlab("Resample size")
-
-upperq = c(17.59443, 17.58865, 17.50011, 17.54498, 17.52506, 17.59228, 17.53206, 17.47092, 17.54269)
-sample_mean = c(17.33624, 17.33152, 17.30638, 17.34717, 17.30928, 17.33852, 17.31785, 17.32374, 17.34064)
-lowerq = c(16.96755, 17.09749, 17.12346, 17.15404, 17.10467, 17.12946, 17.13240, 17.16913, 17.17636)
-depth_dat = data.frame(upperq, sample_mean, lowerq, n)
-ggplot(depth_dat, aes(x = n)) + geom_line(aes(y = upperq)) + geom_line(aes(y = sample_mean), col = "blue") + geom_line(aes(y = lowerq)) + ggtitle("Average Bill Depth at Different Resample Sizes", "Confidence interval: 0.95") + ylab("bill depth (mm)") + xlab("Resample size")
+# Create hypervolumes
+hv_alba = hypervolume(climate_alba)
+hv_rubra = hypervolume(climate_rubra)
 ```
 
+We first use `hypervolume_resample` with `method = "boostrap seq"` to define a sequence of sample sizes and resample 20 hypervolumes from each sample size. We then pass the output into `hypervolume_funnel` to visualize the results. To plot how a summary statistic describing a hypervolume varies with sample size, a function must be passed to the `func` field of `hypervolume_funnel`. A user inputted function must take a `hypervolume` object as an input and output a `numeric`. By default, `func = get_volume`. The confidence intervals in the plots are generated non-parametrically by taking quantiles at each sample size. When using `hypervolume_funnel` to plot the output of `hypervolume_resample`, a ggplot object is returned. It is then possible to add more plot elements to the result.  
 
-The default contruction of hypervolumes uses `kde.bandwidth = estimate_bandwidth(data, method = "silverman")`. The first plot shows that volume decreases with sample size due to Silverman bandwidth decreasing with sample size. In fact, Silverman bandwidth is not appropriate for multimodal data such as `penguins`. The plot demonstrates this fact and shows that at small sample size, the hypervolume overestimates the true volume. Other methods for estimating bandwidth may be more accurate, but are computationally unfeasible for data with more than 3 dimensions. The estimated volume converges to the true volume of the population as sample size increases; however, at 300 data points, the result from `hypervolume_funnel` suggests that the volume is being overestimated.  
 
-In contrast, the plots for the mean of each column of data show that the centroid of the data is preserved by hypervolume construction using gaussian kernels.  
+```{r eval=FALSE}
+alba_seq = hypervolume_resample("alba_seq", hv_alba, "bootstrap seq", n = 20, seq = seq(100, 1700, 400), cores = 32)
+rubra_seq = hypervolume_resample("rubra_seq", hv_rubra, "bootstrap seq", n = 20, seq = seq(100, 2100, 400), cores = 32)
 
-In the example, each confidence interval is a quantile of 30 resampled values. Improving the accuracy requires larger sample sizes which drastically increases run time. It is recommended to use more cores to allow hypervolumes to be generated in parallel; however, by default, `cores = 1` and the function runs sequentially.  
+# Funnel Plots
+alba_plot = hypervolume_funnel(alba_seq) + 
+  geom_point(aes(y = upperq)) + 
+  geom_point(aes(y = lowerq)) + 
+  geom_point(aes(y = sample_mean), col = "blue") + 
+  theme_bw() + 
+  labs(title = "a)", subtitle = NULL) + 
+  ylab("Volume") + 
+  ylim(0, 0.8) + 
+  xlim(0, 2100)
+rubra_plot = hypervolume_funnel(rubra_seq) + 
+  geom_point(aes(y = upperq)) + 
+  geom_point(aes(y = lowerq)) + 
+  geom_point(aes(y = sample_mean), col = "blue") + 
+  theme_bw() + 
+  labs(title = "b)", subtitle = NULL) + 
+  ylab("Volume") + 
+  ylim(0, 0.8) + 
+  xlim(0, 2100)
+grid.arrange(alba_plot, rubra_plot, nrow = 1)
+```
+```{r out.width="100%", echo=FALSE}
+url = "funnel_plot_comparisons.png"
+knitr::include_graphics(url)
+```
+
+The default contruction of hypervolumes uses `kde.bandwidth = estimate_bandwidth(data, method = "silverman")`. The above plot shows that volume decreases for both **a)** *Q. alba* and **b)** *Q. rubra* as sample size increases. This effect is due to Silverman bandwidth decreasing with sample size. In fact, Silverman bandwidth is not appropriate for multimodal data. The plot demonstrates this fact and shows that at small sample size, the hypervolume overestimates the true volume. Other methods for estimating bandwidth may be more accurate, but are computationally unfeasible for data with more than 3 dimensions. The estimated volume converges to the true volume of the population as sample size increases as shown in the above funnel plots.
+
+In the example, each confidence interval is a quantile of 20 resampled values. Improving the accuracy requires larger sample sizes which increases run time. It is recommended to use more cores to allow hypervolumes to be generated in parallel; however, by default, `cores = 1` and the function runs sequentially.  
 
 ## Use case 2: Effect of simulating bias when resampling
 Weights can be applied when resampling points so that the probability of sampling a particular point is proportional to the weight of that point. Weights are applied by either passing a list of weights to the `weights` field of `hypervolume_resample`, or by specifying the `mu` and `sigma` parameters. When using `mu` and `sigma`, the weight function is a multivariate normal density. `mu` is the mean of multivariate normal distribution while `sigma` is the diagonal covariance matrix of a multivariate normal distribution. `cols_to_weigh` specifies which columns to use as the input of the multivariate normal density.
 
-The following code demonstrates an application of applying weights while resampling data. In the example, we use `quercus` data to construct a hypervolume object from georeferenced climate data. For the sake of this example, consider a case of sampling *Q. alba* observations to the east of -75 longitude at half the rate of the other observations (imagine limited budget or time getting in the way of thorough sampling). We can applying resampling weights based on this prior knowledge and see if it significantly changes the distribution of the climate data. 
+The following code demonstrates an application of applying weights while resampling data. In the example, we use `quercus` data to construct a hypervolume object from georeferenced climate data. For the sake of this example, consider a case of sampling *Q. alba* observations to the east of -75 longitude at half the rate of the other observations (imagine limited budget or time getting in the way of thorough sampling). We can apply resampling weights based on this prior knowledge and see if it significantly changes the distribution of the climate data. 
 
 ```{r, eval = FALSE}
 data("quercus")
@@ -125,17 +142,28 @@ alba_biased_combined_samples = hypervolume_resample("combined_biased_resample", 
 result = hypervolume_overlap_test(hv_alba, weighted_hv_alba, alba_biased_combined_samples, cores = 32)
 
 # Show null distribution and observed value
-result$plots$sorensen
+result$plots$sorensen + 
+  theme_bw() + 
+  labs(title = NULL) + 
+  xlab("Sorensen Distance") + 
+  ylab("Density")
 ```
 ```{r out.width="100%", echo = FALSE}
 url = "biased_bootstrap_overlap.png"
 knitr::include_graphics(url)
 ```
 
+The red line indicates the observed overlap statistic. Based on the above null distribution, p = 0.124. We cannot reject the null hypothesis that the climate hypervolume generated from the weighted bootstrap comes from a different distribution than the nonweighted hypervolume.  
+
+
+The following example demonstrates what happens when strong bias is applied to a small dataset. Using the `palmerpenguin` datatset, we want to induce a bias when resampling so that penguins with larger bills are resampled more often. We do this by using `mu` and `sigma` to define a multivariate normal distribution so that the resampling weight of each point is proportional to the normal density at that point.  
+
 
 ```{r, eval=FALSE}
 hv = hypervolume(na.omit(penguins)[,3:6], verbose = FALSE)
 cols_to_weigh = c("bill_length_mm", "bill_depth_mm")
+
+# Highest weights are assigned to max bill length and max bill depth
 mu = apply(hv@Data, 2, max)[cols_to_weigh]
 sigma = apply(hv@Data, 2, var)[cols_to_weigh]*2
 biased_path = hypervolume_resample("Bill bias", hv, method = "weighted bootstrap", n = 1, mu = mu, sigma = sigma, cols_to_weigh = cols_to_weigh)
@@ -148,36 +176,43 @@ combined_dat['Type'] = rep(c('original', 'biased'), each = nrow(hv@Data))
 ```
 
 ```{r, eval=FALSE}
-plot1 = ggplot(combined_dat, aes(y = ..density..)) + geom_histogram(aes(x = bill_depth_mm, fill = Type), bins = 20) +
+plot1 = ggplot(combined_dat) + 
+  geom_histogram(aes(x = bill_depth_mm, fill = Type), bins = 20) +
   facet_wrap(~Type) +
-  ggtitle("Distribution of Bill Depth", "Biased resample vs Original sample") +
-  xlab("bill depth (mm)")
-plot2 = ggplot(combined_dat, aes(y = ..density..)) + geom_histogram(aes(x = bill_length_mm, fill = Type), bins = 20) +
+  ggtitle("Distribution of Bill Depth") +
+  xlab("Bill depth (mm)") + 
+  ylab("Count") +
+  theme_bw() +
+  theme(legend.position = "none")
+plot2 = ggplot(combined_dat) + 
+  geom_histogram(aes(x = bill_length_mm, fill = Type), bins = 20) +
   facet_wrap(~Type) +
-  ggtitle("Distribution of Bill Length", "Biased resample vs Original sample") +
-  xlab("bill length(mm)")
-grid.arrange(plot1, plot2, nrow = 2)
+  ggtitle("Distribution of Bill Length") +
+  xlab("Bill length (mm)") +
+  ylab(NULL) +
+  theme_bw() +
+  theme(legend.position = "none")
+plot3 = ggplot(combined_dat) + 
+  geom_histogram(aes(x = flipper_length_mm, fill = Type), bins = 20) +
+  facet_wrap(~Type) +
+  ggtitle("Distribution of Flipper Length") + 
+  xlab("Flipper length (mm)") +
+  ylab("Count")+
+  theme_bw() +
+  theme(legend.position = "none")
+plot4 = ggplot(combined_dat) + 
+  geom_histogram(aes(x = body_mass_g, fill = Type), bins = 20) +
+  facet_wrap(~Type) +
+  ggtitle("Distribution of Body Mass") +
+  xlab("Body mass (g)") +
+  ylab(NULL) +
+  theme_bw() +
+  theme(legend.position = "none")
+grid.arrange(plot1, plot2, plot3, plot4, nrow = 2)
 ```
 
 ```{r out.width="100%", echo = FALSE}
-url = "bill_depth_length_weighted.png"
-knitr::include_graphics(url)
-```
-
-```{r, eval=FALSE}
-plot1 = ggplot(combined_dat, aes(y = ..density..)) + geom_histogram(aes(x = flipper_length_mm, fill = Type), bins = 20) +
-  facet_wrap(~Type) +
-  ggtitle("Distribution of Flipper Length", "Biased resample vs Original sample") + 
-  xlab("flipper length (mm)")
-plot2 = ggplot(combined_dat, aes(y = ..density..)) + geom_histogram(aes(x = body_mass_g, fill = Type), bins = 20) +
-  facet_wrap(~Type) +
-  ggtitle("Distribution of Body Mass", "Biased resample vs Original sample") +
-  xlab("body mass (g)")
-grid.arrange(plot1, plot2, nrow = 2)
-```
-
-```{r out.width="100%", echo = FALSE}
-url = "flipper_length_body_mass_weighted.png"
+url = "penguin_weights.png"
 knitr::include_graphics(url)
 ```
 
@@ -231,8 +266,18 @@ method2_path = hypervolume_permute("rubra_alba_permutation", hv1, hv2, n = 1357,
 result2 = hypervolume_overlap_test(hv1, hv2, method2_path, cores = 2)
 
 # Graphical Results of null sorensen statistic
-plot1 = result1$plots$sorensen + ggtitle("Method 1", as.character(result1$p_values$sorensen)) + xlab("Sorensen Index")
-plot2 = result2$plots$sorensen + ggtitle("Method 2", as.character(result2$p_values$sorensen)) + xlab("Sorensen Index")
+plot1 = result1$plots$sorensen + 
+    xlab("Sorensen distance") +
+    ylab("Density") +
+    ggtitle("a)") +
+    xlim(0.7, 1) +
+    theme_bw()
+plot1 = result2$plots$sorensen + 
+    xlab("Sorensen distance") +
+    ylab("Density") +
+    ggtitle("b)") +
+    xlim(0.7, 1) +
+    theme_bw()
 grid.arrange(plot1, plot2, ncol=2)
 ```
 
@@ -241,7 +286,7 @@ url = "overlap test demos.png"
 knitr::include_graphics(url)
 ```
 
-For our example, the red line shows the observed value of the Sorensen overlap index. Method one results in a significantly lower p value, but Method two also results in a low p value. Since p is less than 0.05 in both cases, we can reject the hypothesis that the two *Quercus* species have identical climate niches.  
+For our example, the red line shows the observed value of the Sorensen distance. a) shows that the bootstrap overlap test results in a significantly lower p value than a significance level of 0.05. b) shows that the permutation overlap test also results in a low p value. Since p is less than 0.05 in both cases, we can reject the hypothesis that the two *Quercus* species have identical climate niches.  
 
 ## Testing the power of the overlap test
 The following code demonstrates how to test the power of the overlap test using simulated datasets. The power of a test is defined as the probability the test rejects the null hypothesis given that the alternative hypothesis is true. The first simulations quantify the power of the overlap test to reject the null hypothesis when two distributions have the same shape but are shifted. A sample dataset of N=20 observations in n=5 dimensions is drawn from a multivariate normal distribution with mean vector 0 and the identity covariance matrix. A second sample of M=40 observations is drawn from the same distribution with the mean shifted. The sorensen distance is used as the test statistic.
@@ -338,7 +383,7 @@ data4 = data.frame(rmvnorm(1000, mean = c(0, 0), sigma = diag(c(alpha_squared[4]
 data5 = data.frame(rmvnorm(1000, mean = c(0, 0), sigma = diag(c(alpha_squared[5], 1/alpha_squared[5]))))
 data6 = data.frame(rmvnorm(1000, mean = c(0, 0), sigma = diag(c(alpha_squared[6], 1/alpha_squared[6]))))
 data = rbind(data1, data2, data3, data4, data5, data6)
-data["Scale factor"] = rep(c("alpha = 1", "alpha = 0.913", "alpha = 0.816", "alpha = 0.707", "alpha = 0.577", "alpha = 0.408"), each = 1000)
+data["Scale factor"] = rep(c("a = 1", "a = 0.913", "a = 0.816", "a = 0.707", "a = 0.577", "a = 0.408"), each = 1000)
 
 ggplot(data = data, aes(x = X1, y = X2, color = `Scale factor`)) + 
   geom_point(alpha = 0.4) + 
