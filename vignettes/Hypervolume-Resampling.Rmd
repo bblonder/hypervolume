@@ -282,7 +282,7 @@ grid.arrange(plot1, plot2, ncol=2)
 ```
 
 ```{r out.width="100%", echo = FALSE}
-url = "overlap test demos.png"
+url = "overlap_test_demos.png"
 knitr::include_graphics(url)
 ```
 

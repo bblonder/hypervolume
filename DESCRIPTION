@@ -3,9 +3,9 @@ Type: Package
 Title: High Dimensional Geometry, Set Operations, Projection, and 
         Inference Using Kernel Density Estimation, Support Vector 
         Machines, and Convex Hulls
-Version: 3.1.2
-Date: 2023-05-05
-Author: Benjamin Blonder, with contributions from Cecina Babich Morrow, David J. Harris, Stuart Brown, Gregoire Butruille, Alex Laini, and Dan Chen
+Version: 3.1.3
+Date: 2023-09-13
+Author: Benjamin Blonder, with contributions from Cecina Babich Morrow, Stuart Brown, Gregoire Butruille, Daniel Chen, Alex Laini, and David J. Harris
 Maintainer: Benjamin Blonder <benjamin.blonder@berkeley.edu>
 Description: Estimates the shape and volume of high-dimensional datasets and performs set operations: intersection / overlap, union, unique components, inclusion test, and hole detection. Uses stochastic geometry approach to high-dimensional kernel density estimation, support vector machine delineation, and convex hull generation. Applications include modeling trait and niche hypervolumes and species distribution modeling.
 License: GPL-3
