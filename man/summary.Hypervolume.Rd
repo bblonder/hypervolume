@@ -19,7 +19,7 @@ Prints basic information about Hypervolume or HypervolumeList structure.
 The hypervolume to summarize
 }
   \item{...}{
- 
+Other arguments to be passed to base summary function 
 }
 }
 \value{

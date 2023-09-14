@@ -17,7 +17,7 @@ Summarizes all slots of \code{\link{Hypervolume-class}} object.
 The hypervolume to summarize
 }
   \item{...}{
- 
+Other arguments to be passed to base print function 
 }
 }
 \value{
