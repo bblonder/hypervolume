@@ -1,5 +1,3 @@
-#todo: remove sp/raster dependences
-
 useDynLib(hypervolume)
 
 export( 

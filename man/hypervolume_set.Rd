@@ -39,7 +39,7 @@ The intersection is the points in both hypervolumes, the union those in either h
 
 If you have more than two hypervolumes and wish to calculate only an intersection, consider instead using \code{\link{hypervolume_set_n_intersection}} rather than iteratively applying this function.
 
-By default, the function uses \code{check.memory=TRUE} which will provide an estimate of the computational cost of the set operations. The function should then be re-run with {check_memory=FALSE} if the cost is acceptable. This algorithm's memory and time cost scale quadratically with the number of input points, so large datasets can have disproportionately high costs. This error-checking is intended to prevent the user from large accidental memory allocation. 
+By default, the function uses \code{check.memory=TRUE} which will provide an estimate of the computational cost of the set operations. The function should then be re-run with \code{check_memory=FALSE} if the cost is acceptable. This algorithm's memory and time cost scale quadratically with the number of input points, so large datasets can have disproportionately high costs. This error-checking is intended to prevent the user from large accidental memory allocation. 
 
 The computation is actually performed on a random sample from both input hypervolumes, constraining each to have the same point density given by the minimum of the point density of each input hypervolume, and the point density calculated using the volumes of each input hypervolume divided by \code{num.points.max}.
 
