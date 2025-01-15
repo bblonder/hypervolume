@@ -59,6 +59,7 @@ export(
   hypervolume_permute,
   hypervolume_project,
   hypervolume_prune, 
+  hypervolume_pt_distance,
   hypervolume_threshold,
   hypervolume_redundancy,
   hypervolume_resample,
