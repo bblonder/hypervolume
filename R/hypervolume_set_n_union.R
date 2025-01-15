@@ -87,7 +87,7 @@ hypervolume_set_n_union <- function (hv_list, num.points.max = NULL, verbose = T
   }
   
   if (is_any_pointstokeep_null == TRUE){
-    stop(paste0("hv",nopointstokeep,"has no random points and is empty."))
+    stop(paste0("hv ",nopointstokeep," has no random points and is empty.\n"))
     
   }
   
