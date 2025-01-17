@@ -1,5 +1,5 @@
-\name{hypervolume_pt_distance}
-\alias{hypervolume_pt_distance}
+\name{hypervolume_distance_point}
+\alias{hypervolume_distance_point}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Distance from a point to the margin of a hypervolume.
@@ -8,7 +8,7 @@ Distance from a point to the margin of a hypervolume.
 Calculates the distance between two hypervolumes either defined as the Euclidean distance between centroids or as the minimum Euclidean distance between the random points comprising either hypervolume.
 }
 \usage{
-hypervolume_pt_distance(hv1, x, type = "minimum", 
+hypervolume_distance_point(hv1, x, type = "minimum", 
   num.points.max = 1000, check.memory = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -49,7 +49,7 @@ point = penguins_no_na[penguins_no_na$species=="Chinstrap",
                        c("bill_length_mm","bill_depth_mm","flipper_length_mm")][42, ]
 
 # note that minimum distance is smaller than centroid distance as expected
-hypervolume_pt_distance(hv1, point, type='minimum', num.points.max=500, check.memory=FALSE)
-hypervolume_pt_distance(hv1, point, type='maximum', num.points.max=500, check.memory=FALSE)
+hypervolume_distance_point(hv1, point, type='minimum', num.points.max=500, check.memory=FALSE)
+hypervolume_distance_point(hv1, point, type='maximum', num.points.max=500, check.memory=FALSE)
 }
 }

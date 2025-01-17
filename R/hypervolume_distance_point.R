@@ -1,4 +1,4 @@
-hypervolume_pt_distance <- function(hv1, x, type="minimum", num.points.max=1000, check.memory=TRUE){
+hypervolume_distance_point <- function(hv1, x, type="minimum", num.points.max=1000, check.memory=TRUE){
   
   # Ensure that hv1 a Hypervolume object
   if (!inherits(hv1, "Hypervolume")) {
