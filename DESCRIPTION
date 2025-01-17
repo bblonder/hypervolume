@@ -5,7 +5,7 @@ Title: High Dimensional Geometry, Set Operations, Projection, and
         Machines, and Convex Hulls
 Version: 3.1.5
 Date: 2025-01-17
-Author: Benjamin Blonder, with contributions from Cecina Babich Morrow, Stuart Brown, Gregoire Butruille, Daniel Chen, Alex Laini, David J. Harris, and Clément Violet
+Author: Benjamin Blonder, with contributions from Cecina Babich Morrow, Stuart Brown, Gregoire Butruille, Daniel Chen, Alex Laini, David J. Harris, and Clement Violet
 Maintainer: Benjamin Blonder <benjamin.blonder@berkeley.edu>
 Description: Estimates the shape and volume of high-dimensional datasets and performs set operations: intersection / overlap, union, unique components, inclusion test, and hole detection. Uses stochastic geometry approach to high-dimensional kernel density estimation, support vector machine delineation, and convex hull generation. Applications include modeling trait and niche hypervolumes and species distribution modeling.
 License: GPL-3

@@ -6,6 +6,8 @@ Multi-way set union
 }
 \description{
 Union of n hypervolumes.
+
+Code by Clement Violet.
 }
 \usage{
 hypervolume_set_n_union(hv_list, num.points.max = NULL, 
@@ -61,5 +63,5 @@ union = hv_set_n_union(hv_list)
 }
 }
 \seealso{
-\code{\link{hypervolume_set}}
+\code{\link{hypervolume_set}}, \code{\link{hypervolume_set_n_intersection}}, \code{\link{hypervolume_n_occupancy}}
 }

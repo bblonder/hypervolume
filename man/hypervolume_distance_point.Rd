@@ -6,6 +6,8 @@ Distance from a point to the margin of a hypervolume.
 }
 \description{
 Calculates the distance between two hypervolumes either defined as the Euclidean distance between centroids or as the minimum Euclidean distance between the random points comprising either hypervolume.
+
+Code by Clement Violet.
 }
 \usage{
 hypervolume_distance_point(hv1, x, type = "minimum", 
