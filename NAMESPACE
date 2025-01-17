@@ -67,6 +67,7 @@ export(
   hypervolume_segment, 
   hypervolume_set, 
   hypervolume_set_n_intersection,
+  hypervolume_set_n_union,
   hypervolume_svm,
   hypervolume_thin, 
   hypervolume_variable_importance, 
