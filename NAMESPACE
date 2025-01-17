@@ -28,6 +28,7 @@ export(
   get_volume, 
   hypervolume_box,
   hypervolume_distance, 
+  hypervolume_distance_point,
   hypervolume_estimate_probability,
   hypervolume_funnel,
   hypervolume_gaussian,
