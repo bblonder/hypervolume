@@ -92,8 +92,8 @@ get_occupancy_stats_bootstrap <- function(path, FUN, remove_zeroes = TRUE, metho
                                                                      median = quantile(x, 0.5),
                                                                      quantile_97.5 = quantile(x, 0.975),
                                                                      max = max(x),
-                                                                     skewness = skewness(x),
-                                                                     kurtosis = kurtosis(x))))
+                                                                     skewness = e1071::skewness(x),
+                                                                     kurtosis = e1071::kurtosis(x))))
       colnames(final_res) <- c("hypervolume", "mean", "sd", "min", "quantile_2.5", "median", "quantile_97.5", "max",
                                "skewness", "kurtosis")
     }
@@ -122,8 +122,8 @@ get_occupancy_stats_bootstrap <- function(path, FUN, remove_zeroes = TRUE, metho
       res_pairwise[i, 5] <-  quantile(res_temp, c(0.5))
       res_pairwise[i, 6] <-  quantile(res_temp, c(0.975))
       res_pairwise[i, 7] <-  max(res_temp)
-      res_pairwise[i, 8] <-  skewness(res_temp)
-      res_pairwise[i, 9] <-  kurtosis(res_temp)
+      res_pairwise[i, 8] <-  e1071::skewness(res_temp)
+      res_pairwise[i, 9] <-  e1071::kurtosis(res_temp)
       
     }
     final_res <- data.frame(comparison = char_combn, res_pairwise)

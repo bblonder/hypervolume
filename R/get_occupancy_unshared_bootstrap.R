@@ -39,8 +39,8 @@ get_occupancy_unshared_bootstrap <- function(path, method = "pairwise", res_type
                                                                      median = quantile(x, 0.5),
                                                                      quantile_97.5 = quantile(x, 0.975),
                                                                      max = max(x),
-                                                                     skewness = skewness(x),
-                                                                     kurtosis = kurtosis(x))))
+                                                                     skewness = e1071::skewness(x),
+                                                                     kurtosis = e1071::kurtosis(x))))
       colnames(final_res) <- c("hypervolume", "mean", "sd", "min", "quantile_2.5", "median", "quantile_97.5", "max",
                                "skewness", "kurtosis")
       final_res[, "hypervolume"] <- as.character(final_res[, "hypervolume"])
@@ -84,8 +84,8 @@ get_occupancy_unshared_bootstrap <- function(path, method = "pairwise", res_type
                                                                      median = quantile(x, 0.5),
                                                                      quantile_97.5 = quantile(x, 0.975),
                                                                      max = max(x),
-                                                                     skewness = skewness(x),
-                                                                     kurtosis = kurtosis(x))))
+                                                                     skewness = e1071::skewness(x),
+                                                                     kurtosis = e1071::kurtosis(x))))
       colnames(final_res) <- c("comparison", "mean", "sd", "min", "quantile_2.5", "median", "quantile_97.5", "max",
                                "skewness", "kurtosis")
       final_res[, "comparison"] <- gsub("_", " - ", final_res[, "comparison"])
