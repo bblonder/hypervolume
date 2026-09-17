@@ -3,8 +3,8 @@ Type: Package
 Title: High Dimensional Geometry, Set Operations, Projection, and 
         Inference Using Kernel Density Estimation, Support Vector 
         Machines, and Convex Hulls
-Version: 3.1.6
-Date: 2025-06-15
+Version: 3.1.7
+Date: 2026-09-17
 Authors@R: c(person(given = "Benjamin",
                     family = "Blonder",
                     role = c("aut", "cre"),
