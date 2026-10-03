@@ -38,15 +38,19 @@ Imports: raster, maps, MASS, geometry, ks, hitandrun, pdist, fastcluster,
         compiler, e1071, progress, mvtnorm, data.table,
         terra, sp, foreach, doParallel, parallel, ggplot2, pbapply,
         palmerpenguins, purrr, dplyr, caret
-Suggests: 
+Suggests:
     rgl,
     magick,
     alphahull,
     knitr,
     rmarkdown,
-    gridExtra
+    gridExtra,
+    testthat (>= 3.0.0),
+    covr,
+    microbenchmark
 NeedsCompilation: yes
 RoxygenNote: 7.1.1
 URL: https://github.com/bblonder/hypervolume
 BugReports: https://github.com/bblonder/hypervolume/issues
 VignetteBuilder: knitr
+Config/testthat/edition: 3

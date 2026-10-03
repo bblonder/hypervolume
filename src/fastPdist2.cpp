@@ -17,6 +17,14 @@ NumericMatrix fastPdist2(NumericMatrix Ar, NumericMatrix Br) {
   arma::mat C = -2 * (A * B.t());
   C.each_col() += An;
   C.each_row() += Bn.t();
-  
-  return wrap(sqrt(C)); 
+
+  // The |a|^2 + |b|^2 - 2 a.b expansion is fast but numerically unstable
+  // for nearby points: rounding can push the squared distance slightly
+  // negative and sqrt() of that returns NaN. hypervolume_distance(type =
+  // "minimum") then hid the NaN with na.rm = TRUE, which silently changed
+  // the answer for the exact case most at risk. Clamp negatives to zero
+  // so the sqrt is always real. Values already >= 0 are untouched.
+  C.transform([](double v) { return v < 0.0 ? 0.0 : v; });
+
+  return wrap(sqrt(C));
 }

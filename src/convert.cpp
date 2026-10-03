@@ -21,26 +21,33 @@ vector<vector< double > > convertMatrixToVector(double array[], int nrow, int nc
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-SEXP kdtree_build_intl(SEXP d, SEXP nr, SEXP nc) // d is the numeric data, nr is the rows, nc is the cols
+SEXP kdtree_build_intl(SEXP d, SEXP nr, SEXP nc) // d is the numeric col-major R matrix, nr rows, nc cols
 {
   int nrow = as<int>(nr);
   int ncol = as<int>(nc);
-  //bool verbose = as<int>(verb);
   NumericVector data(d);
-  
-  if(data.size() != nrow*ncol)
-  {
+
+  if (data.size() != (R_xlen_t) nrow * ncol) {
     throw(length_error("Data not same size as product of nrow and ncol"));
   }
-  
-  vector<vector< double > > dataMatrix
-    = convertMatrixToVector(data.begin(), nrow, ncol);
-  
-  KDTree *t = new KDTree(dataMatrix);
-  
+
+  // Transpose R's col-major buffer into a row-major flat vector<double>
+  // (KDTree stores points as points[i*ncol + j]). This is one pass through
+  // the buffer; previously this codepath allocated a vector<vector<double>>
+  // (one heap allocation per row) via convertMatrixToVector and then the
+  // KDTree constructor copied that into its own field -- three copies total
+  // for one build. Now: one linear transpose + one std::move.
+  const double* src = data.begin();
+  vector<double> flat((size_t) nrow * ncol);
+  for (int j = 0; j < ncol; j++) {
+    for (int i = 0; i < nrow; i++) {
+      flat[(size_t) i * ncol + j] = src[(size_t) i + (size_t) j * nrow];
+    }
+  }
+
+  KDTree* t = new KDTree(std::move(flat), nrow, ncol);
   XPtr<KDTree> p(t, TRUE);
-  
-  return(p);
+  return p;
 }
 
 // [[Rcpp::export]]

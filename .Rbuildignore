@@ -1,2 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^hypervolume_speedup_notes\.md$
+^.*\.pdf$
+^tools$
+^\.github$

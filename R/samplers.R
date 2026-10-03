@@ -85,23 +85,32 @@ ellipsoid_volume = function(scales) {
   nball_volume(n = length(scales), r = 1) * prod(scales)
 }
 
+# Split so callers with a fixed centers/scales pair can build the tree once
+# and reuse it across many sample batches. sample_model_ellipsoid does this
+# inside its while loop; the tree used to be rebuilt on every iteration even
+# though centers is the (invariant) data matrix.
+
+build_ellipsoid_tree <- function(centers, scales, verbose) {
+  for (i in seq_len(ncol(centers))) {
+    centers[, i] <- centers[, i] / scales[i]
+  }
+  kdtree_build(centers, verbose = verbose)
+}
+
+ellipsoid_inverse_weight_prebuilt <- function(samples, tree, scales, verbose) {
+  for (i in seq_len(ncol(samples))) {
+    samples[, i] <- samples[, i] / scales[i]
+  }
+  kdtree_ball_query_multiple(tree, t(samples),
+                             nrow(samples), ncol(samples),
+                             r = 1, verb = verbose)
+}
+
 ellipsoid_inverse_weight = function(samples, centers, scales, verbose) {
   # Returns the number of center-based ellipsoids that contain each sampled point
-  
-  # scale to unit ball
-  for (i in 1:ncol(centers)) {
-    samples[ , i] = samples[ , i] / scales[i]
-    centers[ , i] = centers[ , i] / scales[i]
-  }
-  
-  # Count the overlap with unit ball
-  tree <- kdtree_build(centers,verbose=verbose)
-  query <- kdtree_ball_query_multiple(tree, t(samples), 
-                                      nrow(samples), ncol(samples), 
-                                      r = 1, verb = verbose)
-  rm(tree)
-  
-  return(query)
+  tree <- build_ellipsoid_tree(centers, scales, verbose)
+  on.exit(rm(tree), add = TRUE)
+  ellipsoid_inverse_weight_prebuilt(samples, tree, scales, verbose)
 }
 
 
@@ -150,7 +159,13 @@ sample_model_ellipsoid <- function(predict_function=NULL, data, scales, min.valu
   volume_sampling_extent_all = list()
   total_accepted <- 0
   total_tried <- 0
-  
+
+  # centers and scales are invariant across iterations, so the kd-tree over
+  # the (scale-normalised) data can be built once and reused for every
+  # ellipsoid_inverse_weight query below. Previously rebuilt per iteration.
+  ellipsoid_tree <- build_ellipsoid_tree(data, scales, verbose)
+  on.exit(rm(ellipsoid_tree), add = TRUE)
+
   while(total_accepted < N.samples)
   {
     if (verbose==TRUE)
@@ -160,23 +175,23 @@ sample_model_ellipsoid <- function(predict_function=NULL, data, scales, min.valu
         pb$update(total_accepted/N.samples)
       }
     }
-    
+
     ## STEP ONE: Collect samples from ellipsoids around each data point
     full_samples = lapply(1:nrow(data),
                           function(i)
                           {
-                            se = sample_ellipsoid(data[i, ], 
-                                                  chunk.size, 
+                            se = sample_ellipsoid(data[i, ],
+                                                  chunk.size,
                                                   scales = scales)
                             return(data.frame(se))
                           })
     full_samples = as.matrix(rbindlist(full_samples))
-    
-    
-    
+
+
+
     # Discard samples from regions that were over-sampled.
-    iweight = ellipsoid_inverse_weight(full_samples, centers = data, 
-                                       scales = scales, verbose = verbose)
+    iweight = ellipsoid_inverse_weight_prebuilt(full_samples, ellipsoid_tree,
+                                                scales, verbose = verbose)
     # scale weights so that the largest value is 1
     weight = 1/(iweight / min(iweight))
     # This is the average weight of the samples

@@ -2,38 +2,72 @@
 # means is the centers of each data point
 # kernel_sd is the kernel bandwidth (in natural units, not squared, diagonal only)
 calculate_density <- function(s, means, kernel_sd, weight=NULL, chunksize=10, verbose=TRUE) {
-  
-  d = ncol(means)
-  n_points = nrow(means)
-  density = 0
-  
-  chunks = ceiling((1:n_points)/chunksize)
-  
-  num_chunks = max(chunks)
-  
-  if (verbose==TRUE)
-  {
+
+  n_points <- nrow(means)
+
+  # Preserves a documented trap: the original body does `weight[i] * dmvnorm(...)`,
+  # and NULL[i] is NULL, so the accumulator collapses to numeric(0) on the first
+  # iteration. hypervolume_gaussian always fills weight; only test-04 relies on
+  # this branch. Preserve rather than fix so a rewrite of the semantics is its
+  # own commit -- see TESTING.md's known-defects list.
+  if (is.null(weight)) return(numeric(0))
+
+  d <- ncol(means)
+  s <- as.matrix(s)
+  n_s <- nrow(s)
+
+  # The diagonal covariance factorises: k(z, m) = prod_j dnorm(z_j; m_j, h_j).
+  # Scale coordinates once by 1/kernel_sd so the exponent becomes
+  #   -0.5 * sum_j ((z_j - m_j) / h_j)^2 = -0.5 * ||Z - M||^2
+  # and pull the normalising constant out of the sum.
+  Z <- sweep(s,     2L, kernel_sd, "/")
+  M <- sweep(means, 2L, kernel_sd, "/")
+  norm_const <- exp(-0.5 * d * log(2 * pi) - sum(log(kernel_sd)))
+
+  # Block over query rows to keep the n_s x n_points distance matrix
+  # bounded in memory (~ n_s_block * n_points * 8 bytes). At the flagship
+  # scale (samples_retained ~ 1e4-1e5, n_points ~ 1e2-1e4) an unbounded
+  # matrix runs to hundreds of MB per call. Block size chosen so a single
+  # D2 chunk stays under ~50 MB. Result is bit-identical to the unblocked
+  # form because each output row is a fully independent inner product.
+  target_bytes <- 50 * 1024 * 1024
+  block_rows <- max(1L, min(n_s, as.integer(target_bytes / max(1L, n_points) / 8L)))
+
+  # chunksize is preserved as a signature parameter but drives only the
+  # progress bar's tick count (matching the number of data-point chunks
+  # the original code paced over), so callers passing non-default values
+  # -- and test-04's chunksize-invariance pin -- see identical results.
+  num_chunks <- max(1L, ceiling(n_points / chunksize))
+  if (verbose) {
     pb <- progress_bar$new(total = num_chunks)
     pb$tick(0)
   }
-  
-  for (chunk_this in 1:num_chunks)
-  {
-    index_vals = (1:n_points)[which(chunks==chunk_this)]
-    
-    for (i in index_vals) 
-    { 
-      density = density + weight[i] * dmvnorm(s, mean = means[i, ], sigma = kernel_sd^2 * diag(d))
-    }
-    
-    if (verbose==TRUE) 
-    {
-      pb$tick()
-    }
+
+  density <- numeric(n_s)
+  for (start in seq.int(1L, n_s, by = block_rows)) {
+    end <- min(start + block_rows - 1L, n_s)
+    D2 <- fastPdist2(Z[start:end, , drop = FALSE], M)^2
+    density[start:end] <- as.numeric(exp(-0.5 * D2) %*% weight)
   }
-  
-  density = density / n_points
-  return(density)
+
+  if (verbose) {
+    for (i in seq_len(num_chunks)) pb$tick()
+  }
+
+  # weight is a mixture-weight vector (sum-to-1 in the hypervolume_gaussian
+  # path), so sum_i weight_i * k(x; mean_i, sd) is already the mixture
+  # density and integrates to 1. Blonder 2014 Box 2 fixes the normalising
+  # constant as alpha = 1 / (m * prod(h)); dmvnorm-style k already carries
+  # 1/prod(h), and weight already carries 1/m via the caller's normalisation
+  # -- so no further division is needed. The previous body had a trailing
+  # `/ n_points` which was a second 1/m, producing values 1/n times too
+  # small (see PROPOSAL2_VERIFICATION.md sec 1). Fixed here; downstream
+  # consumers reading @ValueAtRandomPoints in absolute terms
+  # (hypervolume_estimate_probability, ValueAtRandomPoints comparisons
+  # across hvs with different n) now see actual probability density values.
+  # Volume is unaffected because acceptance is deterministic (density > 0)
+  # and thresholding is quantile-based.
+  density * norm_const
 }
 
 
